@@ -2,90 +2,90 @@
 
 [![Build Status](https://img.shields.io/badge/Docs--as--Code-Pandoc%20%7C%20XeLaTeX-blue.svg)](pandoc/Makefile)
 [![Course](https://img.shields.io/badge/UPC-1ASI0729%20Open%20Source-red.svg)](https://www.upc.edu.pe/)
-[![Milestone](https://img.shields.io/badge/Delivery-TB1%20Stage%20Review-brightgreen.svg)](#tabla-de-contenidos---entregable-tb1)
+[![Milestone](https://img.shields.io/badge/Delivery-TB1%20Stage%20Review-brightgreen.svg)](#table-of-contents---tb1-deliverable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
-Repositorio oficial para la gestión, redacción colaborativa y compilación secuencial del **Informe de Proyecto Final** de la startup **Dymbia** y su plataforma SaaS **SumaqAgro**, desarrollado bajo el enfoque **Docs-as-Code**, GitFlow y Conventional Commits para el curso *1ASI0729 Desarrollo de Aplicaciones Open Source* (Ciclo 2026-20).
+Official repository for managing, collaboratively writing, and sequentially compiling the **Final Project Report** for the startup **Dymbia** and its SaaS platform **SumaqAgro**, developed using **Docs-as-Code**, GitFlow, and Conventional Commits for the course *1ASI0729 Open Source Applications Development* (Academic Term 2026-20).
 
 ---
 
-## Enlaces Rápidos del Proyecto
+## Project Quick Links
 
-- **Repositorio de Código del Landing Page:** [Landing Page - SumaqAgro](https://github.com/dymbia-opensource/sumaqAgro-landing-page)
-- **Enlace al Tablero del Product Backlog (Jira):** [Tablero Jira - SumaqAgro](https://sumaq-agro.atlassian.net/jira/software/c/projects/DSB/boards/2/backlog?epics=visible)
-- **Espacio de Trabajo Event Storming (Miro):** [Tablero de Event Storming en Miro](https://miro.com/welcomeonboard/WG5aQ1R0dmR5b0xQWTI5TEZvaXplRmpPTUxmT2pmR1NNVXBVakcxRFI5Yk16dVY3TXpRc0RwbHVKNWFndGJvZDZkZXJrbkN4VFZQdzhHTjV6MWdBNUJtQnhYMVFmcjNLbkxyOWQwZlVuWHVPRUdrWUJzeGVtb1g5cE9UeGFKdjJBd044SHFHaVlWYWk0d3NxeHNmeG9BPT0hdjE=?share_link_id=126689221129)
+- **Landing Page Source Code Repository:** [Landing Page - SumaqAgro](https://github.com/dymbia-opensource/sumaqAgro-landing-page)
+- **Product Backlog Board (Jira):** [Jira Board - SumaqAgro](https://sumaq-agro.atlassian.net/jira/software/c/projects/DSB/boards/2/backlog?epics=visible)
+- **Event Storming Workspace (Miro):** [Event Storming Board on Miro](https://miro.com/welcomeonboard/WG5aQ1R0dmR5b0xQWTI5TEZvaXplRmpPTUxmT2pmR1NNVXBVakcxRFI5Yk16dVY3TXpRc0RwbHVKNWFndGJvZDZkZXJrbkN4VFZQdzhHTjV6MWdBNUJtQnhYMVFmcjNLbkxyOWQwZlVuWHVPRUdrWUJzeGVtb1g5cE9UeGFKdjJBd044SHFHaVlWYWk0d3NxeHNmeG9BPT0hdjE=?share_link_id=126689221129)
 
-
----
-
-## Información Académica
-
-- **Institución:** Universidad Peruana de Ciencias Aplicadas (UPC)
-- **Facultad:** Facultad de Ingeniería
-- **Carrera:** Ingeniería de Software
-- **Curso:** 1ASI0729 - Desarrollo de Aplicaciones Open Source
-- **Ciclo Académico:** 2026-20
-- **Docente:** Velasquez Nuñez, Angel Augusto
 
 ---
 
-## Descripción del Proyecto
+## Academic Information
 
-**Nombre de la Startup:** Dymbia  
-**Nombre del Producto:** SumaqAgro
-
-**Dymbia** es una startup peruana de base tecnológica enfocada en cerrar la brecha de digitalización y tecnificación en el sector agroalimentario nacional, orientándose prioritariamente a pequeños y medianos productores independientes, cooperativas agrarias y asesores técnicos en las cadenas de valor de **papa andina** y **café de especialidad**.
-
-### Problemática Abordada
-- **Vulnerabilidad a Eventos Climáticos Extremos:** Dependencia del régimen de secano en la sierra y afectaciones por heladas y plagas que provocan pérdidas productivas de hasta un 40%.
-- **Informalidad Contable Rural:** Falta de registro de compras y jornales, impidiendo determinar el costo unitario de producción por saco o quintal.
-- **Asimetría Comercial y Falta de Trazabilidad:** Carencia de mecanismos accesibles para acreditar calibres oficiales o catación SCA ante compradores mayoristas.
-
-### Capacidades Centrales
-1. **Monitoreo Satelital sin Hardware:** Telemetría óptica Sentinel-2 para calcular vigor foliar (NDVI) y balance hídrico (NDWI) sin instalar sensores en tierra.
-2. **Bitácora Contable y Punto de Equilibrio:** Registro financiero ágil (con soporte offline) que calcula el precio mínimo de venta para proteger la inversión.
-3. **Certificación Digital con QR:** Generación de constancias PDF y sellos QR públicos auditables para trazabilidad de cosechas.
+- **Institution:** Universidad Peruana de Ciencias Aplicadas (UPC)
+- **Faculty:** Faculty of Engineering
+- **Degree Program:** Software Engineering
+- **Course:** 1ASI0729 - Open Source Applications Development
+- **Academic Term:** 2026-20
+- **Instructor:** Velasquez Nuñez, Angel Augusto
 
 ---
 
-## Arquitectura de la Solución y Stack Tecnológico
+## Project Description
 
-* **Domain-Driven Design (DDD):** Descomposición estratégica en 7 Bounded Contexts y modelado táctico en Agregados, Entidades y Objetos de Valor (Value Objects).
-* **Backend RESTful (Spring Boot 3 / Java 21):** Arquitectura en capas desacopladas (Interfaces, Aplicación, Dominio, Infraestructura) con persistencia Spring Data JPA sobre MySQL 8.0.
-* **Web Application (Angular 18 SPA):** Interfaz reactiva con Angular Material y arquitectura *Offline-First* (IndexedDB y Service Workers) para operar en parcelas sin señal.
-* **Landing Page:** Sitio web estático en HTML5, CSS3 y JavaScript vanilla optimizado para redes móviles rurales.
-* **Modelo C4 (Diagrams-as-Code):** Documentación arquitectónica de Contexto, Contenedores y Componentes formalizada mediante Structurizr DSL.
+**Startup Name:** Dymbia  
+**Product Name:** SumaqAgro
 
-> **Nota de Alcance:** El proyecto abarca exclusivamente software en la nube; no contempla sensores físicos ni dispositivos IoT de campo.
+**Dymbia** is a Peruvian technology startup focused on closing the digitalization and technology adoption gap in the national agrifood sector, primarily serving small and medium-sized independent growers, agricultural cooperatives, and technical advisors in the **Andean potato** and **specialty coffee** value chains.
+
+### Problems Addressed
+- **Vulnerability to Extreme Weather Events:** Reliance on rainfed agriculture in the highlands and damage from frost and pests, causing production losses of up to 40%.
+- **Informal Rural Accounting:** Missing purchase and farm labor records prevent growers from determining the unit production cost per sack or quintal.
+- **Trade Asymmetry and Lack of Traceability:** Limited access to mechanisms for verifying official size grades or SCA cupping scores for wholesale buyers.
+
+### Core Capabilities
+1. **Satellite Monitoring without Hardware:** Sentinel-2 optical telemetry to calculate vegetation vigor (NDVI) and water balance (NDWI) without installing ground sensors.
+2. **Accounting Log and Break-Even Analysis:** Streamlined financial recordkeeping (with offline support) that calculates the minimum selling price to protect the investment.
+3. **Digital Certification with QR Codes:** Generation of PDF certificates and publicly auditable QR seals for harvest traceability.
 
 ---
 
-## Tabla de Contenidos - Entregable TB1
+## Solution Architecture and Technology Stack
 
-* [Carátula](report/front-matter/01-caratula.md)
-* [Registro de Versiones del Informe](report/front-matter/02-version-history.md)
+* **Domain-Driven Design (DDD):** Strategic decomposition into 7 Bounded Contexts and tactical modeling with Aggregates, Entities, and Value Objects.
+* **RESTful Backend (Spring Boot 3 / Java 21):** Decoupled layered architecture (Interfaces, Application, Domain, Infrastructure) with Spring Data JPA persistence on MySQL 8.0.
+* **Web Application (Angular 18 SPA):** Reactive interface with Angular Material and an *Offline-First* architecture (IndexedDB and Service Workers) for use in plots without network coverage.
+* **Landing Page:** Static website built with HTML5, CSS3, and vanilla JavaScript, optimized for rural mobile networks.
+* **C4 Model (Diagrams-as-Code):** Architectural documentation of Context, Containers, and Components formalized using Structurizr DSL.
+
+> **Scope Note:** The project covers cloud software exclusively; it does not include physical sensors or field IoT devices.
+
+---
+
+## Table of Contents - TB1 Deliverable
+
+* [Cover Page](report/front-matter/01-caratula.md)
+* [Report Version History](report/front-matter/02-version-history.md)
 * [Project Report Collaboration Insights](report/front-matter/03-collaboration.md)
 * [Student Outcome](report/front-matter/04-student-outcome.md)
-* [Capítulo I: Introducción](report/10-chapter-1-intro.md)
+* [Chapter I: Introduction](report/10-chapter-1-intro.md)
   * [1.1. Startup Profile](report/10-chapter-1-intro.md#11-startup-profile)
-    * [1.1.1. Descripción de la Startup](report/10-chapter-1-intro.md#111-descripción-de-la-startup)
-    * [1.1.2. Perfiles de integrantes del equipo](report/10-chapter-1-intro.md#112-perfiles-de-integrantes-del-equipo)
+    * [1.1.1. Startup Description](report/10-chapter-1-intro.md#111-descripción-de-la-startup)
+    * [1.1.2. Team Member Profiles](report/10-chapter-1-intro.md#112-perfiles-de-integrantes-del-equipo)
   * [1.2. Solution Profile](report/10-chapter-1-intro.md#12-solution-profile)
-    * [1.2.1 Antecedentes y problemática](report/10-chapter-1-intro.md#121-antecedentes-y-problemática)
+    * [1.2.1 Background and Problem Statement](report/10-chapter-1-intro.md#121-antecedentes-y-problemática)
     * [1.2.2 Lean UX Process](report/10-chapter-1-intro.md#122-lean-ux-process)
       * [1.2.2.1. Lean UX Problem Statements](report/10-chapter-1-intro.md#1221-lean-ux-problem-statements)
       * [1.2.2.2. Lean UX Assumptions](report/10-chapter-1-intro.md#1222-lean-ux-assumptions)
       * [1.2.2.3. Lean UX Hypothesis Statements](report/10-chapter-1-intro.md#1223-lean-ux-hypothesis-statements)
       * [1.2.2.4. Lean UX Canvas](report/10-chapter-1-intro.md#1224-lean-ux-canvas)
-  * [1.3. Segmentos objetivo](report/10-chapter-1-intro.md#13-segmentos-objetivo)
-* [Capítulo II: Requirements Elicitation & Analysis](report/20-chapter-2-requirements.md)
-  * [2.1. Competidores](report/20-chapter-2-requirements.md#21-competidores)
-    * [2.1.1. Análisis competitivo](report/20-chapter-2-requirements.md#211-análisis-competitivo)
-    * [2.1.2. Estrategias y tácticas frente a competidores](report/20-chapter-2-requirements.md#212-estrategias-y-tácticas-frente-a-competidores)
-  * [2.2. Entrevistas](report/20-chapter-2-requirements.md#22-entrevistas)
-    * [2.2.1. Diseño de entrevistas](report/20-chapter-2-requirements.md#221-diseño-de-entrevistas)
-    * [2.2.2. Registro de entrevistas](report/20-chapter-2-requirements.md#222-registro-de-entrevistas)
-    * [2.2.3. Análisis de entrevistas](report/20-chapter-2-requirements.md#223-análisis-de-entrevistas)
+  * [1.3. Target Segments](report/10-chapter-1-intro.md#13-segmentos-objetivo)
+* [Chapter II: Requirements Elicitation & Analysis](report/20-chapter-2-requirements.md)
+  * [2.1. Competitors](report/20-chapter-2-requirements.md#21-competidores)
+    * [2.1.1. Competitive Analysis](report/20-chapter-2-requirements.md#211-análisis-competitivo)
+    * [2.1.2. Strategies and Tactics against Competitors](report/20-chapter-2-requirements.md#212-estrategias-y-tácticas-frente-a-competidores)
+  * [2.2. Interviews](report/20-chapter-2-requirements.md#22-entrevistas)
+    * [2.2.1. Interview Design](report/20-chapter-2-requirements.md#221-diseño-de-entrevistas)
+    * [2.2.2. Interview Records](report/20-chapter-2-requirements.md#222-registro-de-entrevistas)
+    * [2.2.3. Interview Analysis](report/20-chapter-2-requirements.md#223-análisis-de-entrevistas)
   * [2.3. Needfinding](report/20-chapter-2-requirements.md#23-needfinding)
     * [2.3.1. User Personas](report/20-chapter-2-requirements.md#231-user-personas)
     * [2.3.2. User Task Matrix](report/20-chapter-2-requirements.md#232-user-task-matrix)
@@ -93,11 +93,11 @@ Repositorio oficial para la gestión, redacción colaborativa y compilación sec
     * [2.3.4. Empathy Mapping](report/20-chapter-2-requirements.md#234-empathy-mapping)
   * [2.4. Big Picture Event Storming](report/20-chapter-2-requirements.md#24-big-picture-event-storming)
   * [2.5. Ubiquitous Language](report/20-chapter-2-requirements.md#25-ubiquitous-language)
-* [Capítulo III: Requirements Specification](report/30-chapter-3-specification.md)
+* [Chapter III: Requirements Specification](report/30-chapter-3-specification.md)
   * [3.1. User Stories](report/30-chapter-3-specification.md#31-user-stories)
   * [3.2. Impact Mapping](report/30-chapter-3-specification.md#32-impact-mapping)
   * [3.3. Product Backlog](report/30-chapter-3-specification.md#33-product-backlog)
-* [Capítulo IV: Product Design](report/40-chapter-4-design.md)
+* [Chapter IV: Product Design](report/40-chapter-4-design.md)
   * [4.1. Style Guidelines](report/40-chapter-4-design.md#41-style-guidelines)
     * [4.1.1. General Style Guidelines](report/40-chapter-4-design.md#411-general-style-guidelines)
     * [4.1.2. Web Style Guidelines](report/40-chapter-4-design.md#412-web-style-guidelines)
@@ -126,7 +126,7 @@ Repositorio oficial para la gestión, redacción colaborativa y compilación sec
     * [4.7.1. Class Diagrams](report/40-chapter-4-design.md#471-class-diagrams)
   * [4.8. Database Design](report/40-chapter-4-design.md#48-database-design)
     * [4.8.1. Database Diagrams](report/40-chapter-4-design.md#481-database-diagrams)
-* [Capítulo V: Product Implementation, Validation & Deployment](report/50-chapter-5-implementation.md)
+* [Chapter V: Product Implementation, Validation & Deployment](report/50-chapter-5-implementation.md)
   * [5.1. Software Configuration Management](report/50-chapter-5-implementation.md#51-software-configuration-management)
     * [5.1.1. Software Development Environment Configuration](report/50-chapter-5-implementation.md#511-software-development-environment-configuration)
     * [5.1.2. Source Code Management](report/50-chapter-5-implementation.md#512-source-code-management)
@@ -151,80 +151,80 @@ Repositorio oficial para la gestión, redacción colaborativa y compilación sec
       * [5.2.2.6. Services Documentation Evidence for Sprint Review](report/50-chapter-5-implementation.md#5226-services-documentation-evidence-for-sprint-review)
       * [5.2.2.7. Software Deployment Evidence for Sprint Review](report/50-chapter-5-implementation.md#5227-software-deployment-evidence-for-sprint-review)
       * [5.2.2.8. Team Collaboration Insights during Sprint](report/50-chapter-5-implementation.md#5228-team-collaboration-insights-during-sprint)
-* [Conclusiones](report/60-conclusions.md)
-* [Bibliografía](report/99-bibliography.md)
-* [Anexos](report/annexes/annex-c-videos.md)
-  * [Anexo A: Student Outcome 3](report/annexes/annex-a-student-outcome.md)
-  * [Anexo B: Performance Report (Team Leader)](report/annexes/annex-b-performance-report.md)
-  * [Anexo C: Video About-the-Product & Sustentación](report/annexes/annex-c-videos.md)
+* [Conclusions](report/60-conclusions.md)
+* [Bibliography](report/99-bibliography.md)
+* [Annexes](report/annexes/annex-c-videos.md)
+  * [Annex A: Student Outcome 3](report/annexes/annex-a-student-outcome.md)
+  * [Annex B: Performance Report (Team Leader)](report/annexes/annex-b-performance-report.md)
+  * [Annex C: About-the-Product Video & Project Defense](report/annexes/annex-c-videos.md)
 
 ---
 
-## Arquitectura de Directorios y Nomenclatura
+## Directory Architecture and Naming Conventions
 
-El repositorio implementa la estructura modular de directorios para compilación con Pandoc y XeLaTeX:
+The repository uses a modular directory structure for compilation with Pandoc and XeLaTeX:
 
 ```text
 sumaqAgro-report/
-├── pandoc/                              # Pipeline de exportación a PDF
-│   ├── build.yaml                       # Configuración Pandoc / XeLaTeX (orden de los capítulos)
-│   ├── metadata.yaml                    # Propiedades del PDF (fuentes, márgenes, idioma)
+├── pandoc/                              # PDF export pipeline
+│   ├── build.yaml                       # Pandoc / XeLaTeX configuration (chapter order)
+│   ├── metadata.yaml                    # PDF properties (fonts, margins, language)
 │   ├── Makefile                         # make -C pandoc pdf MILESTONE=tb1
 │   ├── build.ps1                        # .\pandoc\build.ps1 -Milestone tb1 (Windows)
 │   ├── filters/
-│   │   └── pdf.lua                      # Imágenes y tablas HTML → PDF
+│   │   └── pdf.lua                      # HTML images and tables → PDF
 │   ├── pdf/
-│   │   ├── preamble.tex                 # Ajustes LaTeX
-│   │   └── toc.md                       # Posición de la tabla de contenidos
-│   └── build/                           # Salida del PDF (ignorada por Git)
-├── report/                              # Contenido del informe
-│   ├── front-matter/                    # Prefijos 01-09
+│   │   ├── preamble.tex                 # LaTeX settings
+│   │   └── toc.md                       # Table of contents placement
+│   └── build/                           # PDF output (ignored by Git)
+├── report/                              # Report content
+│   ├── front-matter/                    # Prefixes 01-09
 │   │   ├── 01-caratula.md
 │   │   ├── 02-version-history.md
 │   │   ├── 03-collaboration.md
 │   │   └── 04-student-outcome.md
-│   ├── 10-chapter-1-intro.md            # Prefijos 10-89: capítulos
+│   ├── 10-chapter-1-intro.md            # Prefixes 10-89: chapters
 │   ├── 20-chapter-2-requirements.md
 │   ├── 30-chapter-3-specification.md
 │   ├── 40-chapter-4-design.md
 │   ├── 50-chapter-5-implementation.md
 │   ├── 60-conclusions.md
-│   ├── 99-bibliography.md               # Prefijo 99: referencias APA
+│   ├── 99-bibliography.md               # Prefix 99: APA references
 │   ├── annexes/
 │   │   ├── annex-a-student-outcome.md
 │   │   ├── annex-b-performance-report.md
 │   │   └── annex-c-videos.md
-│   └── assets/img/                      # Imágenes agrupadas por capítulo
+│   └── assets/img/                      # Images grouped by chapter
 │       ├── chapter-1/                   # team/, lean-ux-canvas.png
-│       ├── chapter-2/                   # interviews/, personas, empathy y journey maps
+│       ├── chapter-2/                   # interviews/, personas, empathy and journey maps
 │       ├── chapter-3/                   # impact map, backlog
 │       ├── chapter-4/                   # c4/, class-diagrams/, database/, event-storming/,
 │       │                                # domain-driven-design/, applications-design/, landing-page/, wireflows/
 │       ├── chapter-5/                   # deployment-configuration/, landing-page/, sprint-1/
 │       ├── lean-ux-canvas.png
 │       └── upc-logo.png
-├── CHANGELOG.md                         # Cambios por versión
-├── CONTRIBUTING.md                      # GitFlow, Conventional Commits y compilación
+├── CHANGELOG.md                         # Changes by version
+├── CONTRIBUTING.md                      # GitFlow, Conventional Commits, and compilation
 ├── LICENSE.md                           # MIT
-└── README.md                            # Portada digital e índice navegable
+└── README.md                            # Digital cover page and navigable index
 ```
 
-## Compilación del PDF
+## PDF Compilation
 
-Requisitos: **Pandoc 3.x** y **XeLaTeX** (MiKTeX o TeX Live / MacTeX). Todos los comandos se ejecutan desde la raíz del repositorio.
+Requirements: **Pandoc 3.x** and **XeLaTeX** (MiKTeX or TeX Live / MacTeX). Run all commands from the repository root.
 
 ### Windows (PowerShell)
 
-Instalación (una sola vez):
+Installation (one time only):
 
 ```powershell
 winget install --id JohnMacFarlane.Pandoc
 winget install --id MiKTeX.MiKTeX
 ```
 
-En **MiKTeX Console → Settings**, activa *Install missing packages on-the-fly: Always*.
+In **MiKTeX Console → Settings**, enable *Install missing packages on-the-fly: Always*.
 
-Compilación:
+Compilation:
 
 ```powershell
 .\pandoc\build.ps1 -Milestone tb1
