@@ -1151,290 +1151,231 @@ En la imagen se evidencia las contribuciones registradas por cada integrante. Es
 
 ![Insights → Contributors](assets/img/chapter-5/sprint-2/img-collaboration.png)
 
----
+## 5.3. Validation Interviews.
 
-### 5.2.3. Sprint 3
+### 5.3.1. Diseño de Entrevistas
 
-El **Sprint 3** marca el inicio del desarrollo de los **RESTful Web Services** de **SumaqAgro**, construidos con **Java 21**, **Spring Boot**, **Spring Data JPA**, **MySQL** y documentados con **SpringDoc OpenAPI / Swagger UI**. El backend se organiza por *Bounded Contexts* (**IAM**, **Profiles**, **Subscriptions**, **Farming**, **Crop** y **Certification**) y, dentro de cada uno, en las capas *domain*, *application*, *infrastructure* e *interfaces*, siguiendo los patrones tácticos de Domain-Driven Design: agregados, *value objects*, comandos, consultas, eventos de dominio, puertos de repositorio y fachadas de contexto (ACL). En paralelo, la **Web Application** en Angular evolucionó hacia su segunda versión con los flujos de autenticación, suscripción, perfil y cooperativa, y la **Landing Page** se reestructuró en su tercera versión. El sprint abarca las semanas 9 a 12 del ciclo y culmina con la entrega AV2.
+Las entrevistas tienen como propósito recopilar información cualitativa sobre las experiencias, necesidades y percepciones de los usuarios potenciales de SumaqAgro. Para ello, las entrevistas se estructuraron en cuatro bloques principales: perfil y contexto, orientado a conocer las características y actividades de los entrevistados; 
+expectativas del producto, enfocado en identificar los beneficios esperados; evaluación del prototipo, destinado a conocer la percepción de los usuarios sobre las funcionalidades y su facilidad de uso; y cierre, que permite recoger opiniones finales y sugerencias de mejora.
 
-#### 5.2.3.1. Sprint Planning 3
+### Preguntas para el Segmento: Agricultores independientes
 
-En esta sección se especifican los aspectos principales de la reunión de planificación del **Sprint 3** (*Sprint Planning Meeting*) del equipo **Dymbia**. La reunión se realizó al inicio de la iteración registrada en Jira (19 de octubre al 13 de noviembre de 2026) y en ella se incorporaron al equipo **Salcedo Muñoz, Andy Alfredo Hipolito** y **Yarleque Ruiz, Cristina Marcela**. El equipo revisó los resultados del Sprint 2, acordó las mejoras de su forma de trabajo y seleccionó del Product Backlog las historias de usuario y técnicas necesarias para reemplazar la Fake REST API por un backend propio con persistencia real.
+**Perfil y contexto**
 
-| Sprint # | Sprint 3 |
-| :--- | :--- |
-| **Sprint Planning Background** | |
-| Date | 2026-10-19 |
-| Time | 10:00 AM |
-| Location | Discord / GitHub / Jira Software |
-| Prepared By | Sanca Condori, Miguel |
-| Attendees (to planning meeting) | Salcedo Muñoz, Andy Alfredo Hipolito / Sanca Condori, Miguel / Solorzano Sullca, Benjamin / Tejada Pumacayo, Yamil Jared / Yarleque Ruiz, Cristina Marcela |
-| Sprint 2 Review Summary | Se publicó la primera versión de la Web Application en Angular (`v1.0.0`, y su *patch* `v1.0.1` con el CHANGELOG y la guía de contribución) en Firebase Hosting, conectada a una Fake REST API (`json-server`) desplegada en Render. Asimismo, se publicó la nueva versión de la Landing Page (`v2.0.0` y `v2.0.1`) con las secciones reorganizadas, contenido i18n en español e inglés y la sección del video About-the-Team. Se demostraron los flujos de Crop Health (visor Leaflet con NDVI/NDWI, alertas regionales, reportes de plagas, bandeja, inspecciones y recetas agronómicas) y las vistas iniciales de Field Management, Profiles y Harvest Certification. Quedaron pendientes la preparación de alertas demo por región (TSK-08), la validación integrada del circuito productor–ingeniero (TSK-22) y la consistencia de los datos relacionados (TSK-23). |
-| Sprint 2 Retrospective Summary | El equipo valoró la organización por Bounded Contexts y el uso de GitFlow con Conventional Commits. Como oportunidades de mejora se identificó que la Fake REST API no permite validar reglas de negocio ni seguridad, que los datos demo entre contextos eran inconsistentes y que la integración de ramas se concentró al final del sprint. Se acordó: (1) modelar primero el dominio de cada contexto en el backend antes de exponer endpoints, (2) separar el modelo de dominio de las entidades de persistencia JPA mediante puertos de repositorio, (3) integrar a `develop` cada funcionalidad terminada sin esperar al cierre y (4) asignar a cada nuevo integrante un Bounded Context completo para acelerar su incorporación. |
-| **Sprint Goal & User Stories** | |
-| Sprint 3 Goal | Our focus is on delivering the first deployed version of the SumaqAgro RESTful Web Services, built with Spring Boot, Spring Data JPA and MySQL and documented with OpenAPI/Swagger, and connecting it to a new version of the Angular Web Application. Users will sign up, sign in and sign out with JWT-based authentication, producers will register plots with validated GPS boundaries and open crop campaigns, farmers will report pests and consult regional agroclimatic alerts, users will update their profiles and register cooperatives, and collection centers will register harvest batches, all stored in a real database instead of the fake API. We believe it delivers a secure and persistent foundation for the platform. This will be confirmed when the Web Services v1.0.0 and the Web App v2.0.0 are publicly deployed, every endpoint is documented in Swagger UI, and these flows work end to end. |
-| Sprint 3 Velocity | 111 Story Points |
-| Sum of Story Points | 111 Story Points |
+1. ¿Cuántos años lleva trabajando en la agricultura y qué cultivos produce actualmente?
+2. ¿Cómo registra actualmente los gastos de fertilizantes, semillas, jornales y otros insumos?
+3. ¿Qué dificultades encuentra al consultar información sobre el estado de sus cultivos cuando trabaja en sus parcelas?
 
-A continuación, se detallan las historias de usuario y técnicas comprometidas en el Sprint 3, tal como fueron registradas en el tablero de Jira, agrupadas por el Bounded Context que las implementa:
+**Expectativas del producto**
 
-| Bounded Context | Story ID | Título | Story Points |
-| :--- | :---: | :--- | :---: |
-| IAM | **US-10** | Registro de usuario en la plataforma (Sign Up) | 3 |
-| IAM | **US-11** | Inicio de sesión seguro (Sign In) | 3 |
-| IAM | **US-14** | Cierre de sesión seguro (Sign Out) | 2 |
-| IAM | **TS-02** | Servicio de autenticación JWT y Spring Security | 8 |
-| Subscriptions | **US-12** | Consulta de catálogo de planes durante Onboarding | 2 |
-| Subscriptions | **US-22** | Control de cuota de parcelas según el plan | 2 |
-| Profiles | **US-16** | Actualización de perfil y datos de contacto | 3 |
-| Profiles | **US-17** | Registro e institucionalización de Cooperativa | 5 |
-| Profiles | **US-18** | Adición de socios al padrón de la cooperativa | 5 |
-| Profiles | **US-21** | Directorio consolidado de miembros y predios | 3 |
-| Farming | **US-29** | Delimitación de polígono mediante coordenadas GPS | 8 |
-| Farming | **US-32** | Apertura de nueva campaña agrícola | 3 |
-| Farming | **US-33** | Seleccionar tipo de cultivo (Papa / Café) | 3 |
-| Farming | **US-34** | Especificación de variedad de semilla utilizada | 3 |
-| Farming | **US-37** | Registro de egresos en insumos y fertilizantes | 3 |
-| Farming | **US-38** | Registro de egresos en jornales y mano de obra | 3 |
-| Farming | **US-39** | Registro de egresos en transporte y flete rural | 3 |
-| Crop | **TS-01** | Integración con API externa de AgroMonitoring | 8 |
-| Crop | **US-42** | Programación de consulta de telemetría satelital | 5 |
-| Crop | **US-43** | Ingesta de imágenes satelitales y descarte por nubes | 5 |
-| Crop | **US-45** | Consulta de alertas agroclimáticas registradas por región | 5 |
-| Crop | **US-48** | Registro de reportes textuales de plagas o enfermedades | 5 |
-| Crop | **US-52** | Confirmación de aplicación de tratamiento fitosanitario | 3 |
-| Certification | **US-54** | Registro de lote de cosecha ingresado a acopio | 3 |
-| Certification | **US-56** | Extracción y registro de muestra representativa | 3 |
-| Certification | **US-59** | Asignación de score de calidad global del lote | 5 |
-| Transversal | **TS-06** | Documentación de API RESTful con OpenAPI y Swagger UI | 5 |
-| Transversal | **US-05** | Demostración del producto mediante video | 2 |
-| **Total** | | | **111** |
+4. ¿Qué beneficios esperaría obtener de una plataforma que permita monitorear sus cultivos mediante imágenes satelitales?
+5. ¿Qué tan útil sería para usted conocer los costos reales de producción de cada parcela antes de vender su cosecha?
+6. ¿Considera importante recibir alertas sobre posibles amenazas climáticas o fitosanitarias? ¿Por qué?
 
-Asimismo, el equipo acordó las versiones que cada producto debe alcanzar al cierre del Sprint 3, aplicando **Semantic Versioning 2.0.0** y publicándolas mediante ramas `release/*` integradas en `main`:
+**Evaluación del prototipo**
 
-| Producto | Repositorio | Versión al cierre del Sprint 2 | Versión objetivo del Sprint 3 |
-| :--- | :--- | :---: | :---: |
-| Report | `dymbia-opensource/sumaqAgro-report` | 2.0.0 | 3.0.0 |
-| Landing Page (Website) | `dymbia-opensource/sumaqAgro-landing-page` | 2.0.1 | 3.0.0 |
-| Web Application | `dymbia-opensource/sumaqAgro-appweb` | 1.0.1 | 2.0.0 |
-| RESTful Web Services | `dymbia-opensource/sumaqAgro-backend` | — | 1.0.0 |
+7. Después de observar el módulo de monitoreo satelital, ¿qué tan fácil le resultó interpretar la información sobre el estado de sus cultivos?
+8. ¿Qué tan sencillo le resultó registrar los costos de producción y consultar los resultados por parcela?
+9. ¿Qué información o funcionalidad le resultó más difícil de comprender durante la demostración?
 
----
+**Cierre**
 
-#### 5.2.3.2. Aspect Leaders and Collaborators
+10. ¿Utilizaría SumaqAgro para gestionar sus actividades agrícolas? ¿Qué condiciones necesitaría para incorporarla a su trabajo?
+11. ¿Qué cambios o funcionalidades adicionales recomendaría para mejorar la plataforma?
 
-En esta sección se presenta la matriz **Leadership-and-Collaboration Matrix (LACX)** correspondiente al **Sprint 3**. Dado que el alcance de esta iteración se centra en los RESTful Web Services, los aspectos considerados corresponden a los **Bounded Contexts** del backend, junto con su contraparte en la Web Application. Esta organización permite que cada integrante asuma la responsabilidad completa de un contexto (dominio, persistencia, servicios de aplicación, endpoints REST y documentación OpenAPI), lo cual también facilitó la incorporación de los dos nuevos integrantes del equipo.
+### Preguntas para el Segmento: Directivos de cooperativas agrícolas
 
-Los aspectos considerados en el Sprint 3 son los siguientes:
+**Perfil y contexto**
 
-* **Aspect 1 — IAM & Subscriptions:** registro e inicio de sesión con JWT, protección de rutas con Spring Security, catálogo de planes y suscripción (US-10, US-11, US-14, US-12, TS-02).
-* **Aspect 2 — Farming & Shared Kernel:** parcelas, linderos GPS, cuota de parcelas, campañas agrícolas y egresos, además del *shared kernel* (manejo de errores, patrón `Result`, auditoría JPA, configuración e internacionalización de mensajes) (US-22, US-29, US-32, US-33, US-34, US-37, US-38, US-39).
-* **Aspect 3 — Crop & AgroMonitoring:** observaciones satelitales, integración con AgroMonitoring, alertas agroclimáticas, reportes de plagas, inspecciones y recetas técnicas (TS-01, US-42, US-43, US-45, US-48, US-52).
-* **Aspect 4 — Profiles & Cooperatives:** perfiles de usuario, cooperativas, padrón de socios, asignación de agrónomos y fachada del contexto para otros Bounded Contexts (US-16, US-17, US-18, US-21).
-* **Aspect 5 — Certification:** lotes de cosecha, pesaje, muestreo, calificación de calidad, certificados y trazabilidad pública (US-54, US-56, US-59).
+1. ¿Cuál es su cargo y cuántos productores o socios tiene actualmente bajo su responsabilidad?
+2. ¿Cómo gestionan actualmente los registros de producción, calidad y procedencia de los productos agrícolas?
+3. ¿Cuáles son las principales dificultades que enfrenta durante los procesos de control de calidad y certificación?
 
-La documentación OpenAPI (TS-06) y el video demostrativo (US-05) son responsabilidad compartida: cada líder documenta en Swagger UI los endpoints de su aspecto.
+**Expectativas del producto**
 
-##### Leadership-and-Collaboration Matrix (LACX) — Sprint 3
+4. ¿Qué beneficios esperaría obtener de una plataforma que centralice la información agrícola de los productores asociados?
+5. ¿Qué tan importante sería disponer de registros digitales para verificar la trazabilidad y procedencia de cada lote?
+6. ¿Qué información considera indispensable para evaluar la calidad de los productos antes de su comercialización?
 
-| Team Member (Last Name, First Name) | GitHub Username | Aspect 1: IAM & Subscriptions | Aspect 2: Farming & Shared Kernel | Aspect 3: Crop & AgroMonitoring | Aspect 4: Profiles & Cooperatives | Aspect 5: Certification |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Salcedo Muñoz, Andy Alfredo Hipolito** | `Andy777sdw` | **C** | **C** | **C** | **C** | **L** |
-| **Sanca Condori, Miguel** | `MiguelSanca` | **C** | **L** | **C** | **C** | **C** |
-| **Solorzano Sullca, Benjamin** | `benjass2` | **L** | **C** | **C** | **C** | **C** |
-| **Tejada Pumacayo, Yamil Jared** | `YamilTejada` | **C** | **C** | **L** | **C** | **C** |
-| **Yarleque Ruiz, Cristina Marcela** | `Cris06luna` | **C** | **C** | **C** | **L** | **C** |
+**Evaluación del prototipo**
 
-*Leyenda: **L** = Leader (Líder del Aspecto Técnico) | **C** = Collaborator (Colaborador en el Desarrollo)*
+7. Después de observar el módulo de gestión y certificación, ¿qué tan fácil le resultó consultar la información de los productores y sus parcelas?
+8. ¿Considera que los certificados digitales permitirían mejorar la organización y disponibilidad de la documentación durante las auditorías? ¿Por qué?
+9. ¿Qué tan útil considera disponer de información centralizada sobre la calidad y trazabilidad de los lotes?
 
----
+**Cierre**
 
-#### 5.2.3.3. Sprint Backlog 3
+10. ¿Consideraría implementar SumaqAgro en su cooperativa? ¿Qué factores influirían en esa decisión?
+11. ¿Qué mejoras considera necesarias para que la plataforma responda a las necesidades administrativas y comerciales de su organización?
 
-El objetivo principal del **Sprint 3** es construir y documentar la primera versión de los RESTful Web Services de SumaqAgro con persistencia en MySQL y autenticación JWT, y adaptar la Web Application a los nuevos flujos de autenticación, suscripción, perfil y cooperativa. Las historias seleccionadas se descompusieron en **52 tareas** (201 horas), complementadas con **3 tareas transversales** (12 horas), sumando una estimación total de **213 horas**. El seguimiento se realizó en el tablero de Jira Software del proyecto.
+### Preguntas para el Segmento: Ingenieros agrónomos y asesores técnicos
 
-**URL Público del Tablero:**
-[Tablero Jira - SumaqAgro (Sprint 3)](https://sumaq-agro.atlassian.net/jira/software/c/projects/DSB/boards/2)
+**Perfil y contexto**
 
-El estado de cada tarea refleja el avance registrado en los repositorios al cierre del sprint: **Done** indica que la funcionalidad está integrada en la rama `develop`; **To-Review** indica que la funcionalidad está publicada en su rama `feature/*` y pendiente de revisión e integración; **In-Process** indica trabajo iniciado sin rama publicada completa; y **To-do** indica trabajo aún no iniciado.
+1. ¿Cuántos años de experiencia tiene como ingeniero agrónomo o asesor técnico?
+2. ¿Cuántos agricultores y parcelas supervisa aproximadamente durante un mes?
+3. ¿Qué herramientas utiliza actualmente para registrar sus visitas técnicas, diagnósticos y recomendaciones?
 
-| Sprint # | Sprint 3 | | | | | | |
-| :--- | :--- | :--- | :--- | :--- | :---: | :--- | :---: |
-| **Story Id** | **Story Title** | **Task Id** | **Task Title** | **Task Description** | **Estimation (Hours)** | **Assigned To** | **Status** |
-| **TS-02** | Servicio de autenticación JWT y Spring Security | **TSK-01** | Configuración base del backend | Crear el proyecto Spring Boot, organizar las dependencias Maven y centralizar las versiones. | 3 h | Solorzano Sullca, Benjamin | Done |
-| **TS-02** | Servicio de autenticación JWT y Spring Security | **TSK-02** | Modelo de usuario y roles | Modelar el agregado `User`, la entidad `Role` y sus repositorios; sembrar los roles soportados al iniciar. | 5 h | Solorzano Sullca, Benjamin | Done |
-| **TS-02** | Servicio de autenticación JWT y Spring Security | **TSK-03** | Protección de rutas con JWT | Implementar el servicio de tokens JWT y el filtro *bearer* de Spring Security para proteger los endpoints. | 5 h | Solorzano Sullca, Benjamin | Done |
-| **US-10** | Registro de usuario en la plataforma (Sign Up) | **TSK-04** | Endpoint de registro | Implementar el comando de registro con contraseña cifrada (BCrypt), crear el perfil inicial y exponer `POST /api/v1/users`. | 4 h | Solorzano Sullca, Benjamin | Done |
-| **US-10** | Registro de usuario en la plataforma (Sign Up) | **TSK-05** | Vista de registro en la Web App | Construir el formulario de registro con nombres del perfil, confirmación de contraseña y traducciones. | 4 h | Solorzano Sullca, Benjamin | Done |
-| **US-11** | Inicio de sesión seguro (Sign In) | **TSK-06** | Endpoint de inicio de sesión | Implementar el comando de inicio de sesión y exponer `POST /api/v1/tokens` que devuelve el token JWT. | 3 h | Solorzano Sullca, Benjamin | Done |
-| **US-11** | Inicio de sesión seguro (Sign In) | **TSK-07** | Sesión y guards en la Web App | Implementar el store de autenticación, el interceptor HTTP, los *guards* de sesión y rol y la vista de inicio de sesión. | 5 h | Solorzano Sullca, Benjamin | Done |
-| **US-14** | Cierre de sesión seguro (Sign Out) | **TSK-08** | Cierre de sesión | Separar el cierre de sesión del estado del layout, invalidar sesiones expiradas o rechazadas y limpiar el almacenamiento local. | 2 h | Solorzano Sullca, Benjamin | Done |
-| **US-12** | Consulta de catálogo de planes durante Onboarding | **TSK-09** | Modelo de suscripciones en la Web App | Definir las entidades `Plan`, `Subscription` y `Payment`, sus comandos, *assemblers*, endpoints y el store de suscripciones. | 6 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-12** | Consulta de catálogo de planes durante Onboarding | **TSK-10** | Vistas de catálogo y checkout | Construir el catálogo de planes, el flujo de selección y pago y el historial de facturación. | 5 h | Salcedo Muñoz, Andy Alfredo Hipolito | Done |
-| **US-12** | Consulta de catálogo de planes durante Onboarding | **TSK-11** | Catálogo de planes en el backend | Modelar `Plan`, `Subscription` y `SubscriptionPeriod`, sembrar los planes y exponer el catálogo, la suscripción vigente y el checkout. | 5 h | Solorzano Sullca, Benjamin | To-Review |
-| **US-22** | Control de cuota de parcelas según el plan | **TSK-12** | Validación de cuota en el backend | Rechazar el registro de parcelas cuando el propietario alcanza la cuota de su plan. | 2 h | Sanca Condori, Miguel | Done |
-| **US-22** | Control de cuota de parcelas según el plan | **TSK-13** | Cuota activa en la Web App | Usar la cuota de la suscripción activa al registrar parcelas y restringir el acceso sin suscripción vigente. | 3 h | Solorzano Sullca, Benjamin | Done |
-| **US-16** | Actualización de perfil y datos de contacto | **TSK-14** | Agregado y persistencia de perfiles | Definir los *value objects* y el agregado `Profile` con su repositorio y persistencia JPA. | 5 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-16** | Actualización de perfil y datos de contacto | **TSK-15** | Endpoints de perfil | Exponer `GET` y `PUT /api/v1/profiles/user/{userId}` con sus recursos y *assemblers*. | 3 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-16** | Actualización de perfil y datos de contacto | **TSK-16** | Edición de cuenta en la Web App | Permitir la edición en línea de los datos personales y de contacto del productor, con pruebas unitarias. | 3 h | Solorzano Sullca, Benjamin | Done |
-| **US-17** | Registro e institucionalización de Cooperativa | **TSK-17** | Agregado Cooperative | Modelar el agregado `Cooperative` con socios e invitaciones y su repositorio. | 4 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-17** | Registro e institucionalización de Cooperativa | **TSK-18** | Endpoint de cooperativas | Exponer `POST /api/v1/cooperatives` con sus recursos de solicitud y respuesta. | 3 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-17** | Registro e institucionalización de Cooperativa | **TSK-19** | Flujo de registro de cooperativa | Construir en la Web App el flujo de registro de la cooperativa con validaciones. | 3 h | Solorzano Sullca, Benjamin | Done |
-| **US-18** | Adición de socios al padrón de la cooperativa | **TSK-20** | Endpoints de socios e invitaciones | Exponer `POST /api/v1/cooperatives/{cooperativeId}/members` y `/invitations`. | 4 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-18** | Adición de socios al padrón de la cooperativa | **TSK-21** | Registro de socios en la Web App | Registrar socios, editar sus datos y vincular cuentas demo de productores. | 4 h | Solorzano Sullca, Benjamin | Done |
-| **US-21** | Directorio consolidado de miembros y predios | **TSK-22** | Asignación de agrónomos y fachada | Implementar `AgronomistAssignment`, sus endpoints y la fachada `ProfilesContextFacade` para otros contextos. | 5 h | Yarleque Ruiz, Cristina Marcela | Done |
-| **US-21** | Directorio consolidado de miembros y predios | **TSK-23** | Expedientes de socios | Mostrar expedientes navegables de socios con parcelas vinculadas, certificados e historial de acopio. | 4 h | Solorzano Sullca, Benjamin | Done |
-| **US-21** | Directorio consolidado de miembros y predios | **TSK-24** | Consulta del directorio en el backend | Exponer la consulta del directorio consolidado de socios y parcelas de una cooperativa. | 3 h | Yarleque Ruiz, Cristina Marcela | To-do |
-| **US-29** | Delimitación de polígono mediante coordenadas GPS | **TSK-25** | Agregado FieldPlot | Modelar `FieldPlot` y `PlotStatus`, sus consultas, servicios y `POST`/`GET /api/v1/field-plots`. | 5 h | Sanca Condori, Miguel | Done |
-| **US-29** | Delimitación de polígono mediante coordenadas GPS | **TSK-26** | Linderos GPS | Definir `GeoCoordinate` y `PlotBoundary`, calcular el área y exponer `PUT /api/v1/field-plots/{fieldPlotId}/boundary`. | 5 h | Sanca Condori, Miguel | Done |
-| **US-29** | Delimitación de polígono mediante coordenadas GPS | **TSK-27** | Línea base de suelo | Registrar textura y línea base de suelo de la parcela mediante `PUT /api/v1/field-plots/{fieldPlotId}/soil-baseline`. | 3 h | Sanca Condori, Miguel | Done |
-| **US-32** | Apertura de nueva campaña agrícola | **TSK-28** | Agregado CropCampaign | Modelar `CropCampaign` con fecha de siembra y cierre, su repositorio y adaptador JPA que publica eventos. | 4 h | Sanca Condori, Miguel | Done |
-| **US-32** | Apertura de nueva campaña agrícola | **TSK-29** | Endpoints de campañas | Exponer `POST /api/v1/crop-campaigns`, consultas, cierres y campañas por parcela validando una sola campaña en curso. | 4 h | Sanca Condori, Miguel | Done |
-| **US-33** | Seleccionar tipo de cultivo (Papa / Café) | **TSK-30** | Tipo de cultivo | Definir `CropType` y permitir seleccionarlo mediante `PATCH /api/v1/crop-campaigns/{cropCampaignId}`. | 2 h | Sanca Condori, Miguel | Done |
-| **US-34** | Especificación de variedad de semilla utilizada | **TSK-31** | Variedad de semilla | Definir `SeedVariety` con su convertidor y permitir especificarla en la campaña en curso. | 2 h | Sanca Condori, Miguel | Done |
-| **US-37** | Registro de egresos en insumos y fertilizantes | **TSK-32** | Libro de campaña en el backend | Modelar `CampaignLedger` y `ExpenseEntry` con su persistencia. | 5 h | Sanca Condori, Miguel | To-do |
-| **US-38** | Registro de egresos en jornales y mano de obra | **TSK-33** | Endpoint de egresos por categoría | Exponer el registro de egresos por categoría (insumos, mano de obra y transporte) en la campaña. | 4 h | Sanca Condori, Miguel | To-do |
-| **US-39** | Registro de egresos en transporte y flete rural | **TSK-34** | Costos de campaña en la Web App | Calcular costos de campaña y precio de equilibrio desde las entidades y el store. | 3 h | Sanca Condori, Miguel | Done |
-| **TS-01** | Integración con API externa de AgroMonitoring | **TSK-35** | Registro de polígonos en AgroMonitoring | Implementar el servicio de monitoreo que registra en AgroMonitoring el polígono delimitado y lo vincula a la parcela. | 5 h | Sanca Condori, Miguel | Done |
-| **TS-01** | Integración con API externa de AgroMonitoring | **TSK-36** | Importación de imágenes satelitales | Implementar `AgroMonitoringSatelliteImagery` y el comando de importación de observaciones. | 5 h | Tejada Pumacayo, Yamil Jared | To-Review |
-| **US-42** | Programación de consulta de telemetría satelital | **TSK-37** | Consulta programada | Programar la consulta periódica de nuevas imágenes para las parcelas vinculadas. | 3 h | Tejada Pumacayo, Yamil Jared | To-do |
-| **US-43** | Ingesta de imágenes satelitales y descarte por nubes | **TSK-38** | Agregado SatelliteObservation | Modelar la observación con `NDVI`, `NDWI` y `Percentage`, su persistencia y `GET` de observaciones. | 5 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-43** | Ingesta de imágenes satelitales y descarte por nubes | **TSK-39** | Descarte por nubosidad | Evitar importaciones duplicadas mediante clave de importación y descartar imágenes con nubosidad alta. | 3 h | Tejada Pumacayo, Yamil Jared | To-Review |
-| **US-45** | Consulta de alertas agroclimáticas registradas por región | **TSK-40** | Alertas y pronósticos | Implementar `AgroclimaticAlert` y `ClimateForecast` con persistencia y consulta por región. | 5 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-45** | Consulta de alertas agroclimáticas registradas por región | **TSK-41** | Boletines regionales | Publicar y consultar boletines regionales mediante `/api/v1/regional-bulletins`. | 4 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-48** | Registro de reportes textuales de plagas o enfermedades | **TSK-42** | Agregado PestReport | Modelar el reporte con transiciones de estado, excepciones, evento `PestReportRecordedEvent` y persistencia. | 4 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-48** | Registro de reportes textuales de plagas o enfermedades | **TSK-43** | Endpoints de reportes | Exponer `POST`, `GET` y `DELETE /api/v1/pest-reports`. | 3 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-52** | Confirmación de aplicación de tratamiento fitosanitario | **TSK-44** | Inspecciones de campo | Programar y completar inspecciones mediante `/api/v1/field-inspections`. | 4 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-52** | Confirmación de aplicación de tratamiento fitosanitario | **TSK-45** | Recetas y confirmación de aplicación | Emitir recetas técnicas y confirmar su aplicación con `PATCH /api/v1/technical-prescriptions/{id}/application`. | 4 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-54** | Registro de lote de cosecha ingresado a acopio | **TSK-46** | Agregado HarvestBatch | Modelar el lote, su pesaje, persistencia y adaptador JPA que publica eventos. | 5 h | Salcedo Muñoz, Andy Alfredo Hipolito | To-Review |
-| **US-54** | Registro de lote de cosecha ingresado a acopio | **TSK-47** | Endpoints de lotes | Exponer `HarvestBatchesController` para registrar y consultar lotes. | 3 h | Salcedo Muñoz, Andy Alfredo Hipolito | To-Review |
-| **US-56** | Extracción y registro de muestra representativa | **TSK-48** | Registro de muestra | Implementar el comando de muestreo del lote y su validación. | 3 h | Salcedo Muñoz, Andy Alfredo Hipolito | To-Review |
-| **US-59** | Asignación de score de calidad global del lote | **TSK-49** | Calificación de calidad | Implementar la graduación de papa y la catación de café, el evento `BatchGradedEvent` y su manejador. | 4 h | Salcedo Muñoz, Andy Alfredo Hipolito | To-Review |
-| **US-59** | Asignación de score de calidad global del lote | **TSK-50** | Certificados y trazabilidad | Implementar `QualityCertificate`, la generación de PDF/QR y la consulta pública de trazabilidad. | 5 h | Salcedo Muñoz, Andy Alfredo Hipolito | To-Review |
-| **TS-06** | Documentación de API RESTful con OpenAPI y Swagger UI | **TSK-51** | Documentación OpenAPI | Configurar SpringDoc OpenAPI y documentar los endpoints de cada contexto con anotaciones de Swagger. | 4 h | Tejada Pumacayo, Yamil Jared | Done |
-| **US-05** | Demostración del producto mediante video | **TSK-52** | Video demostrativo | Grabar y editar el video de demostración de los flujos implementados en el sprint. | 2 h | Sanca Condori, Miguel | To-do |
+**Expectativas del producto**
 
-Adicionalmente, se registraron tareas transversales que no dependen de una historia en particular, pero que son necesarias para satisfacer restricciones generales del backend:
+4. ¿Qué beneficios esperaría obtener de una herramienta que permita monitorear parcelas mediante información satelital?
+5. ¿Qué información considera necesaria para identificar oportunamente posibles afectaciones en los cultivos?
+6. ¿Qué tan importante sería contar con registros digitales de las visitas técnicas y recomendaciones realizadas a cada productor?
 
-| Task Id | Task Title | Task Description | Estimation (Hours) | Assigned To | Status |
-| :---: | :--- | :--- | :---: | :--- | :---: |
-| **TSK-T1** | Shared kernel | Implementar el patrón `Result`, el manejo estructurado de errores, el *exception handler* global, los *assemblers* de `ProblemDetail`, la auditoría JPA y la estrategia de nombres en *snake case* con tablas en plural. | 6 h | Sanca Condori, Miguel | Done |
-| **TSK-T2** | Configuración por entornos e i18n | Definir las propiedades por entorno y los mensajes de error en inglés y español. | 2 h | Sanca Condori, Miguel | Done |
-| **TSK-T3** | Separación dominio–persistencia | Separar los agregados de las entidades JPA mediante puertos de repositorio y publicador de eventos de dominio. | 4 h | Sanca Condori, Miguel | Done |
+**Evaluación del prototipo**
+
+7. Después de observar el módulo de monitoreo, ¿qué tan útil considera la información satelital para complementar sus evaluaciones de campo?
+8. ¿Qué tan sencillo le resultó localizar parcelas y consultar su información geográfica?
+9. ¿Considera que los registros e informes digitales facilitan el seguimiento de sus recomendaciones técnicas? ¿Por qué?
+
+**Cierre**
+
+10. ¿Incorporaría SumaqAgro como herramienta de apoyo en sus actividades de asesoría agrícola? ¿Por qué?
+11. ¿Qué mejoras recomendaría para facilitar el trabajo de los asesores técnicos?
+
+### 5.3.2. Registro de Entrevistas
+
+Las entrevistas de validación se llevaron a cabo con usuarios de ambos segmentos objetivo. A continuación se presenta el registro detallado de las entrevistas realizadas, incluyendo información del entrevistado, capturas de video y análisis de respuestas.
+
+Link de las entrevistas: https://tinyurl.com/22wc9pys
+
+Link completo: https://upcedupe-my.sharepoint.com/:v:/g/personal/u20241f859_upc_edu_pe/IQDdYvzFj0ESTKQL2tU1jv8GAc-WOtwj9JSusBCu7Dsft8o?e=52Rkjh&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D
+
+### Entrevista 1 – Agricultor de papa (Segmento 1)
+
+| Campo | Información        |
+|---|--------------------|
+| Nombre completo | Mateo              |
+| Edad | 32                 |
+| Distrito | Comas              |
+| Ocupación | Agricultor de papa |
+| Fecha de entrevista | 14/11/2026         |
+| Duración | 09:07              |
+| URL del video (Microsoft Stream) | (https://tinyurl.com/22wc9pys) |
+| Minutaje | 00:00 – 09:07      |
+
+#### Captura de la entrevista
+
+![Mateo](assets/img/chapter-5/validation-interviews/validación-1.png)
+
+#### Resumen de Respuestas
+
+Mateo es un agricultor dedicado principalmente al cultivo de papa. Durante la entrevista, explicó que organiza sus actividades agrícolas de manera manual, planificando la siembra según la disponibilidad de semillas, los recursos que necesita y las personas que pueden ayudarlo en las labores del campo. Respecto al seguimiento de sus cultivos, comentó que cuando observa alguna anomalía, como manchas en las hojas, suele tomar fotografías y consultar primero con algún vecino y posteriormente con un técnico. Asimismo, señaló que lleva el control de sus gastos en un cuaderno, donde registra las fechas y los pagos realizados; sin embargo, en ocasiones olvida anotar algunos jornales y recién calcula el gasto total cuando llega el momento de vender su producción.
+
+Al conocer SumaqAgro, identificó que la plataforma podría servirle para revisar sus parcelas y llevar un control de sus gastos. Durante la demostración, comprendió el funcionamiento general del mapa y el registro de parcelas, aunque manifestó algunas dudas respecto a los números que aparecen en la información geográfica. Indicó que necesitaría explicaciones más sencillas que le permitan interpretar estos datos y saber si es conveniente visitar una parcela, así como identificar qué aspectos debería revisar durante su recorrido. También mostró interés en conocer los costos de la plataforma, especialmente si resultan accesibles para un agricultor que trabaja de manera independiente.
+
+Respecto al sistema de alertas agrícolas, Mateo manifestó que antes de tomar alguna decisión revisaría si el aviso corresponde a su zona y si continúa vigente. Además, consideró importante que las alertas incluyan recomendaciones sobre las acciones que debería realizar y el tiempo durante el cual debe mantenerse atento a una posible afectación del cultivo. En cuanto al módulo de gastos y ganancias, valoró la posibilidad de registrar las compras y consultar posteriormente información como el producto adquirido, el monto pagado, la fecha y el nombre de la campaña, ya que estos datos le permitirían evitar confusiones cuando administra varias campañas agrícolas.
+
+Finalmente, manifestó que utilizaría principalmente el módulo de registro de gastos durante su próxima campaña, destacando la importancia de poder registrar los pagos realizados a los trabajadores directamente desde la parcela, incluso cuando no disponga de conexión a internet. Consideró que esta funcionalidad evitaría que olvide registrar algunos gastos al regresar a casa. Entre sus principales recomendaciones, propuso mejorar la comprensión del mapa mediante pequeñas explicaciones que permitan interpretar los números y la información presentada. 
 
 ---
 
-#### 5.2.3.4. Development Evidence for Sprint Review
+### Entrevista 2 – Ingeniero agrónomo / Asesor técnico (Segmento 3)
 
-En esta sección se presentan los avances de implementación del **Sprint 3**. El esfuerzo principal se concentró en el nuevo repositorio de **RESTful Web Services** (`sumaqAgro-backend`), que al cierre del sprint expone en `develop` los endpoints de los contextos **IAM**, **Profiles**, **Farming** y **Crop**, documentados con Swagger UI. Los contextos **Certification** y **Subscriptions** y la importación desde AgroMonitoring se encuentran en sus ramas `feature/*`, pendientes de revisión e integración. En la **Web Application** (`sumaqAgro-appweb`) se implementaron los flujos de autenticación, suscripción, cuenta de usuario y cooperativa, que aún consumen la Fake REST API y se conectarán a los Web Services en la siguiente iteración. En la **Landing Page** (`sumaqAgro-landing-page`) se publicaron los *releases* `v3.0.0`, `v3.1.0` y `v3.2.0`, que reestructuran el proyecto con *partials* reutilizables para el encabezado y el pie de página, extraen los íconos SVG a archivos dedicados e incorporan a los nuevos integrantes del equipo.
+| Campo | Información                                       |
+|---|---------------------------------------------------|
+| Nombre completo | Jeff                                              |
+| Edad | 30                                                |
+| Distrito | Ica (Santiago)                                    |
+| Ocupación | Ingeniero agrónomo y asesor técnico independiente |
+| Fecha de entrevista | 14/11/2026                                   |
+| Duración | 05:15                                             |
+| URL del video (Microsoft Stream) |(https://tinyurl.com/22wc9pys)                              |
+| Minutaje | 09:07 - 14:22                                     |
 
-El equipo trabajó bajo **GitFlow**: cada funcionalidad se desarrolló en una rama `feature/<bounded-context>-<funcionalidad>` creada desde `develop` y se integró nuevamente en `develop` mediante *merge*. Todos los mensajes siguen el estándar **Conventional Commits** en inglés, con el *scope* del Bounded Context o agregado modificado. Los mensajes se conservan literalmente como están registrados en Git.
+#### Captura de la entrevista
 
-En el repositorio de RESTful Web Services se registraron **264 commits** durante el sprint; a continuación se presenta una selección de **58 commits** representativos de todos los integrantes, ordenados desde el más antiguo hasta el más reciente:
+![Jeff](assets/img/chapter-5/validation-interviews/validacion-2.png)
 
-| Repository | Branch | Commit Id | Commit Message | Commit Message Body | Commited on (Date) |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `dymbia-opensource/sumaqAgro-backend` | `main` | `f1b07d0` | `chore: initialize SumaqAgro Spring Boot backend project` | --- | 25/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/project-setup` | `bd5fda9` | `chore(deps): organize Maven dependencies and centralize version properties` | --- | 26/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/shared` | `35ac3d6` | `feat(shared): add JPA auditing support` | --- | 26/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/shared` | `762fe97` | `feat(shared): implement generic Result pattern` | --- | 26/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/shared` | `154b9fc` | `feat(shared): add centralized REST exception handling` | --- | 26/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/project-configurations` | `c475d53` | `feat(pom): update project version and dependencies, add license and developer info` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/project-configurations` | `160dd16` | `feat(configuration): add environment-specific properties` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/project-configurations` | `0342029` | `feat(configuration): add error messages for en and es` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-health-domain-value-objects` | `176fed6` | `feat(crop-health): add NDVI and NDWI value objects with validation` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/field-management-plots` | `5e0da0c` | `feat(field-plot): add FieldPlot aggregate` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-health-domain-aggregates` | `f0d10c2` | `feat(crop-health): add PestReport aggregate with validation and status management` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/field-management-plots` | `0343163` | `feat(field-plot): implement FieldPlotsController for managing field plots` | --- | 31/10/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-context-rename` | `28662cb` | `refactor(farming): rename fieldmanagement package to farming` | --- | 03/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-crop-campaigns` | `da2fc77` | `feat(farming): add CropCampaign aggregate and Start crop campaign command` | --- | 03/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/shared-persistence` | `ed3dc04` | `feat(shared): add domain aggregate root without persistence concerns` | --- | 05/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/shared-persistence` | `1f95d91` | `feat(shared): add map, flatMap, mapError and recover to Result` | --- | 05/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/shared-persistence` | `14e6848` | `feat(shared): add problem detail and response entity assemblers` | --- | 05/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `43db509` | `feat(iam): define supported roles and role domain entity.` | --- | 05/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `442ed25` | `feat(iam): add JPA persistence for users and role assignments` | --- | 05/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-context` | `0f7ac4c` | `feat(profiles): add value objects for Profiles context` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-context` | `ee21ef0` | `feat(profiles): add Profile aggregate, command and event from domain model` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-persistence` | `0262429` | `refactor(field-plot): separate domain aggregate from JPA persistence` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-context` | `85e93e8` | `feat(profiles): add Cooperative aggregate with members and invitations` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `de1a26a` | `feat(iam): add BCrypt password hashing` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `4c970b0` | `feat(iam): add JWT token service` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-agronomist-assignment` | `a9105dd` | `feat(profiles): add queries and repository for AgronomistAssignment` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `9a92595` | `feat(iam): implement user sign-in command` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `29d88a3` | `feat(iam): expose sign-in through the tokens endpoint` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `a9f341d` | `feat(iam): expose registration through the users endpoint` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/iam-authentication` | `fba225d` | `feat(iam): secure API routes with bearer JWT authentication` | --- | 06/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-crop-campaign` | `362918a` | `feat(crop-campaign): add crop campaigns controller` | --- | 07/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/harvest-certification` | `ab32cc5` | `feat(certification): add HarvestBatch aggregate` | --- | 07/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/harvest-certification` | `0c16c26` | `feat(certification): add register, weigh, sample, grade potato and cup coffee commands` | --- | 07/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-pest-report` | `e41ebfe` | `feat(pest-report): add PestReport aggregate with state transitions and reconstitution` | --- | 07/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/harvest-certification` | `12bf3ec` | `feat(certification): add HarvestBatchesController` | --- | 07/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/harvest-certification` | `e26d164` | `feat(certification): add PublicTraceabilityController` | --- | 07/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-agronomist-assignment` | `1527e9f` | `feat(profiles): implement REST endpoints for user profiles` | --- | 08/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-pest-report` | `a7eac6b` | `feat(pest-report): implement PestReportsController for managing pest report operations` | --- | 08/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-field-inspection` | `53da853` | `feat(field-inspection): implement FieldInspection aggregate for scheduling and completing inspections` | --- | 08/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-rest-endpoints` | `80fc2f5` | `feat(profiles): add REST controller for Cooperative operations` | --- | 08/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/profiles-context-facade` | `e5ccf02` | `feat(profiles): implement ProfilesContextFacadeImpl for ACL integration` | --- | 08/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-plot-boundary` | `769b44e` | `feat(farming): add endpoint to delineate the plot boundary` | --- | 09/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-field-inspection` | `d05320f` | `feat(field-inspection): implement REST controller for scheduling, retrieving, and completing field inspections` | --- | 09/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-plot-boundary` | `0a285c5` | `feat(farming): link delineated polygons to AgroMonitoring` | --- | 09/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-technical-prescription` | `5c721a5` | `feat(crop): add TechnicalPrescription aggregate to manage pest report prescriptions` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-technical-prescription` | `2983457` | `feat(crop): add REST controller for managing technical prescriptions` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/subscription-management` | `8f3f412` | `feat(subscriptions): add PlanCode enum to represent commercial plans` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/subscription-management` | `99eb238` | `feat(subscriptions): expose the plan catalog` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/harvest-certification` | `49c0d02` | `refactor(certification): extract value objects from aggregates and commands` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/subscription-management` | `7fce7c0` | `feat(subscriptions): add checkout and restore the plan repository port` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-satelite-observation` | `c1a8e9b` | `feat(satellite-observation): add REST controller and assembler for satellite observation queries` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-climate-forecast` | `7c71ee1` | `feat(climate-forecast): add REST controller for retrieving climate forecasts by region` | --- | 11/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-agroclimatic-alert` | `29a8584` | `feat(agroclimatic-alert): add REST controller and resource for querying agroclimatic alerts` | --- | 11/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-regional-bulletin` | `147733b` | `feat(regional-bulletin): add REST controller for publishing and querying regional bulletins` | --- | 11/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-agromonitoring-satellite` | `f8f37d6` | `feat(agromonitoring-satellite): implement import functionality for satellite observations` | --- | 12/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/crop-agromonitoring-satellite` | `2647bfc` | `feat(agromonitoring-satellite): enhance API documentation with Swagger annotations for import and retrieval operations` | --- | 12/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-endpoints-upgrade` | `9ec3139` | `refactor(crop-campaign): replace field PUT endpoints with PATCH` | --- | 13/11/2026 |
-| `dymbia-opensource/sumaqAgro-backend` | `feature/farming-soil-baseline` | `b6a5139` | `feat(field-plot): add endpoint to record the soil baseline` | --- | 13/11/2026 |
+#### Resumen de Respuestas
 
-En el repositorio de la Web Application se registraron **165 commits** durante el sprint; a continuación se presenta una selección de **25 commits** representativos, ordenados desde el más antiguo hasta el más reciente:
+El entrevistado cuenta con tres años de experiencia como ingeniero agrónomo. Durante su primer año trabajó en una agroexportadora en Ica y, desde 2024, se desempeña como asesor técnico independiente, brindando apoyo a pequeños productores y a una cooperativa dedicada al cultivo de papa y quinua. Actualmente, atiende aproximadamente entre 15 y 20 productores y supervisa alrededor de 25 parcelas mensualmente. Durante la entrevista, explicó que una de sus principales dificultades es la distancia entre los terrenos agrícolas, lo que limita la cantidad de visitas que puede realizar diariamente. Asimismo, señaló que utiliza un cuaderno de campo y archivos de Excel para registrar sus actividades, mientras que las fotografías y recomendaciones técnicas las comparte mediante WhatsApp. Esta distribución de información dificulta recuperar los antecedentes de las visitas y consultar recomendaciones realizadas meses atrás.
 
-| Repository | Branch | Commit Id | Commit Message | Commit Message Body | Commited on (Date) |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/seed-plan-plot-limit` | `1b0f7f8` | `feat(field-management): enhance plot registration and quota management with new UI components and improved error handling` | --- | 21/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-domain` | `459f40b` | `feat(iam): define user roles and user entity` | --- | 26/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-bounded-context` | `deaf27a` | `feat(iam): add authentication endpoints and API facadeb v` | --- | 27/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-bounded-context` | `efae2c8` | `feat(iam): add sign-in view with validation and translations` | --- | 27/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-bounded-context` | `34157f0` | `feat(iam): add sign-up view and authentication navigation` | --- | 27/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/field-management-upgrade` | `4926780` | `refactor(field-management): calculate campaign costs and breakeven price in the store` | --- | 27/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-session` | `81c5d7f` | `feat(iam): add expiring mock session storage` | --- | 27/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-domain` | `eb1dcf3` | `feat(subscriptions): add Plan domain entity with pricing logic` | --- | 29/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-infrastructure` | `20bcdbd` | `feat(subscriptions): add plans and subscriptions edndpoints for HTTP requests` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-store` | `029f938` | `feat(subscriptions): add subscriptions store` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-paid-plans` | `c844e85` | `refactor(subscriptions): remove free plan from the domain` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-refactor` | `5f7d4a5` | `refactor(iam): separate sign-out from layout state` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/iam-registration-ui` | `a76f986` | `feat(iam): collect profile names during registration` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/profiles-account-help` | `1dfc2d9` | `feat(profiles): support updating farmer personal and contact details` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-presentation` | `a7a432b` | `feat(subscriptions): add plans catalog with plan cards and translations` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-presentation` | `ef74e8c` | `feat(subscriptions): add checkout view and plan selection flow` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscriptions-presentation` | `441fa2b` | `feat(subscriptions): add billing history and cancellation view` | --- | 30/10/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/crop-health-improvements` | `75f2fa4` | `feat(advisory-directory): add AdvisoryDirectory and PlotDirectory services for managing advisor and plot data` | --- | 03/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscription-flow` | `cb09049` | `feat(subscriptions): gate workspace access on subscription validity` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscription-flow` | `75402fb` | `feat(field-management): use the active subscription plot quota` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/subscription-onboarding-flow` | `4628aa3` | `feat(iam): add language switching and refine sign-in and sign-up forms` | --- | 11/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/ui-improvements` | `92be170` | `feat(crop-health): reorganize the advisor consultation view` | --- | 12/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/ui-and-validation-issues` | `6550606` | `feat(profiles): add cooperative registration flow` | --- | 13/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/ui-and-validation-issues` | `26953cf` | `feat(profiles): add cooperative member registration and dossier` | --- | 13/11/2026 |
-| `dymbia-opensource/sumaqAgro-appweb` | `feature/ui-and-validation-issues` | `5faa8f3` | `feat(profiles): add navigable cooperative member dossiers` | --- | 13/11/2026 |
+Respecto al monitoreo de las parcelas mediante información satelital, manifestó que sería beneficioso contar con herramientas que le permitan identificar cuáles presentan una disminución en sus indicadores de vegetación y, de esta manera, priorizar sus visitas técnicas. Considera importante disponer de información histórica sobre el comportamiento de los cultivos, así como datos de humedad, temperatura y etapa de desarrollo, debido a que estos factores permiten interpretar mejor las posibles afectaciones agrícolas. Sin embargo, aclaró que la información satelital debe utilizarse como complemento de las evaluaciones de campo y no como un diagnóstico definitivo, ya que la identificación de plagas y enfermedades requiere una inspección directa de los cultivos.
 
-En el repositorio de la Landing Page se registraron **17 commits** y tres *releases* durante el sprint; a continuación se presenta una selección representativa, ordenada desde el más antiguo hasta el más reciente:
+Asimismo, destacó que contar con un historial digital de visitas técnicas, diagnósticos y recomendaciones sería incluso más importante que el propio monitoreo satelital. Considera que centralizar los reportes de los productores, las inspecciones realizadas y las recomendaciones permitiría evaluar si las indicaciones proporcionadas han dado resultados y disponer de evidencia ante posibles pérdidas de cultivos. Durante la evaluación del prototipo, valoró positivamente la visualización de las curvas de comportamiento de los indicadores satelitales, en lugar de mostrar únicamente un dato del día. También consideró sencillo localizar las parcelas y consultar su información geográfica, aunque mencionó que inicialmente no comprendió que el productor era quien debía delimitar su parcela. Por ello, sugirió incorporar una vista general con todas las parcelas organizadas por zonas, ya que esta distribución se ajustaría mejor a su manera de planificar las visitas.
 
-| Repository | Branch | Commit Id | Commit Message | Commit Message Body | Commited on (Date) |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `dymbia-opensource/sumaqAgro-landing-page` | `main` | `5d7739f` | `Merge branch 'release/v3.0.0' into main` | --- | 26/10/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/project-structure-cleanup` | `5208c8e` | `feat(partials): refactor header and footer and add them to a partials folder` | --- | 02/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/project-structure-cleanup` | `1bbc4a0` | `refactor(assets): extract inline SVGs into dedicated files` | --- | 02/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/project-structure-cleanup` | `35d2b06` | `docs(readme): translate to English and update project structure` | --- | 02/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `main` | `8da070b` | `Merge branch 'release/v3.1.0' into main` | --- | 02/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/restructured-files` | `67e598c` | `refactor(website): update file paths for scripts and legal pages` | --- | 03/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/restructured-files` | `27ef427` | `feat(team): add new team members and update existing profiles` | --- | 03/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/restructured-files` | `8d7c6a2` | `fix(landing): center team cards and keep FAQ closed by default` | --- | 04/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/restructured-files` | `afb1a1e` | `fix(landing): improve subscription CTA copy` | --- | 04/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `feature/update-information` | `374d350` | `chore(team): update Andy Salcedo's role to Software Developer` | --- | 10/11/2026 |
-| `dymbia-opensource/sumaqAgro-landing-page` | `main` | `752c5f9` | `Merge branch 'release/v3.2.0' into main` | --- | 10/11/2026 |
+Finalmente, manifestó su disposición a incorporar SumaqAgro como herramienta de apoyo en sus actividades de asesoría agrícola, indicando que aprobaría su implementación junto con la cooperativa y que podría beneficiar inicialmente a unos 12 productores, principalmente por la posibilidad de consultar historiales y organizar las visitas técnicas. No obstante, expresó su preocupación por la adopción de la plataforma, debido a que si los agricultores no registran sus parcelas ni sus reportes, la información disponible para los asesores sería limitada.
+
+---
+
+### Entrevista 3 - Directivo de Cooperativa Agrícola (Segmento 2)
+
+| **Dato** | **Información**                                        |
+|---|--------------------------------------------------------|
+| **Nombre Completo** | Diego                                                  |
+| **Edad** | 30 años                                                |
+| **Distrito** | Surco                                                  |
+| **Ocupación** | Coordinador de operaciones de una cooperativa agrícola |
+| **Fecha de Entrevista** | 14/11/2026                                             |
+| **Duración** | 06:05                                                  |
+| **URL del video** | (https://tinyurl.com/22wc9pys)                         |
+| **Timing** | 14:22 - 20:25                                          |
+
+**Screenshot del video:**
+
+![Diego](assets/img/chapter-5/validation-interviews/validación-3.png)
+
+**Resumen de Respuestas:**
+
+Diego, de 30 años, se desempeña como coordinador de operaciones de una cooperativa agrícola que cuenta aproximadamente con 45 productores asociados, dedicados principalmente al cultivo de papa y café. Durante la entrevista, explicó que actualmente la gestión de los registros de producción, calidad y procedencia se realiza mediante archivos de Excel y documentos físicos. Esta forma de trabajo presenta algunas dificultades, especialmente cuando la información proporcionada por los agricultores está incompleta o cuando necesitan consultar nuevamente los datos de un productor.
+
+Asimismo, señaló que una de sus principales dificultades se encuentra en la organización de la información durante los procesos de control de calidad y certificación. Debido a que los registros se encuentran distribuidos en diferentes archivos, resulta complicado consultar los datos de manera rápida y preparar la documentación necesaria para las auditorías. Frente a esta situación, manifestó que una plataforma como SumaqAgro sería beneficiosa para centralizar la información agrícola, facilitar el seguimiento de los productores y reducir el tiempo dedicado a las tareas administrativas.
+
+Respecto a la trazabilidad, Diego considera fundamental disponer de registros digitales que permitan identificar la procedencia de cada lote y conocer información como el productor responsable, la parcela de origen, la fecha de cosecha, la cantidad recibida y las características de calidad. Tras observar el prototipo, valoró positivamente el módulo de gestión y certificación, destacando que la información se encuentra organizada y resulta sencilla de consultar. También consideró que los certificados digitales facilitarían la disponibilidad de documentos durante las auditorías y mejorarían el control de los productos recibidos.
+
+Finalmente, manifestó su interés en implementar SumaqAgro en su cooperativa, siempre que la plataforma sea fácil de utilizar, funcione correctamente y tenga costos accesibles. Entre sus principales recomendaciones, propuso incorporar opciones para generar reportes de producción y calidad, exportar información a Excel y consultar rápidamente los registros de cada productor. Estas observaciones reflejan su interés en contar con una herramienta que optimice las actividades operativas y facilite la gestión de información dentro de la cooperativa.
+
+---
+
+### Entrevista 4 - Directiva de Cooperativa Agrícola (Segmento 2)
+
+| **Dato** | **Información**                            |
+|---|--------------------------------------------|
+| **Nombre Completo** | Camila                                     |
+| **Edad** | 32 años                                    |
+| **Distrito** | Chorrillos                                 |
+| **Ocupación** | Administradora de una cooperativa agrícola |
+| **Fecha de Entrevista** | 14/11/2026                                 |
+| **Duración** | 04:55                                      |
+| **URL del video** | (https://tinyurl.com/22wc9pys)             |
+| **Timing** | 20:25 - 25:20                              |
+
+**Screenshot del video:**
+
+![Camila](assets/img/chapter-5/validation-interviews/validación-4.png)
+
+**Resumen de Respuestas:**
+
+Camila, de 32 años, se desempeña como administradora de una cooperativa agrícola que cuenta aproximadamente con 80 productores asociados, dedicados principalmente a los cultivos de café y papa. Durante la entrevista, explicó que sus responsabilidades incluyen organizar la documentación, supervisar los registros de los productores y apoyar en los procesos de comercialización. Actualmente, la cooperativa utiliza archivos de Excel y documentos físicos para gestionar la información de producción, calidad y procedencia. Sin embargo, indicó que cada área maneja sus propios archivos, lo que dificulta encontrar información específica y mantener los registros actualizados.
+
+En relación con los procesos de control de calidad y certificación, identificó como principal dificultad la recopilación de documentación, debido a que algunos productores entregan información fuera de tiempo o mantienen registros desactualizados. Esta situación puede generar retrasos en los procesos de certificación y en la preparación de documentos solicitados por los compradores. Por ello, considera que SumaqAgro podría contribuir a mejorar la organización de la cooperativa mediante la centralización de los datos y el acceso a información actualizada de cada productor.
+
+Respecto a la trazabilidad, destacó la importancia de contar con registros digitales que permitan verificar la procedencia de los lotes y brindar mayor confianza a los compradores. También señaló que sería necesario disponer de información como el productor, la ubicación de la parcela, el tipo de cultivo, la fecha de cosecha, la cantidad producida y los resultados de las evaluaciones de calidad. Después de observar el módulo de gestión y certificación, manifestó que la interfaz le pareció fácil de comprender y que los certificados digitales representarían una mejora importante para acceder a la documentación durante las auditorías, evitando la pérdida de documentos físicos.
+
+Finalmente, Camila expresó su interés en implementar SumaqAgro, ya que considera que responde a varias necesidades administrativas de su organización. No obstante, señaló que antes de adoptarla evaluaría aspectos como la facilidad de uso, el costo del servicio, la seguridad de la información y el ahorro de tiempo que podría generar. Entre sus recomendaciones, propuso incorporar reportes automáticos, opciones para descargar certificados, un historial de cada productor y notificaciones que permitan identificar registros pendientes de actualización o fechas importantes relacionadas con las certificaciones.
+
+---
+
+### Entrevista 5 – Ingeniero agrónomo / Asesor técnico (Segmento 3)
+
+| Campo | Información                                       |
+|---|---------------------------------------------------|
+| Nombre completo | Italo Raúl Pancorro Borós                         |
+| Edad | 24 años                                           |
+| Distrito | Junín - Huancayo                                  |
+| Ocupación | Ingeniero agrónomo y asesor técnico independiente |
+| Fecha de entrevista | 14/11/2026                                        |
+| Duración | 09:30                                             |
+| URL del video (Microsoft Stream) | (https://tinyurl.com/22wc9pys)                    |
+| Minutaje | 25:20 – 34:50                                     |
+
+#### Captura de la entrevista
+
+![Italo](assets/img/chapter-5/validation-interviews/validación-5.png)
+
+#### Resumen de Respuestas
+
+Italo cuenta con cinco años de experiencia en extensión agrícola y asistencia técnica. Supervisa entre 18 y 22 agricultores y aproximadamente 35 a 45 parcelas al mes. Actualmente registra sus visitas en cuadernos, WhatsApp y Excel, por lo que considera fundamental centralizar la información en un historial digital.
+
+Considera que el monitoreo satelital permite detectar zonas críticas, priorizar visitas y ahorrar tiempo y combustible. Valora los indicadores de vegetación, humedad y alertas agroclimáticas como herramientas de apoyo, sin reemplazar las inspecciones en campo. Recomienda mejorar el modo offline para guardar inspecciones y recetas, adjuntar fotografías y ampliar la capacidad de parcelas del plan para asesores técnicos.
