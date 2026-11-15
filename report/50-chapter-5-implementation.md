@@ -1438,3 +1438,248 @@ En el repositorio de la Landing Page se registraron **17 commits** y tres *relea
 | `dymbia-opensource/sumaqAgro-landing-page` | `feature/restructured-files` | `afb1a1e` | `fix(landing): improve subscription CTA copy` | --- | 04/11/2026 |
 | `dymbia-opensource/sumaqAgro-landing-page` | `feature/update-information` | `374d350` | `chore(team): update Andy Salcedo's role to Software Developer` | --- | 10/11/2026 |
 | `dymbia-opensource/sumaqAgro-landing-page` | `main` | `752c5f9` | `Merge branch 'release/v3.2.0' into main` | --- | 10/11/2026 |
+
+---
+
+#### 5.2.3.5. Execution Evidence for Sprint Review
+
+Durante el Sprint 3 se actualizó la Landing Page y se desarrollaron en la Web Application los flujos de ingreso, registro por rol, suscripciones y gestión de cooperativas. En paralelo, el equipo implementó los servicios Spring Boot para sustituir la API simulada del Sprint 2. Las capturas de esta sección muestran las vistas públicas que se pudieron comprobar en Cloudflare Pages y Firebase Hosting.
+
+##### Landing Page
+
+La pantalla de inicio presenta la propuesta de valor de SumaqAgro para productores de papa y café. Desde **View plans** se consulta el catálogo, y **Sign In** abre el acceso a la aplicación web. La versión publicada muestra tres planes, para agricultores independientes, cooperativas y asesores técnicos. Los botones de selección de plan preparan un correo de consulta.
+
+La portada presenta la propuesta de SumaqAgro y ofrece acceso a los planes y a la demostración.
+
+![img-1.png](assets/img/chapter-5/sprint-3/landing/img-1.png)
+
+La vista previa del panel acompaña una explicación de los riesgos agrícolas, los costos y la falta de trazabilidad.
+
+![img-2.png](assets/img/chapter-5/sprint-3/landing/img-2.png)
+
+Cuatro herramientas reúnen el monitoreo satelital, el registro de costos, la certificación y las alertas.
+
+![img-3.png](assets/img/chapter-5/sprint-3/landing/img-3.png)
+
+La sección explica el uso de SumaqAgro en tres pasos e incluye un video demostrativo.
+
+![img-4.png](assets/img/chapter-5/sprint-3/landing/img-4.png)
+
+Las pestañas presentan a los agricultores independientes, las cooperativas y los asesores técnicos.
+
+![img-5.png](assets/img/chapter-5/sprint-3/landing/img-5.png)
+
+El catálogo compara los tres planes y permite alternar entre facturación mensual y anual.
+
+![img-6.png](assets/img/chapter-5/sprint-3/landing/img-6.png)
+
+La sección reúne las metas de impacto del proyecto y los testimonios publicados.
+
+![img-7.png](assets/img/chapter-5/sprint-3/landing/img-7.png)
+
+La presentación de Dymbia reúne su misión, su visión y los perfiles del equipo.
+
+![img-8.png](assets/img/chapter-5/sprint-3/landing/img-8.png)
+
+El espacio para conocer a Dymbia aparece junto a las preguntas frecuentes sobre el producto.
+
+![img-9.png](assets/img/chapter-5/sprint-3/landing/img-9.png)
+
+El llamado a la acción sugiere un plan según el perfil y el pie de página reúne los enlaces de contacto y soporte.
+
+![img-10.png](assets/img/chapter-5/sprint-3/landing/img-10.png)
+
+##### Web Application
+
+El enlace de acceso de la Landing Page lleva a la pantalla de **inicio de sesión**, que ofrece ingreso con correo y contraseña y acceso al registro. En **Create your account**, el visitante puede seleccionar su rol de agricultor, directivo de cooperativa o asesor técnico. Las capturas corresponden a la navegación pública hasta los formularios, antes del envío de datos.
+
+Formulario de inicio de sesión con correo y contraseña.
+
+![img-1.png](assets/img/chapter-5/sprint-3/app-web/img-1.png)
+
+Bandeja de diagnóstico para consultar reportes de plagas.
+
+![img-2.png](assets/img/chapter-5/sprint-3/app-web/img-2.png)
+
+Formulario de registro de una cooperativa.
+
+![img-3.png](assets/img/chapter-5/sprint-3/app-web/img-3.png)
+
+Suscripción al plan Cooperativa Pro e historial de pagos.
+
+![img-4.png](assets/img/chapter-5/sprint-3/app-web/img-4.png)
+
+Vista general del mapa satelital de salud del cultivo.
+
+![img-5.png](assets/img/chapter-5/sprint-3/app-web/img-5.png)
+
+Panel del agricultor con indicadores del cultivo y costos de producción.
+
+![img-6.png](assets/img/chapter-5/sprint-3/app-web/img-6.png)
+
+Vista satelital con el lindero de la parcela seleccionada.
+
+![img-7.png](assets/img/chapter-5/sprint-3/app-web/img-7.png)
+
+Listado de parcelas registradas y espacios disponibles del plan.
+
+![img-8.png](assets/img/chapter-5/sprint-3/app-web/img-8.png)
+
+Listado de campañas agrícolas y su estado.
+
+![img-9.png](assets/img/chapter-5/sprint-3/app-web/img-9.png)
+
+Vista de consulta al asesor y seguimiento de reportes de plagas.
+
+![img-10.png](assets/img/chapter-5/sprint-3/app-web/img-10.png)
+
+Sección de certificados oficiales por lote de cosecha.
+
+![img-11.png](assets/img/chapter-5/sprint-3/app-web/img-11.png)
+
+Vista de alertas, pronósticos y boletines por región.
+
+![img-12.png](assets/img/chapter-5/sprint-3/app-web/img-12.png)
+
+Configuración de la cuenta del agricultor con datos de contacto, seguridad y preferencias.
+
+![img-13.png](assets/img/chapter-5/sprint-3/app-web/img-13.png)
+
+Suscripción al plan Semilla e historial de pagos.
+
+![img-14.png](assets/img/chapter-5/sprint-3/app-web/img-14.png)
+
+
+##### Video de navegación
+
+El recorrido parte de la Landing Page, muestra el catálogo de planes y continúa en la aplicación con el ingreso y la selección de rol. Para el tramo autenticado, la grabación debe mostrar un flujo completo con una cuenta de demostración, por ejemplo, el registro y la consulta posterior de una parcela o de un socio de cooperativa.
+
+- **Ruta del video** `videos/sprint-3/upc-pre-202620-1asi0729-7742-dymbia-productnavigation-sprint-3.mp4`
+- **URL de Microsoft Stream** pendiente de agregar después de publicar el video.
+
+---
+
+#### 5.2.3.6. Services Documentation Evidence for Sprint Review
+
+Los RESTful Web Services incorporan SpringDoc OpenAPI para exponer los contratos HTTP y consultarlos desde Swagger UI. La tabla recoge las operaciones principales del sprint, contrastadas con los controladores y recursos del backend. Los fragmentos JSON son ejemplos abreviados con datos ficticios. La columna de entrada identifica parámetros de ruta, filtros de consulta y campos principales del cuerpo. El esquema completo de cada recurso se consulta en OpenAPI.
+
+![img-swagger.png](assets/img/chapter-5/sprint-3/swagger-img.png)
+
+- **Repositorio de Web Services** [sumaq-agro-platform](https://github.com/dymbia-opensource/sumaq-agro-platform)
+- **Documentación del entorno configurado** [Swagger UI en Render](https://sumaq-agro-platform.onrender.com/swagger-ui/index.html) y [OpenAPI JSON en Render](https://sumaq-agro-platform.onrender.com/v3/api-docs).
+- **Documentación para ejecución local** [Swagger UI local](http://localhost:8080/swagger-ui/index.html) y [OpenAPI JSON local](http://localhost:8080/v3/api-docs).
+
+##### Operaciones por Bounded Context
+
+Las rutas de la tabla son relativas a `/api/v1`. Las operaciones protegidas usan el encabezado `Authorization: Bearer <token>`, obtenido mediante `POST /tokens`. Los cuerpos de las solicitudes se envían en JSON.
+
+| Contexto y acción | Verbo y ruta | Entrada | Ejemplo de respuesta |
+| :--- | :--- | :--- | :--- |
+| IAM · Registrar cuenta | `POST /users` | `email`, `password`, `roles` y `profile` con nombres y apellidos | `201` con la cuenta creada, por ejemplo `{"id":10,"roles":["ROLE_FARMER"]}`. |
+| IAM · Iniciar sesión | `POST /tokens` | `email` y `password` | `200` con el usuario y su JWT, por ejemplo `{"id":10,"token":"<jwt>"}`. |
+| Subscriptions · Consultar catálogo | `GET /plans` | Sin parámetros | `200` con planes, por ejemplo `[{"code":"SEED","monthlyPrice":49,"currency":"PEN"}]`. |
+| Subscriptions · Consultar suscripción | `GET /subscriptions/me` | Cuenta autenticada | `200` con la suscripción, por ejemplo `{"planCode":"SEED","status":"ACTIVE"}`, o `204` si no existe. |
+| Subscriptions · Registrar checkout | `POST /subscriptions/me/checkout` | `planCode`, `billingCycle` y `simulatedOutcome` opcional | `201` con el pago de demostración, por ejemplo `{"status":"COMPLETED","amount":49}`. El pago es simulado. |
+| Subscriptions · Consultar pagos | `GET /subscriptions/me/payments` | Cuenta autenticada | `200` con el historial, por ejemplo `[]` para una cuenta sin pagos. |
+| Subscriptions · Cancelar suscripción | `POST /subscriptions/me/cancel` | Cuenta autenticada | `200` con la suscripción actualizada, por ejemplo `{"id":5,"status":"CANCELLED"}`. |
+| Profiles · Buscar perfil | `GET /profiles?userId=10` | `userId` como filtro | `200` con perfiles, por ejemplo `[{"id":7,"userId":10}]`. |
+| Profiles · Consultar perfil | `GET /profiles/{profileId}` | `profileId` en la ruta | `200` con el perfil, por ejemplo `{"id":7,"firstName":"Ana"}`. |
+| Profiles · Actualizar perfil | `PUT /profiles/{profileId}` | `profileId` y cuerpo con datos personales o de contacto | `200` con el perfil actualizado, por ejemplo `{"id":7,"firstName":"Ana"}`. |
+| Profiles · Registrar cooperativa | `POST /cooperatives` | `ruc`, `businessName`, `region`, `managerUserId` y datos institucionales | `201` con la cooperativa creada, por ejemplo `{"id":4,"businessName":"Cooperativa Demo"}`. |
+| Profiles · Agregar socio | `POST /cooperatives/{cooperativeId}/members` | `cooperativeId` y datos de identificación del socio | `201` con el socio registrado, por ejemplo `{"id":9,"cooperativeId":4}`. |
+| Profiles · Consultar cooperativas | `GET /cooperatives?directorUserId=10` | Filtro opcional `directorUserId` | `200` con la lista, por ejemplo `[{"id":4,"managerUserId":10}]`. |
+| Profiles · Consultar padrón | `GET /cooperatives/{cooperativeId}/members` | `cooperativeId` en la ruta | `200` con los socios, por ejemplo `[]` para una cooperativa sin socios. |
+| Profiles · Consultar asignaciones | `GET /agronomist-assignments?plotId=8` | Filtros opcionales `plotId`, `agronomistUserId`, `producerUserId` y `cooperativeId` | `200` con las asignaciones que coinciden, por ejemplo `[]` si la parcela todavía no tiene asesor. |
+| Farming · Registrar parcela | `POST /field-plots` | `ownerUserId`, `name`, `region`, `areaHectares` y referencias cooperativas si aplican | `201` con la parcela creada, por ejemplo `{"id":8,"name":"Parcela Demo"}`. |
+| Farming · Listar parcelas del titular | `GET /field-plots?ownerUserId=10` | `ownerUserId` | `200` con las parcelas, por ejemplo `[{"id":8,"ownerUserId":10}]`. |
+| Farming · Consultar parcela | `GET /field-plots/{fieldPlotId}` | `fieldPlotId` en la ruta | `200` con los datos de la parcela, por ejemplo `{"id":8,"areaHectares":1.2}`. |
+| Farming · Delimitar parcela | `PUT /field-plots/{fieldPlotId}/polygon` | `fieldPlotId` y lista `coordinates` | `200` con la parcela y su lindero. Cada elemento de `boundary` contiene `latitude` y `longitude`. |
+| Farming · Abrir campaña | `POST /crop-campaigns` | `fieldPlotId`, `season`, `cropType`, `seedVariety`, `customSeedVariety` y `sowingDate` | `201` con la campaña creada, por ejemplo `{"id":12,"fieldPlotId":8}`. |
+| Farming · Listar campañas de una parcela | `GET /field-plots/{fieldPlotId}/crop-campaigns` | `fieldPlotId` en la ruta | `200` con las campañas, por ejemplo `[{"id":12,"fieldPlotId":8}]`. |
+| Crop · Consultar observaciones | `GET /satellite-observations?plotId=8` | `plotId` | `200` con observaciones registradas, por ejemplo `[{"plotId":8,"ndviMean":0.58,"ndwiMean":0.18}]`. |
+| Crop · Consultar alertas | `GET /agroclimatic-alerts?region=Apurimac` | `region` | `200` con alertas de la región, por ejemplo `[]` cuando no hay registros. |
+| Crop · Registrar reporte de plaga | `POST /pest-reports` | `plotId`, `reporterId`, `description` y `severity` | `201` con el reporte, por ejemplo `{"id":21,"plotId":8,"status":"PENDING"}`. |
+| Crop · Consultar reportes | `GET /pest-reports?plotId=8` | `plotId` | `200` con los reportes de la parcela, por ejemplo `[{"id":21,"plotId":8}]`. |
+| Crop · Eliminar reporte | `DELETE /pest-reports/{pestReportId}` | `pestReportId` en la ruta | `200` con un mensaje en el campo `message` cuando se elimina el reporte. |
+| Crop · Programar inspección | `POST /field-inspections` | `pestReportId`, `agronomistId` y `scheduledAt` | `201` con la inspección creada, por ejemplo `{"id":22,"pestReportId":21}`. |
+| Crop · Completar inspección | `PATCH /field-inspections/{fieldInspectionId}/completion` | `fieldInspectionId` y cuerpo con `findings` | `200` con la inspección actualizada, por ejemplo `{"id":22,"findings":"Manchas en cinco plantas"}`. |
+| Crop · Emitir receta técnica | `POST /technical-prescriptions` | `pestReportId`, `agronomistId`, `product`, `dosage`, `instructions` y `applicationDate` | `201` con la receta registrada, por ejemplo `{"id":23,"pestReportId":21}`. |
+| Certification · Registrar lote | `POST /harvest-batches` | `batchCode`, `cooperativeId`, `memberId`, `plotId`, `cropType` y `harvestedOn` | `201` con el lote, por ejemplo `{"id":30,"batchCode":"LOTE-DEMO","status":"PENDING"}`. |
+| Certification · Registrar pesaje | `POST /harvest-batches/{harvestBatchId}/weight` | `harvestBatchId`, `grossWeightKg` y `tareKg` | `200` con el lote actualizado, por ejemplo `{"id":30,"netWeightKg":95}`. |
+| Certification · Emitir certificado | `POST /quality-certificates` | Cuerpo con `certificateNumber`, `harvestBatchId` e `issuedByUserId` | `201` con el certificado y su huella, por ejemplo `{"certificateNumber":"CERT-DEMO","certificateHash":"…"}`. |
+| Certification · Verificar trazabilidad | `GET /public/traceability?number=CERT-DEMO&hash=<hash>` | Número y huella del certificado | `200` con el resultado de la verificación, por ejemplo `{"certificateNumber":"CERT-DEMO","authentic":true}`. |
+
+Los contratos se contrastaron con el código disponible para la revisión de AV2. Parte de las operaciones de Subscriptions y Certification se desarrolló en ramas del sprint y su integración en `develop` aparece después del corte del 13 de noviembre. La tabla documenta su implementación en el código y su disponibilidad pública queda por validar.
+
+##### Interacción con Swagger UI
+
+Para comprobar el contrato con datos de muestra, abrir **Tokens**, enviar el correo y la contraseña de una cuenta de prueba y comprobar que la respuesta sea `200` con un JWT. Después, ejecutar **Field Plots** con el `fieldPlotId` de una parcela de demostración y comprobar que la respuesta `200` incluya sus datos. Las capturas deben mostrar los parámetros, el código HTTP y el cuerpo de respuesta, con las credenciales y el token ocultos.
+
+Durante la revisión, la URL pública de Swagger UI mostró la pantalla de arranque de Render. Quedan pendientes las capturas de interacción en `assets/img/chapter-5/sprint-3/swagger-token.jpg` y `assets/img/chapter-5/sprint-3/swagger-parcelas.jpg`.
+
+##### Commits relacionados con la documentación de servicios
+
+| Commit | Fecha | Evidencia |
+| :--- | :--- | :--- |
+| [`29d88a3`](https://github.com/dymbia-opensource/sumaq-agro-platform/commit/29d88a3) | 06/11/2026 | Incorpora el controlador REST para la emisión del token de sesión. |
+| [`a9f341d`](https://github.com/dymbia-opensource/sumaq-agro-platform/commit/a9f341d) | 06/11/2026 | Incorpora el controlador REST de registro de cuentas. |
+| [`1527e9f`](https://github.com/dymbia-opensource/sumaq-agro-platform/commit/1527e9f) | 08/11/2026 | Incorpora los endpoints REST de perfiles. |
+| [`2647bfc`](https://github.com/dymbia-opensource/sumaq-agro-platform/commit/2647bfc) | 12/11/2026 | Añade anotaciones Swagger para las operaciones de importación y consulta satelital en la rama `feature/crop-agromonitoring-satellite`. |
+
+---
+
+#### 5.2.3.7. Software Deployment Evidence for Sprint Review
+
+La entrega de AV2 comprende tres productos. Se comprobó el acceso público a la Landing Page y a la pantalla de ingreso de la Web Application. Para la API, se identificaron el contenedor preparado para Render y la configuración del frontend que apunta a ese servicio. La respuesta del backend y la conexión autenticada de extremo a extremo quedan por verificar.
+
+##### Landing Page en Cloudflare Pages
+
+1. Se reorganizó el sitio estático bajo el directorio `public/`, con sus páginas legales, estilos, scripts y recursos.
+2. La versión [`v3.2.0`](https://github.com/dymbia-opensource/sumaq-agro-website/tree/v3.2.0) se integró en `main` mediante el commit [`752c5f9`](https://github.com/dymbia-opensource/sumaq-agro-website/commit/752c5f9).
+3. Se comprobó el acceso al [sitio publicado](https://sumaqagro-landing-page.pages.dev/) y el destino de **Sign In**, que conduce a Firebase Hosting. Queda pendiente la captura del historial de Cloudflare Pages con la rama y el commit del despliegue en `assets/img/chapter-5/sprint-3/deploy-cloudflare.jpg`.
+![img-cloudflare.png](assets/img/chapter-5/sprint-3/despliegue/img-cloudflare.png)
+##### Web Application en Firebase Hosting
+
+1. El proyecto `sumaqagro-appweb` está vinculado mediante `.firebaserc`. La compilación con `npm run build` genera el contenido en `dist/sumaqAgro-appweb/browser`, directorio indicado en `firebase.json`.
+2. La publicación usa `firebase deploy --only hosting`. Firebase redirige las rutas internas a `index.html`, de modo que Angular resuelva enlaces como `/demo-access`.
+3. Se comprobó la [ruta publicada de acceso](https://sumaqagro-appweb.web.app/demo-access) y su redirección al formulario de inicio de sesión. El commit [`e70e5ff`](https://github.com/dymbia-opensource/sumaq-agro-web-app/commit/e70e5ff) configura el backend de Render en la rama `feature/update-frontend` el 15 de noviembre. Se requiere el historial de Firebase Hosting para identificar qué compilación está activa y comprobar si incluye ese cambio. La captura se guarda en `assets/img/chapter-5/sprint-3/deploy-firebase.jpg`.
+![img-firebase.png](assets/img/chapter-5/sprint-3/despliegue/img-firebase.png)
+
+
+##### RESTful Web Services en Render
+
+1. El commit [`6526e03`](https://github.com/dymbia-opensource/sumaq-agro-platform/commit/6526e03), del 14 de noviembre, incorpora el `Dockerfile` de Render. La primera etapa ejecuta Maven para generar `platform-1.0.0.jar`. La segunda ejecuta el artefacto con `SERVER_PORT=10000`.
+2. Para usar la conexión MySQL de producción se debe activar el perfil con `SPRING_PROFILES_ACTIVE=prod`. Este perfil lee las variables de entorno de la base de datos, JWT, CORS y AgroMonitoring. `FRONTEND_ORIGIN` debe coincidir con el origen publicado de Firebase.
+3. La [documentación de la API](https://sumaq-agro-platform.onrender.com/swagger-ui/index.html) abrió en la pantalla de arranque de Render durante la comprobación. Para acreditar el despliegue, faltan la respuesta de Swagger y una captura del panel de Render con la rama, el commit y el estado del servicio. La captura se guarda en `assets/img/chapter-5/sprint-3/deploy-render.jpg`.
+![img-rende.png](assets/img/chapter-5/sprint-3/despliegue/img-rende.png)
+---
+
+#### 5.2.3.8. Team Collaboration Insights during Sprint
+
+El equipo organizó la implementación de los servicios por Bounded Context, según la matriz LACX de la sección 5.2.3.2. El trabajo en la aplicación web incluyó autenticación, cambios de perfil, suscripciones, cooperativas y ajustes en los flujos de Crop. La Landing Page concentró cambios de estructura, componentes compartidos y contenido del equipo. Los historiales de GitHub permiten seguir esos cambios por producto y los gráficos de **Insights → Contributors** muestran la actividad de la rama predeterminada.
+
+| Integrante | Landing Page | Web Application | Web Services |
+| :--- | ---: | ---: | ---: |
+| Benjamin Solorzano | 17 | 98 | 41 |
+| Miguel Sanca | 0 | 24 | 80 |
+| Yamil Tejada | 0 | 11 | 83 |
+| Andy Salcedo | 0 | 5 | 23 |
+| Cristina Yarleque | 0 | 27 | 55 |
+| **Total** | **17** | **165** | **282** |
+
+El cuadro cuenta los commits alcanzables desde la rama remota `develop` cuya fecha de commit está entre el 19 de octubre y el 13 de noviembre de 2026, hora de Lima. El conteo excluye los *merge commits* y puede incluir cambios integrados después del cierre. Se obtuvo con `git shortlog -sn --no-merges --since="2026-10-19 00:00 -0500" --until="2026-11-13 23:59 -0500" origin/develop`. El conteo mide aportes registrados en Git. Los gráficos públicos pueden diferir por la rama y el intervalo que muestran.
+
+##### Landing Page
+
+
+El historial registra la reorganización de las vistas y recursos compartidos y la actualización de los perfiles del equipo. La autoría de los 17 commits del periodo en `develop` figura a nombre de Benjamin Solorzano. [Historial de commits](https://github.com/dymbia-opensource/sumaq-agro-website/commits/develop/) · [Insights de colaboradores](https://github.com/dymbia-opensource/sumaq-agro-website/graphs/contributors)
+![img-landing-git.png](assets/img/chapter-5/sprint-3/img-landing-git.png)
+##### Web Application
+
+Los cinco integrantes registraron commits en la rama de integración durante el sprint. El historial permite seguir el trabajo de los formularios de acceso, el catálogo de suscripciones y las vistas de cooperativa, así como la integración posterior con Spring Boot. [Historial de commits](https://github.com/dymbia-opensource/sumaq-agro-web-app/commits/develop/) · [Insights de colaboradores](https://github.com/dymbia-opensource/sumaq-agro-web-app/graphs/contributors)
+![img-app-git.png](assets/img/chapter-5/sprint-3/img-app-git.png)
+##### RESTful Web Services
+
+Benjamin Solorzano trabajó en IAM y suscripciones. Miguel Sanca se encargó de Farming y el *Shared Kernel*. Yamil Tejada implementó servicios de Crop e integración satelital. Cristina Yarleque desarrolló Profiles y cooperativas, y Andy Salcedo trabajó en Certification. La evidencia de desarrollo de 5.2.3.4 identifica los commits por contexto. [Historial de commits](https://github.com/dymbia-opensource/sumaq-agro-platform/commits/develop/) · [Insights de colaboradores](https://github.com/dymbia-opensource/sumaq-agro-platform/graphs/contributors)
+
+![img-backend-git.png](assets/img/chapter-5/sprint-3/img-backend-git.png)
