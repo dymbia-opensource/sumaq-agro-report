@@ -1232,3 +1232,150 @@ expectativas del producto, enfocado en identificar los beneficios esperados; eva
 
 10. ¿Incorporaría SumaqAgro como herramienta de apoyo en sus actividades de asesoría agrícola? ¿Por qué?
 11. ¿Qué mejoras recomendaría para facilitar el trabajo de los asesores técnicos?
+
+### 5.3.2. Registro de Entrevistas
+
+Las entrevistas de validación se llevaron a cabo con usuarios de ambos segmentos objetivo. A continuación se presenta el registro detallado de las entrevistas realizadas, incluyendo información del entrevistado, capturas de video y análisis de respuestas.
+
+Link de las entrevistas: https://tinyurl.com/22wc9pys
+
+Link completo: https://upcedupe-my.sharepoint.com/:v:/g/personal/u20241f859_upc_edu_pe/IQDdYvzFj0ESTKQL2tU1jv8GAc-WOtwj9JSusBCu7Dsft8o?e=52Rkjh&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D
+
+### Entrevista 1 – Agricultor de papa (Segmento 1)
+
+| Campo | Información        |
+|---|--------------------|
+| Nombre completo | Mateo              |
+| Edad | 32                 |
+| Distrito | Comas              |
+| Ocupación | Agricultor de papa |
+| Fecha de entrevista | 14/11/2026         |
+| Duración | 09:07              |
+| URL del video (Microsoft Stream) | (https://tinyurl.com/22wc9pys) |
+| Minutaje | 00:00 – 09:07      |
+
+#### Captura de la entrevista
+
+![Mateo](assets/img/chapter-5/validation-interviews/validación-1.png)
+
+#### Resumen de Respuestas
+
+Mateo es un agricultor dedicado principalmente al cultivo de papa. Durante la entrevista, explicó que organiza sus actividades agrícolas de manera manual, planificando la siembra según la disponibilidad de semillas, los recursos que necesita y las personas que pueden ayudarlo en las labores del campo. Respecto al seguimiento de sus cultivos, comentó que cuando observa alguna anomalía, como manchas en las hojas, suele tomar fotografías y consultar primero con algún vecino y posteriormente con un técnico. Asimismo, señaló que lleva el control de sus gastos en un cuaderno, donde registra las fechas y los pagos realizados; sin embargo, en ocasiones olvida anotar algunos jornales y recién calcula el gasto total cuando llega el momento de vender su producción.
+
+Al conocer SumaqAgro, identificó que la plataforma podría servirle para revisar sus parcelas y llevar un control de sus gastos. Durante la demostración, comprendió el funcionamiento general del mapa y el registro de parcelas, aunque manifestó algunas dudas respecto a los números que aparecen en la información geográfica. Indicó que necesitaría explicaciones más sencillas que le permitan interpretar estos datos y saber si es conveniente visitar una parcela, así como identificar qué aspectos debería revisar durante su recorrido. También mostró interés en conocer los costos de la plataforma, especialmente si resultan accesibles para un agricultor que trabaja de manera independiente.
+
+Respecto al sistema de alertas agrícolas, Mateo manifestó que antes de tomar alguna decisión revisaría si el aviso corresponde a su zona y si continúa vigente. Además, consideró importante que las alertas incluyan recomendaciones sobre las acciones que debería realizar y el tiempo durante el cual debe mantenerse atento a una posible afectación del cultivo. En cuanto al módulo de gastos y ganancias, valoró la posibilidad de registrar las compras y consultar posteriormente información como el producto adquirido, el monto pagado, la fecha y el nombre de la campaña, ya que estos datos le permitirían evitar confusiones cuando administra varias campañas agrícolas.
+
+Finalmente, manifestó que utilizaría principalmente el módulo de registro de gastos durante su próxima campaña, destacando la importancia de poder registrar los pagos realizados a los trabajadores directamente desde la parcela, incluso cuando no disponga de conexión a internet. Consideró que esta funcionalidad evitaría que olvide registrar algunos gastos al regresar a casa. Entre sus principales recomendaciones, propuso mejorar la comprensión del mapa mediante pequeñas explicaciones que permitan interpretar los números y la información presentada. 
+
+---
+
+### Entrevista 2 – Ingeniero agrónomo / Asesor técnico (Segmento 3)
+
+| Campo | Información                                       |
+|---|---------------------------------------------------|
+| Nombre completo | Jeff                                              |
+| Edad | 30                                                |
+| Distrito | Ica (Santiago)                                    |
+| Ocupación | Ingeniero agrónomo y asesor técnico independiente |
+| Fecha de entrevista | 14/11/2026                                   |
+| Duración | 05:15                                             |
+| URL del video (Microsoft Stream) |(https://tinyurl.com/22wc9pys)                              |
+| Minutaje | 09:07 - 14:22                                     |
+
+#### Captura de la entrevista
+
+![Jeff](assets/img/chapter-5/validation-interviews/validacion-2.png)
+
+#### Resumen de Respuestas
+
+El entrevistado cuenta con tres años de experiencia como ingeniero agrónomo. Durante su primer año trabajó en una agroexportadora en Ica y, desde 2024, se desempeña como asesor técnico independiente, brindando apoyo a pequeños productores y a una cooperativa dedicada al cultivo de papa y quinua. Actualmente, atiende aproximadamente entre 15 y 20 productores y supervisa alrededor de 25 parcelas mensualmente. Durante la entrevista, explicó que una de sus principales dificultades es la distancia entre los terrenos agrícolas, lo que limita la cantidad de visitas que puede realizar diariamente. Asimismo, señaló que utiliza un cuaderno de campo y archivos de Excel para registrar sus actividades, mientras que las fotografías y recomendaciones técnicas las comparte mediante WhatsApp. Esta distribución de información dificulta recuperar los antecedentes de las visitas y consultar recomendaciones realizadas meses atrás.
+
+Respecto al monitoreo de las parcelas mediante información satelital, manifestó que sería beneficioso contar con herramientas que le permitan identificar cuáles presentan una disminución en sus indicadores de vegetación y, de esta manera, priorizar sus visitas técnicas. Considera importante disponer de información histórica sobre el comportamiento de los cultivos, así como datos de humedad, temperatura y etapa de desarrollo, debido a que estos factores permiten interpretar mejor las posibles afectaciones agrícolas. Sin embargo, aclaró que la información satelital debe utilizarse como complemento de las evaluaciones de campo y no como un diagnóstico definitivo, ya que la identificación de plagas y enfermedades requiere una inspección directa de los cultivos.
+
+Asimismo, destacó que contar con un historial digital de visitas técnicas, diagnósticos y recomendaciones sería incluso más importante que el propio monitoreo satelital. Considera que centralizar los reportes de los productores, las inspecciones realizadas y las recomendaciones permitiría evaluar si las indicaciones proporcionadas han dado resultados y disponer de evidencia ante posibles pérdidas de cultivos. Durante la evaluación del prototipo, valoró positivamente la visualización de las curvas de comportamiento de los indicadores satelitales, en lugar de mostrar únicamente un dato del día. También consideró sencillo localizar las parcelas y consultar su información geográfica, aunque mencionó que inicialmente no comprendió que el productor era quien debía delimitar su parcela. Por ello, sugirió incorporar una vista general con todas las parcelas organizadas por zonas, ya que esta distribución se ajustaría mejor a su manera de planificar las visitas.
+
+Finalmente, manifestó su disposición a incorporar SumaqAgro como herramienta de apoyo en sus actividades de asesoría agrícola, indicando que aprobaría su implementación junto con la cooperativa y que podría beneficiar inicialmente a unos 12 productores, principalmente por la posibilidad de consultar historiales y organizar las visitas técnicas. No obstante, expresó su preocupación por la adopción de la plataforma, debido a que si los agricultores no registran sus parcelas ni sus reportes, la información disponible para los asesores sería limitada.
+
+---
+
+### Entrevista 3 - Directivo de Cooperativa Agrícola (Segmento 2)
+
+| **Dato** | **Información**                                        |
+|---|--------------------------------------------------------|
+| **Nombre Completo** | Diego                                                  |
+| **Edad** | 30 años                                                |
+| **Distrito** | Surco                                                  |
+| **Ocupación** | Coordinador de operaciones de una cooperativa agrícola |
+| **Fecha de Entrevista** | 14/11/2026                                             |
+| **Duración** | 06:05                                                  |
+| **URL del video** | (https://tinyurl.com/22wc9pys)                         |
+| **Timing** | 14:22 - 20:25                                          |
+
+**Screenshot del video:**
+
+![Diego](assets/img/chapter-5/validation-interviews/validación-3.png)
+
+**Resumen de Respuestas:**
+
+Diego, de 30 años, se desempeña como coordinador de operaciones de una cooperativa agrícola que cuenta aproximadamente con 45 productores asociados, dedicados principalmente al cultivo de papa y café. Durante la entrevista, explicó que actualmente la gestión de los registros de producción, calidad y procedencia se realiza mediante archivos de Excel y documentos físicos. Esta forma de trabajo presenta algunas dificultades, especialmente cuando la información proporcionada por los agricultores está incompleta o cuando necesitan consultar nuevamente los datos de un productor.
+
+Asimismo, señaló que una de sus principales dificultades se encuentra en la organización de la información durante los procesos de control de calidad y certificación. Debido a que los registros se encuentran distribuidos en diferentes archivos, resulta complicado consultar los datos de manera rápida y preparar la documentación necesaria para las auditorías. Frente a esta situación, manifestó que una plataforma como SumaqAgro sería beneficiosa para centralizar la información agrícola, facilitar el seguimiento de los productores y reducir el tiempo dedicado a las tareas administrativas.
+
+Respecto a la trazabilidad, Diego considera fundamental disponer de registros digitales que permitan identificar la procedencia de cada lote y conocer información como el productor responsable, la parcela de origen, la fecha de cosecha, la cantidad recibida y las características de calidad. Tras observar el prototipo, valoró positivamente el módulo de gestión y certificación, destacando que la información se encuentra organizada y resulta sencilla de consultar. También consideró que los certificados digitales facilitarían la disponibilidad de documentos durante las auditorías y mejorarían el control de los productos recibidos.
+
+Finalmente, manifestó su interés en implementar SumaqAgro en su cooperativa, siempre que la plataforma sea fácil de utilizar, funcione correctamente y tenga costos accesibles. Entre sus principales recomendaciones, propuso incorporar opciones para generar reportes de producción y calidad, exportar información a Excel y consultar rápidamente los registros de cada productor. Estas observaciones reflejan su interés en contar con una herramienta que optimice las actividades operativas y facilite la gestión de información dentro de la cooperativa.
+
+---
+
+### Entrevista 4 - Directiva de Cooperativa Agrícola (Segmento 2)
+
+| **Dato** | **Información**                            |
+|---|--------------------------------------------|
+| **Nombre Completo** | Camila                                     |
+| **Edad** | 32 años                                    |
+| **Distrito** | Chorrillos                                 |
+| **Ocupación** | Administradora de una cooperativa agrícola |
+| **Fecha de Entrevista** | 14/11/2026                                 |
+| **Duración** | 04:55                                      |
+| **URL del video** | (https://tinyurl.com/22wc9pys)             |
+| **Timing** | 20:25 - 25:20                              |
+
+**Screenshot del video:**
+
+![Camila](assets/img/chapter-5/validation-interviews/validación-4.png)
+
+**Resumen de Respuestas:**
+
+Camila, de 32 años, se desempeña como administradora de una cooperativa agrícola que cuenta aproximadamente con 80 productores asociados, dedicados principalmente a los cultivos de café y papa. Durante la entrevista, explicó que sus responsabilidades incluyen organizar la documentación, supervisar los registros de los productores y apoyar en los procesos de comercialización. Actualmente, la cooperativa utiliza archivos de Excel y documentos físicos para gestionar la información de producción, calidad y procedencia. Sin embargo, indicó que cada área maneja sus propios archivos, lo que dificulta encontrar información específica y mantener los registros actualizados.
+
+En relación con los procesos de control de calidad y certificación, identificó como principal dificultad la recopilación de documentación, debido a que algunos productores entregan información fuera de tiempo o mantienen registros desactualizados. Esta situación puede generar retrasos en los procesos de certificación y en la preparación de documentos solicitados por los compradores. Por ello, considera que SumaqAgro podría contribuir a mejorar la organización de la cooperativa mediante la centralización de los datos y el acceso a información actualizada de cada productor.
+
+Respecto a la trazabilidad, destacó la importancia de contar con registros digitales que permitan verificar la procedencia de los lotes y brindar mayor confianza a los compradores. También señaló que sería necesario disponer de información como el productor, la ubicación de la parcela, el tipo de cultivo, la fecha de cosecha, la cantidad producida y los resultados de las evaluaciones de calidad. Después de observar el módulo de gestión y certificación, manifestó que la interfaz le pareció fácil de comprender y que los certificados digitales representarían una mejora importante para acceder a la documentación durante las auditorías, evitando la pérdida de documentos físicos.
+
+Finalmente, Camila expresó su interés en implementar SumaqAgro, ya que considera que responde a varias necesidades administrativas de su organización. No obstante, señaló que antes de adoptarla evaluaría aspectos como la facilidad de uso, el costo del servicio, la seguridad de la información y el ahorro de tiempo que podría generar. Entre sus recomendaciones, propuso incorporar reportes automáticos, opciones para descargar certificados, un historial de cada productor y notificaciones que permitan identificar registros pendientes de actualización o fechas importantes relacionadas con las certificaciones.
+
+---
+
+### Entrevista 5 – Ingeniero agrónomo / Asesor técnico (Segmento 3)
+
+| Campo | Información                                       |
+|---|---------------------------------------------------|
+| Nombre completo | Italo Raúl Pancorro Borós                         |
+| Edad | 24 años                                           |
+| Distrito | Junín - Huancayo                                  |
+| Ocupación | Ingeniero agrónomo y asesor técnico independiente |
+| Fecha de entrevista | 14/11/2026                                        |
+| Duración | 09:30                                             |
+| URL del video (Microsoft Stream) | (https://tinyurl.com/22wc9pys)                    |
+| Minutaje | 25:20 – 34:50                                     |
+
+#### Captura de la entrevista
+
+![Italo](assets/img/chapter-5/validation-interviews/validación-5.png)
+
+#### Resumen de Respuestas
+
+Italo cuenta con cinco años de experiencia en extensión agrícola y asistencia técnica. Supervisa entre 18 y 22 agricultores y aproximadamente 35 a 45 parcelas al mes. Actualmente registra sus visitas en cuadernos, WhatsApp y Excel, por lo que considera fundamental centralizar la información en un historial digital.
+
+Considera que el monitoreo satelital permite detectar zonas críticas, priorizar visitas y ahorrar tiempo y combustible. Valora los indicadores de vegetación, humedad y alertas agroclimáticas como herramientas de apoyo, sin reemplazar las inspecciones en campo. Recomienda mejorar el modo offline para guardar inspecciones y recetas, adjuntar fotografías y ampliar la capacidad de parcelas del plan para asesores técnicos.
