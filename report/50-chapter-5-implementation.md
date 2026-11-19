@@ -1911,3 +1911,102 @@ Finalmente, Camila expresó su interés en implementar SumaqAgro, ya que conside
 Italo cuenta con cinco años de experiencia en extensión agrícola y asistencia técnica. Supervisa entre 18 y 22 agricultores y aproximadamente 35 a 45 parcelas al mes. Actualmente registra sus visitas en cuadernos, WhatsApp y Excel, por lo que considera fundamental centralizar la información en un historial digital.
 
 Considera que el monitoreo satelital permite detectar zonas críticas, priorizar visitas y ahorrar tiempo y combustible. Valora los indicadores de vegetación, humedad y alertas agroclimáticas como herramientas de apoyo, sin reemplazar las inspecciones en campo. Recomienda mejorar el modo offline para guardar inspecciones y recetas, adjuntar fotografías y ampliar la capacidad de parcelas del plan para asesores técnicos.
+
+### 5.4. Video About-the-Product
+
+<p>
+  El video "About the Product" presenta la propuesta de valor de SumaqAgro, el problema que resuelve
+  y cómo funciona la plataforma para sus tres segmentos objetivo: pequeños y medianos agricultores
+  independientes, directivos de cooperativas agrarias e ingenieros agrónomos y asesores técnicos.
+  Está dirigido a los visitantes del Landing Page, que desean conocer el modelo de negocio y las
+  características del producto, y a los usuarios de la aplicación, que desean realizar tareas de
+  monitoreo, costos y certificación. El tono es cercano, claro y confiable, consistente con el del
+  producto.
+</p>
+
+<h4>Información General del Video</h4>
+
+<table border="1" cellpadding="4" cellspacing="0">
+  <tbody>
+    <tr>
+      <td><strong>Título del Video</strong></td>
+      <td>[SumaqAgro: Accessible Precision Agriculture for Potato and Coffee Farmers]</td>
+    </tr>
+    <tr>
+      <td><strong>Nombre del archivo</strong></td>
+      <td>upc-pre-202620-1ASI0729-2620-7742-dymbia-about-the-product-sprint-3.mp4</td>
+    </tr>
+    <tr>
+      <td><strong>Duración</strong></td>
+      <td>[1 minuto 45 segundos]</td>
+    </tr>
+    <tr>
+      <td><strong>Fecha de Grabación</strong></td>
+      <td>[15/11/2026]</td>
+    </tr>
+    <tr>
+      <td><strong>URL YouTube</strong></td>
+      <td><a href="https://youtu.be/QbSAPVPGZsU">https://youtu.be/QbSAPVPGZsU</a></td>
+    </tr>
+    <tr>
+      <td><strong>URL Microsoft Stream</strong></td>
+      <td><a href="https://upcedupe-my.sharepoint.com/personal/u20241e417_upc_edu_pe/_layouts/15/AccessDenied.aspx?Source=https%3A%2F%2Fupcedupe-my.sharepoint.com%2Fpersonal%2Fu20241e417_upc_edu_pe%2Fdocuments%2Fvideo+project+5.mp4%3Fweb%3D1&correlation=d6324fa2-10ee-e000-3696-d4d5f11b65eb&Type=item&name=4d49010d-13d2-4a1e-99b9-1143a1033fdc&listItemId=144&listItemUniqueId=83413582-5dac-44f5-9849-855dd2146e07&allowautoredirecttosource=true">https://upcedupe-my.sharepoint.com/personal/u20241e417_upc_edu_pe/_layouts/15/AccessDenied.aspx?Source=https%3A%2F%2Fupcedupe-my.sharepoint.com%2Fpersonal%2Fu20241e417_upc_edu_pe%2Fdocuments%2Fvideo+project+5.mp4%3Fweb%3D1&correlation=d6324fa2-10ee-e000-3696-d4d5f11b65eb&Type=item&name=4d49010d-13d2-4a1e-99b9-1143a1033fdc&listItemId=144&listItemUniqueId=83413582-5dac-44f5-9849-855dd2146e07&allowautoredirecttosource=true</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Screenshot del video:</strong></p>
+<a href="https://youtu.be/QbSAPVPGZsU">
+  <img src="assets/img/chapter-5/about-product.png" alt="Screenshot del Video About-the-Product de SumaqAgro">
+</a>
+
+<h4>Contenido del Video</h4>
+
+<p>
+  El video está estructurado en las siguientes secciones:
+</p>
+
+<ol>
+  <li>
+    <strong>Introducción (0:00 - 0:20):</strong> Presentación de la startup Dymbia y de la problemática
+    del agro peruano: pérdidas de cosecha por heladas, sequías y plagas detectadas tarde, y costos de
+    producción que no se registran.
+  </li>
+  <li>
+    <strong>Propuesta de Solución (0:20 - 0:44):</strong> Presentación de SumaqAgro como una plataforma
+    web de agricultura de precisión, basada en datos satelitales abiertos y sin sensores ni hardware
+    en campo, junto con sus cuatro soluciones y los planes Semilla, Cooperativa Pro y Asesor Técnico.
+  </li>
+  <li>
+    <strong>Funcionalidades Principales (0:44 - 1:16):</strong> Escenas de interacción con la aplicación:
+    <ul>
+      <li>Registro y delimitación de parcelas en el mapa</li>
+      <li>Monitoreo de la salud del cultivo con los índices NDVI y NDWI</li>
+      <li>Registro de gastos de campaña y cálculo del precio de equilibrio por saco</li>
+      <li>Reportes de plagas, inspecciones y recetas técnicas</li>
+      <li>Certificados digitales de calidad y origen con código QR</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Testimonios (1:16 - 1:40):</strong> Opiniones de usuarios que participaron en las entrevistas
+    de validación, una por cada segmento objetivo: [agricultor independiente], [director de cooperativa]
+    e ingeniero agrónomo y asesor técnico.
+  </li>
+  <li>
+    <strong>Llamada a la Acción (1:40 - 1:45):</strong> Invitación a visitar el Landing Page de SumaqAgro
+    y conocer sus planes.
+  </li>
+</ol>
+
+<h4>Inscripción en Landing Page</h4>
+
+<p>
+  El video "About the Product" está incrustado en el Landing Page, en la sección de Soluciones,
+  permitiendo que los visitantes vean una introducción visual de SumaqAgro antes de consultar los
+  planes de suscripción o contactarnos.
+</p>
+
+<p>
+  <strong>URL del Landing Page donde está el video:</strong>
+  <a href="https://sumaqagro-landing-page.pages.dev/#solutions">https://sumaqagro-landing-page.pages.dev/#solutions</a>
+</p>
