@@ -1,74 +1,74 @@
-# Guía de Contribución
+# Contribution Guide
 
-Convenciones del equipo **Dymbia** para colaborar en el informe **SumaqAgro** (Docs-as-Code).
+**Dymbia** team conventions for contributing to the **SumaqAgro** report (Docs-as-Code).
 
-## Estructura del repositorio
+## Repository Structure
 
-| Ruta | Contenido |
+| Path | Contents |
 | :--- | :--- |
-| `report/` | Contenido del informe en Markdown (front matter, capítulos, bibliografía, anexos e imágenes). |
-| `pandoc/` | Pipeline de exportación a PDF: configuración, metadatos, filtro Lua, preámbulo LaTeX y scripts de compilación. |
+| `report/` | Report content in Markdown (front matter, chapters, bibliography, annexes, and images). |
+| `pandoc/` | PDF export pipeline: configuration, metadata, Lua filter, LaTeX preamble, and build scripts. |
 
-### Nomenclatura
+### Naming Conventions
 
-- Archivos del informe con **prefijo numérico** y en **kebab-case**: `01-09` front matter, `10-89` capítulos, `99` bibliografía (por ejemplo, `20-chapter-2-requirements.md`).
-- Imágenes en `report/assets/img/chapter-N/<tema>/`, con nombres en minúsculas, kebab-case y **sin espacios**.
-- Rutas de imágenes **relativas a `report/`**: `![Texto alternativo](assets/img/chapter-4/c4/c4-container-diagram.png)`.
-- Un capítulo o archivo nuevo debe agregarse a `input-files` en `pandoc/build.yaml` (ese orden es el orden del PDF).
+- Report files use a **numeric prefix** and **kebab-case**: `01-09` for front matter, `10-89` for chapters, and `99` for the bibliography (for example, `20-chapter-2-requirements.md`).
+- Images belong in `report/assets/img/chapter-N/<topic>/`, with lowercase, kebab-case names and **no spaces**.
+- Image paths are **relative to `report/`**: `![Alternative text](assets/img/chapter-4/c4/c4-container-diagram.png)`.
+- Each new chapter or file must be added to `input-files` in `pandoc/build.yaml` (this order determines the PDF order).
 
-## Flujo de ramas (GitFlow)
+## Branching Workflow (GitFlow)
 
-| Rama | Uso |
+| Branch | Purpose |
 | :--- | :--- |
-| `main` | Entregas oficiales (AV1, TB1, AV2, TB2, TF). Solo recibe merges de `release/*` y `hotfix/*`. |
-| `develop` | Integración de los capítulos en curso. |
-| `feature/<descripcion>` | Una sección o mejora. Nace de `develop` y vuelve a `develop` por Pull Request. |
-| `release/vX.Y.Z` | Cierre de entrega: registro de versiones, metadatos y PDF final. |
-| `hotfix/vX.Y.Z` | Corrección urgente sobre lo entregado en `main`. |
+| `main` | Official deliverables (AV1, TB1, AV2, TB2, TF). Only receives merges from `release/*` and `hotfix/*`. |
+| `develop` | Integration of chapters in progress. |
+| `feature/<description>` | A section or improvement. Branches from `develop` and merges back into `develop` through a Pull Request. |
+| `release/vX.Y.Z` | Deliverable finalization: version history, metadata, and final PDF. |
+| `hotfix/vX.Y.Z` | Urgent fix for a deliverable on `main`. |
 
 ```bash
 git switch develop && git pull
 git switch -c feature/tb1-chapter-3-user-stories
-# ...cambios...
-git push -u origin feature/tb1-chapter-3-user-stories   # luego abrir PR hacia develop
+# ...changes...
+git push -u origin feature/tb1-chapter-3-user-stories   # then open a PR targeting develop
 ```
 
-Cierre de una entrega:
+Finalizing a deliverable:
 
 1. `git switch -c release/v1.1.0 develop`
-2. Actualizar `CHANGELOG.md` y `report/front-matter/02-version-history.md`, y generar el PDF.
-3. Merge a `main` con `--no-ff`, crear el tag `v1.1.0` y hacer merge de vuelta a `develop`.
+2. Update `CHANGELOG.md` and `report/front-matter/02-version-history.md`, and generate the PDF.
+3. Merge into `main` with `--no-ff`, create the `v1.1.0` tag, and merge back into `develop`.
 
 ## Commits (Conventional Commits 1.0.0)
 
-Formato: `<tipo>(<alcance>): <descripción en imperativo y minúsculas>`
+Format: `<type>(<scope>): <lowercase description in the imperative mood>`
 
-| Tipo | Uso |
+| Type | Purpose |
 | :--- | :--- |
-| `docs` | Contenido del informe. |
-| `fix` | Corrección de errores (rutas, formato, datos). |
-| `build` | Cambios en `pandoc/`. |
-| `refactor` | Reorganización sin cambiar el contenido. |
-| `chore` | Mantenimiento del repositorio. |
+| `docs` | Report content. |
+| `fix` | Error corrections (paths, formatting, data). |
+| `build` | Changes to `pandoc/`. |
+| `refactor` | Reorganization without changing the content. |
+| `chore` | Repository maintenance. |
 
-Alcances habituales: `front-matter`, `chapter-1` … `chapter-5`, `conclusions`, `bibliography`, `annexes`, `assets`, `pandoc`.
+Common scopes: `front-matter`, `chapter-1` … `chapter-5`, `conclusions`, `bibliography`, `annexes`, `assets`, `pandoc`.
 
-Ejemplo: `docs(chapter-3): add user stories for account registration`
+Example: `docs(chapter-3): add user stories for account registration`
 
-## Versionado (SemVer 2.0.0)
+## Versioning (SemVer 2.0.0)
 
-- **MAJOR**: cambio de estructura del informe incompatible con la anterior.
-- **MINOR**: nueva entrega o sección (`v1.1.0` = TB1).
-- **PATCH**: correcciones sobre una entrega (`v1.0.1`).
+- **MAJOR**: a report structure change that is incompatible with the previous version.
+- **MINOR**: a new deliverable or section (`v1.1.0` = TB1).
+- **PATCH**: corrections to a deliverable (`v1.0.1`).
 
-## Compilar el PDF
+## Compiling the PDF
 
-Requisitos: **Pandoc 3.x** y **XeLaTeX** (MiKTeX o TeX Live).
+Requirements: **Pandoc 3.x** and **XeLaTeX** (MiKTeX or TeX Live).
 
 ```bash
-# Linux / macOS / WSL (desde la raíz)
+# Linux / macOS / WSL (from the repository root)
 make -C pandoc pdf MILESTONE=tb1
-make -C pandoc pdf MILESTONE=tb1 FONTS=linux   # sin Arial/Consolas
+make -C pandoc pdf MILESTONE=tb1 FONTS=linux   # without Arial/Consolas
 ```
 
 ```powershell
@@ -76,10 +76,10 @@ make -C pandoc pdf MILESTONE=tb1 FONTS=linux   # sin Arial/Consolas
 .\pandoc\build.ps1 -Milestone tb1
 ```
 
-El PDF se genera en `pandoc/build/` (ignorado por Git) y se adjunta al Release de GitHub de cada tag.
+The PDF is generated in `pandoc/build/` (ignored by Git) and attached to the GitHub Release for each tag.
 
 ## Pull Requests
 
-- Título con formato de Conventional Commit.
-- Verificar que el PDF compile sin errores antes de pedir revisión.
-- Al menos una aprobación de otro integrante antes del merge.
+- Use a title in Conventional Commit format.
+- Verify that the PDF compiles without errors before requesting a review.
+- Obtain at least one approval from another team member before merging.

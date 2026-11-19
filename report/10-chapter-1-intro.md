@@ -82,14 +82,14 @@ En esta sección se declaran los supuestos fundamentales del equipo sobre los qu
 ##### Business Assumptions
 Como equipo asumimos y sostenemos las siguientes premisas sobre el negocio:
 * Existe una demanda insatisfecha por herramientas de agricultura digital accesibles en Perú que no requieran hardware IoT costoso.
-* El modelo de suscripción freemium y B2B es financieramente viable mediante planes escalonados para cooperativas y asesores técnicos, manteniendo un nivel base gratuito para pequeños productores.
+* El modelo de suscripción B2B y B2C es financieramente viable mediante planes escalonados por perfil, con un Plan Semilla de bajo costo para pequeños productores y planes de mayor capacidad para cooperativas y asesores técnicos.
 * Las cooperativas agrarias están dispuestas a pagar por software que estandarice la calidad del acopio y automatice la trazabilidad de sus socios.
 * El valor agronómico de las alertas tempranas compensará la resistencia cultural inicial hacia la adopción tecnológica en zonas rurales.
 
 ##### Business Outcome Assumptions
 Esperamos validar el éxito del negocio a través de los siguientes resultados medibles:
 * Una tasa de retención mensual (MAU) superior al 70% durante las fases fenológicas críticas de siembra y cosecha.
-* Una tasa de conversión mínima del 12% de cuentas gratuitas a planes de suscripción de cooperativas en los primeros 6 meses.
+* Una tasa de conversión mínima del 12% de visitantes que consultan los planes a suscripciones activas en los primeros 6 meses.
 * El establecimiento de convenios o pruebas piloto con al menos 5 cooperativas de café y papa durante el primer año.
 * La reducción del costo de adquisición de clientes (CAC) apalancando la captación grupal a través de asociaciones comunales.
 

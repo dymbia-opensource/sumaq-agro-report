@@ -64,7 +64,7 @@ Para asegurar una captura de datos estructurada y de alto valor, se han elaborad
   </tr>
   <tr>
     <td><b>Estrategias de marketing</b></td>
-    <td>Penetración B2B2C mediante cooperativas, modelo freemium accesible y alianzas con ONGs de desarrollo rural.</td>
+    <td>Penetración B2B2C mediante cooperativas, planes accesibles por perfil y alianzas con ONGs de desarrollo rural.</td>
     <td>Ventas B2B corporativas, demostraciones piloto en fundos industriales y presencia en congresos exportadores.</td>
     <td>Programas ESG, marketing de contenidos sobre huella hídrica y alianzas con corporaciones globales.</td>
     <td>Autoservicio SaaS, seminarios web técnicos, certificaciones gratuitas y convenios con marcas de maquinaria.</td>
@@ -103,7 +103,7 @@ Para asegurar una captura de datos estructurada y de alto valor, se han elaborad
   </tr>
   <tr>
     <td><b>Precios & Costos</b></td>
-    <td>Modelo Freemium: Nivel gratuito para pequeños productores y planes escalonados para cooperativas.</td>
+    <td>Suscripción escalonada por perfil: Plan Semilla desde S/ 49 al mes para pequeños productores y planes de mayor capacidad para asesores técnicos y cooperativas.</td>
     <td>Contratos Enterprise de alto costo (miles de dólares), inaccesibles para el pequeño productor familiar.</td>
     <td>SaaS por hectárea. Requiere riego tecnificado para justificar el retorno de inversión.</td>
     <td>Planes Freemium limitados con saltos agresivos a tiers Premium corporativos por volumen.</td>
@@ -273,7 +273,7 @@ A través de este análisis, establecemos tácticas ofensivas para explotar nues
     </td>
     <td>
       <b>Estrategia (FA) — Estrategias Defensivas</b><br><br>
-      1. Desplegar agresivamente el plan Freemium, permitiendo usar el satélite sin costo para 1 lote, derribando la barrera de desconfianza y resistencia al cambio rural (F1, A1).<br>
+      1. Ofrecer el Plan Semilla a bajo costo y con ahorro en la modalidad anual, para reducir la barrera de entrada y la resistencia al cambio rural (F1, A1).<br>
       2. Reforzar la propuesta de valor centrada en parámetros ultra-locales (alertas de gorgojo/roya, calibres del MIDAGRI) para blindar el mercado frente a la llegada de plataformas internacionales genéricas (F4, A3).<br>
       3. Implementar un módulo educativo offline en la app para capacitar sobre el valor real de digitalizar los cuadernos de campo (F2, A1).
     </td>

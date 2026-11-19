@@ -559,13 +559,13 @@ La sección **¿A quién ayudamos?** organiza la propuesta de valor mediante tre
 
 **Video and Plans**
 
-La sección **Conoce SumaqAgro en acción** presenta un contenedor central con fondo verde oscuro que alberga el reproductor del video demostrativo (*About-the-Product*) para evidenciar el funcionamiento en campo; inmediatamente después, la sección **Planes** (*Pricing*) introduce un conmutador de facturación mensual y anual (*«Ahorra 2 meses con el plan anual»*) junto a una grilla de tres tarjetas de suscripción que estructuran el modelo SaaS freemium y B2B: el **Plan Semilla** (S/ 0 para 1 parcela con NDVI básico y botón *«Empezar gratis»*), el **Plan Cooperativa Pro** (destacado con la etiqueta *«Más popular»* a S/ 189/mes para 50 productores con certificación de calidad y botón *«Suscribir cooperativa»*), y el **Plan Asesor Técnico** (S/ 89/mes para supervisar 20 fundos con recetas técnicas y botón *«Prueba de 14 días»*).
+La sección **Conoce SumaqAgro en acción** presenta un contenedor central con fondo verde oscuro que alberga el reproductor del video demostrativo (*About-the-Product*) para evidenciar el funcionamiento en campo; inmediatamente después, la sección **Planes** (*Pricing*) introduce un conmutador de facturación mensual y anual (*«Ahorra 2 meses con el plan anual»*) junto a una grilla de tres tarjetas de suscripción que estructuran el modelo SaaS B2B y B2C: el **Plan Semilla** (S/ 49/mes para hasta 4 parcelas con NDVI/NDWI y registro de costos, y botón *«Elegir Plan Semilla»*), el **Plan Cooperativa Pro** (destacado con la etiqueta *«Recomendado para cooperativas»* a S/ 189/mes para 50 productores con certificación de calidad y botón *«Elegir Cooperativa Pro»*), y el **Plan Asesor Técnico** (S/ 89/mes para supervisar 20 parcelas con recetas técnicas y botón *«Elegir Plan Asesor Técnico»*).
 
 ![wireframe-plans](assets/img/chapter-4/landing-page/wireframe/desktop/wireframe-plans.png)
 
 **Testimonials , Impact and Footer**
 
-La sección **Impacto** y el cierre del Landing Page se estructuran en tres bloques consecutivos orientados a la credibilidad y la conversión: en primer lugar, el área de métricas cuantitativas presenta tres tarjetas superiores con indicadores clave de respaldo agrario (*333k+ Has. de papa*, *223k+ Familias cafeteras* y *>40% Sin cobertura técnica*), acompañadas en la parte inferior por el bloque testimonial *«Lo que dicen nuestros usuarios»* con tarjetas que incluyen avatar, calificación por estrellas y citas de validación de Juan Huamán (productor de papa) y Elena Vargas (cooperativa cafetalera); a continuación, se ubica el banner final de conversión (*Bottom CTA*) en verde oscuro con el titular *«Empieza a decidir con precisión hoy»*, un texto de apoyo y el botón principal de acción *Registrarse gratis*; finalmente, el pie de página (*Footer*) organiza sobre fondo oscuro el isotipo horizontal de SumaqAgro con su propuesta de valor a la izquierda, junto a una distribución de navegación en tres columnas de enlaces (*Products*, *Quick Links* y *Support*) para centralizar recursos, documentación y canales de soporte de la plataforma.
+La sección **Impacto** y el cierre del Landing Page se estructuran en tres bloques consecutivos orientados a la credibilidad y la conversión: en primer lugar, el área de métricas cuantitativas presenta tres tarjetas superiores con indicadores clave de respaldo agrario (*333k+ Has. de papa*, *223k+ Familias cafeteras* y *>40% Sin cobertura técnica*), acompañadas en la parte inferior por el bloque testimonial *«Lo que dicen nuestros usuarios»* con tarjetas que incluyen avatar, calificación por estrellas y citas de validación de Juan Huamán (productor de papa) y Elena Vargas (cooperativa cafetalera); a continuación, se ubica el banner final de conversión (*Bottom CTA*) en verde oscuro con el titular *«Empieza a decidir con precisión hoy»*, un texto de apoyo y el botón principal de acción *Ver planes*; finalmente, el pie de página (*Footer*) organiza sobre fondo oscuro el isotipo horizontal de SumaqAgro con su propuesta de valor a la izquierda, junto a una distribución de navegación en tres columnas de enlaces (*Products*, *Quick Links* y *Support*) para centralizar recursos, documentación y canales de soporte de la plataforma.
 
 ![wireframe-testimonials-impact-footer](assets/img/chapter-4/landing-page/wireframe/desktop/wireframe-testimonials-impact-footer.png)
 
@@ -603,7 +603,7 @@ En la vista móvil (**Mobile Web Browser**) de los bloques de demostración y mo
 
 **Impact, Testimonials and Footer**
 
-En la vista móvil (**Mobile Web Browser**) del cierre de la página, los componentes se reorganizan en una secuencia vertical de cuatro bloques lineales: en la parte superior, la sección **Impacto** apila las tres tarjetas de métricas agrarias (*333k+ Has. de papa*, *223k+ Familias cafeteras* y *>40% Sin cobertura técnica*); inmediatamente después, el bloque de testimonios (*«Lo que dicen nuestros usuarios»*) presenta de forma vertical las dos tarjetas de validación social con el avatar, nombre, rol y cita de cada usuario; a continuación, el banner final de conversión (*Bottom CTA*) condensa el titular, el texto de apoyo y el botón de acción *«Registrarse gratis»* adaptado a pantalla completa para facilitar la pulsación táctil con una sola mano; finalmente, el pie de página (*Footer*) sobre fondo oscuro (#031416) apila el isotipo de la marca, la descripción institucional y una botonera de enlaces sociales, rematando con tres columnas colapsadas verticalmente (*Products*, *Quick Links* y *Support*) que distribuyen el acceso a los recursos y enlaces ético-legales del sistema.
+En la vista móvil (**Mobile Web Browser**) del cierre de la página, los componentes se reorganizan en una secuencia vertical de cuatro bloques lineales: en la parte superior, la sección **Impacto** apila las tres tarjetas de métricas agrarias (*333k+ Has. de papa*, *223k+ Familias cafeteras* y *>40% Sin cobertura técnica*); inmediatamente después, el bloque de testimonios (*«Lo que dicen nuestros usuarios»*) presenta de forma vertical las dos tarjetas de validación social con el avatar, nombre, rol y cita de cada usuario; a continuación, el banner final de conversión (*Bottom CTA*) condensa el titular, el texto de apoyo y el botón de acción *«Ver planes»* adaptado a pantalla completa para facilitar la pulsación táctil con una sola mano; finalmente, el pie de página (*Footer*) sobre fondo oscuro (#031416) apila el isotipo de la marca, la descripción institucional y una botonera de enlaces sociales, rematando con tres columnas colapsadas verticalmente (*Products*, *Quick Links* y *Support*) que distribuyen el acceso a los recursos y enlaces ético-legales del sistema.
 
 ![wireframe-testimonials-impact-footer](assets/img/chapter-4/landing-page/wireframe/mobile/wireframe-mobile-impact.png)
 
@@ -644,7 +644,7 @@ Presenta un fondo verde corporativo que enmarca el antetítulo "PRODUCT DEMO", e
 
 **Plans — SumaqAgro**
 
-Presenta el titular "Choose the plan that fits your needs" sobre el antetítulo "PLANS" y un conmutador de facturación mensual o anual con descuento. En la zona inferior dispone tres tarjetas de suscripción adaptadas a cada perfil: Seed Plan (gratuito, para 1 parcela con NDVI básico y registro de labores), Pro Cooperative (S/189/mes, destacado como el más popular para 50 productores con certificación y exportación de reportes) y Technical Advisor Plan (S/89/mes, para 20 fincas supervisadas con NDVI avanzado y recomendaciones), cada una con su respectivo botón de acción directo.
+Presenta el titular "Choose the plan that fits your needs" sobre el antetítulo "PLANS" y un conmutador de facturación mensual o anual con descuento. En la zona inferior dispone tres tarjetas de suscripción adaptadas a cada perfil: Seed Plan (S/49/mes, para hasta 4 parcelas con NDVI/NDWI y registro de costos), Pro Cooperative (S/189/mes, destacado como el más popular para 50 productores con certificación y exportación de reportes) y Technical Advisor Plan (S/89/mes, para 20 fincas supervisadas con NDVI avanzado y recomendaciones), cada una con su respectivo botón de acción directo.
 
 ![mockup-plans.png](assets/img/chapter-4/landing-page/mock-up/desktop/mockup-plans.png)
 
@@ -674,7 +674,7 @@ Presenta un encabezado con el antetítulo en verde "Video About the Team", el t�
 
 **Registration — SumaqAgro**
 
-Presenta una franja de color verde corporativo orientada a incentivar el registro de nuevos usuarios. El bloque incorpora un mensaje de invitación y el botón principal "Sign up for free", facilitando el acceso directo a la plataforma desde la página de aterrizaje.
+Presenta una franja de color verde corporativo orientada a incentivar el registro de nuevos usuarios. El bloque incorpora un mensaje de invitación y el botón principal "See plans", facilitando el acceso directo a la plataforma desde la página de aterrizaje.
 
 ![mockup-registration.png](assets/img/chapter-4/landing-page/mock-up/desktop/mockup-registration.png)
 
@@ -1062,7 +1062,7 @@ Para cada User Goal se modela la ruta de éxito principal (*happy path*) junto c
 ##### Explicación de flujos y condiciones
 * **Happy Path (Ruta de éxito esperada):**
   1. El visitante accede a la pantalla de bienvenida (*Welcome back!*) y, al carecer de credenciales, pulsa el enlace interactivo *"Sign up here"* ubicado en el pie del formulario.
-  2. La interfaz transiciona a la pantalla *Create your free account*, donde el usuario selecciona su rol funcional (`Farmer`), ingresa su nombre completo, correo electrónico, nombre de su predio o fundo y establece una contraseña segura de acceso.
+  2. La interfaz transiciona a la pantalla *Create your account*, donde el usuario selecciona su rol funcional (`Farmer`), ingresa su nombre completo, correo electrónico, nombre de su predio o fundo y establece una contraseña segura de acceso.
   3. Marca la casilla de aceptación de los Términos de Servicio y Políticas de Privacidad y pulsa el botón principal de confirmación.
   4. El backend corrobora que los campos son válidos y que el correo no existe en el sistema, completando el registro y habilitando el ingreso a la aplicación web.
 * **Unhappy Paths (Rutas alternativas y de excepción):**
@@ -1131,9 +1131,9 @@ Para cada User Goal se modela la ruta de éxito principal (*happy path*) junto c
   1. En el Dashboard principal (*¡Buen día, Guillermo!*), el productor examina los indicadores de su predio activo y pulsa el botón **"Ver Todos Mis Lotes"** en la cabecera superior.
   2. La aplicación abre la vista de administración *Mis Parcelas Registradas*, cargando el inventario de lotes bajo monitoreo satelital.
   3. El usuario observa la tarjeta de la *PARCELA #1* (Fundo Los Pinos, cultivo Papa Canchan, área de 3.5 ha y estado NDVI 0.74 Óptimo) con acceso a su visor satelital.
-  4. Asimismo, el sistema muestra las tarjetas de la *PARCELA #2* y *PARCELA #3* identificadas como *Cupo Disponible*, acompañadas del botón interactivo **"Registrar Nueva Parcela"** dentro de los márgenes del plan gratuito activo.
+  4. Asimismo, el sistema muestra las tarjetas de la *PARCELA #2* y *PARCELA #3* identificadas como *Cupo Disponible*, acompañadas del botón interactivo **"Registrar Nueva Parcela"** dentro de la cuota de parcelas de su plan activo.
 * **Unhappy Paths (Rutas alternativas y de excepción):**
-  * *Límite de cupos de parcelas alcanzado:* Si el usuario cuenta con los 3 lotes registrados y pulsa sobre agregar uno nuevo, el sistema no abre el catastro GPS; en su lugar, despliega un cuadro modal informando que ha copado el límite de su plan gratuito y ofrece un botón de actualización hacia el plan comercial.
+  * *Límite de cupos de parcelas alcanzado:* Si el usuario ya alcanzó la cuota de parcelas de su plan y pulsa sobre agregar una nueva, el sistema no abre el catastro GPS; en su lugar, despliega un cuadro modal informando que ha copado el límite de su plan y ofrece un botón para cambiar a un plan con mayor cuota.
   * *Ausencia total de registros (Empty State):* Si el agricultor aún no hubiera configurado su primer lote o hubiera borrado sus datos, la pantalla reemplaza las tarjetas activas por una guía informativa orientada al trazado inicial del polígono georreferenciado.
 
 #### User Flow 05 (UG-05): Gestión y Ejecución de Medidas por Alerta Climática Crítica
@@ -1377,8 +1377,8 @@ Considerando la estructura de subdominios recomendada para plataformas SaaS de s
 
 * **Responsabilidad:** Registrar a los usuarios, autenticarlos mediante tokens JWT y controlar el acceso a la plataforma.
 * **Agregado `User`:**
-  * *Commands:* `SignUp`, `SignIn`.
-  * *Events:* `UserSignedUp`, `UserSignedIn`.
+  * *Commands:* `SignUp`, `SignIn`, `RequestPasswordReset`, `ResetPassword`.
+  * *Events:* `UserSignedUp`, `UserSignedIn`, `PasswordResetRequested`, `PasswordReset`.
   * *Read Models:* `PlansCatalog`.
   * *External System:* Brevo Email Service (correo de recuperación de contraseña).
 
@@ -1403,8 +1403,8 @@ Considerando la estructura de subdominios recomendada para plataformas SaaS de s
 
 * **Responsabilidad:** Controlar los planes de suscripción (Semilla, Cooperativa Pro y Asesor Técnico), el cobro mediante la pasarela de pagos y la cuota de parcelas que permite cada plan.
 * **Agregado `Subscription`:**
-  * *Commands:* `AssignSeedPlan`, `SelectSubscriptionPlan`, `SubmitPayment`, `ActivateSubscription`, `CancelSubscription`.
-  * *Events:* `SeedPlanAssigned`, `SubscriptionPlanSelected`, `PaymentConfirmed`, `SubscriptionActivated`, `SubscriptionCancelled`.
+  * *Commands:* `SelectSubscriptionPlan`, `SubmitPayment`, `ActivateSubscription`, `CancelSubscription`.
+  * *Events:* `SubscriptionPlanSelected`, `PaymentConfirmed`, `SubscriptionActivated`, `SubscriptionCancelled`.
   * *Read Models:* `PlansCatalog`, `BillingSummary`.
   * *External System:* Niubiz Payment Gateway.
 
@@ -1444,8 +1444,8 @@ Considerando la estructura de subdominios recomendada para plataformas SaaS de s
   * *Events:* `RegionalBulletinIssued`.
   * *Read Models:* `MultiPlotDashboardByUrgency`.
 * **Agregado `PestReport`:**
-  * *Commands:* `UploadPestEvidencePhoto`, `NotifyAssignedAgronomist`, `RecordDamageAssessment`.
-  * *Events:* `PestEvidencePhotoUploaded`, `AgronomistNotified`, `DamageAssessmentRecorded`.
+  * *Commands:* `RecordPestReport`, `NotifyAssignedAgronomist`, `RecordDamageAssessment`.
+  * *Events:* `PestReportRecorded`, `AgronomistNotified`, `DamageAssessmentRecorded`.
   * *Read Models:* `AdvisorConsultation`, `PhytosanitaryDiagnosisInbox`.
 * **Agregado `FieldInspection`:**
   * *Commands:* `ScheduleFieldInspection`, `CompleteFieldInspection`.
@@ -1478,13 +1478,13 @@ Considerando la estructura de subdominios recomendada para plataformas SaaS de s
 
 La orquestación entre los contextos delimitados se rige por políticas eventuales bajo el estándar *Whenever [Domain Event] Then [Command]*:
 
-* **P1:** `Whenever UserSignedUp Then AssignSeedPlan` (IAM → Subscriptions and Payments)
+* **P1:** `Whenever UserSignedUp Then SelectSubscriptionPlan` (IAM → Subscriptions and Payments)
 * **P2:** `Whenever PaymentConfirmed Then ActivateSubscription` (Subscriptions and Payments)
 * **P3:** `Whenever PlotBoundaryDelineated Then LinkPlotPolygon` (Field Management)
 * **P4:** `Whenever SowingDateRecorded Then ScheduleSatelliteMonitoring` (Field Management → Crop Health)
 * **P5:** `Whenever VegetationAnomalyDetected, WaterStressDetected or FrostRiskDetected Then RaiseAgroclimaticAlert` (Crop Health)
 * **P6:** `Whenever AgroclimaticAlertRaised Then NotifyFarmerAndAgronomist` (Crop Health)
-* **P7:** `Whenever PestEvidencePhotoUploaded Then NotifyAssignedAgronomist` (Crop Health)
+* **P7:** `Whenever PestReportRecorded Then NotifyAssignedAgronomist` (Crop Health)
 * **P8:** `Whenever CropCampaignStarted Then OpenCampaignLedger` (Field Management)
 * **P9:** `Whenever InputExpenseRecorded, DailyLaborExpenseRecorded, FieldFreightExpenseRecorded or ExpectedYieldSet Then RecalculateBreakevenPrice` (Field Management)
 * **P10:** `Whenever DeliveredBatchWeighed Then RecordActualYield` (Harvest Certification → Field Management)
@@ -1562,7 +1562,7 @@ El contenedor de la Landing Page descompone la estructura del sitio web estátic
 
 ##### Desglose de Componentes de la Landing Page:
 * **`Navigation & Hero Component`:** Bloque estructural desarrollado con HTML5 semántico y maquetado responsivo mediante CSS3 Flexbox. Administra la barra de navegación superior, la identidad visual corporativa de SumaqAgro, la propuesta de valor agroclimática orientada a café de especialidad y papa andina, y el llamado a la acción (CTA) que lleva al visitante al registro de la Web Application.
-* **`Pricing & Plans Catalog Component`:** Componente visual maquetado mediante CSS3 Grid. Presenta la matriz comparativa de los planes de suscripción comercial SaaS: el plan *Semilla* (gratuito para pequeños productores familiares), el plan *Cooperativa Pro* (para gremios con monitoreo consolidado de socios) y el plan *Asesor Técnico* (para agrónomos independientes con carteras de clientes).
+* **`Pricing & Plans Catalog Component`:** Componente visual maquetado mediante CSS3 Grid. Presenta la matriz comparativa de los planes de suscripción comercial SaaS: el plan *Semilla* (S/ 49 al mes para pequeños productores familiares), el plan *Cooperativa Pro* (para gremios con monitoreo consolidado de socios) y el plan *Asesor Técnico* (para agrónomos independientes con carteras de clientes).
 
 #### 4.6.4.2. Web Application Container Components Diagram (Angular SPA)
 
@@ -2071,7 +2071,7 @@ Suscripción vigente de cada usuario. Hay una sola suscripción por usuario.
 | `status` | `VARCHAR(20)` | Estado de la suscripción: `ACTIVE` o `CANCELLED`. |
 | `billing_cycle` | `VARCHAR(10)` | Frecuencia de cobro: `MONTHLY` o `ANNUAL`. |
 | `start_date` | `DATE` | Fecha de inicio del periodo vigente. |
-| `end_date` | `DATE` | Fecha de fin del periodo vigente. Está vacía en el plan gratuito. |
+| `end_date` | `DATE` | Fecha de fin del periodo pagado vigente. |
 | `auto_renew` | `BOOLEAN` | Indica si la suscripción se renueva sola al terminar el periodo. |
 | `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
 | `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
