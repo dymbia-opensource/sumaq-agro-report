@@ -1,6 +1,6 @@
 # =====================================================================
 # Compilación del Informe (Docs-as-Code) — Pandoc + XeLaTeX
-#   make -C pandoc pdf                   -> pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb1.pdf
+#   make -C pandoc pdf                   -> pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb2.pdf
 #   make -C pandoc pdf MILESTONE=av2     -> ...-report-av2.pdf
 #   make -C pandoc pdf FONTS=linux       -> usa Liberation Sans/Mono (Linux / WSL)
 # =====================================================================
@@ -8,7 +8,7 @@ CONFIG    = build.yaml
 DIST_DIR  = build
 NRC       = 7742
 STARTUP   = dymbia
-MILESTONE = tb1
+MILESTONE = tb2
 OUTPUT    = $(DIST_DIR)/upc-pre-202620-1asi0729-$(NRC)-$(STARTUP)-report-$(MILESTONE).pdf
 
 ifeq ($(FONTS),linux)

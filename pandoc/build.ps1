@@ -1,11 +1,11 @@
 # =====================================================================
 # build.ps1 — Compila el informe a PDF en Windows (PowerShell)
-#   .\pandoc\build.ps1                 -> entrega TB1
+#   .\pandoc\build.ps1                 -> entrega TB2
 #   .\pandoc\build.ps1 -Milestone av2  -> entrega AV2
 # Requisitos: Pandoc 3.x y MiKTeX (o TeX Live) en el PATH.
 # =====================================================================
 param(
-  [string]$Milestone = "tb1",
+  [string]$Milestone = "tb2",
   [string]$Nrc = "7742",
   [string]$Startup = "dymbia"
 )
