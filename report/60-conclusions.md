@@ -1,5 +1,9 @@
 # Conclusiones
 
+## Conclusiones y recomendaciones
+
+### Conclusiones
+
 * **Validación de la problemática y pertinencia de una solución sin hardware:** A partir de la investigación de campo y las entrevistas realizadas a agricultores independientes, directivos de cooperativas e ingenieros agrónomos, se comprobó que la falta de registro estructurado de costos operativos y la detección tardía de estrés hídrico o plagas generan mermas recurrentes en los cultivos de papa andina y café de especialidad. La propuesta *software-only* de **SumaqAgro**, apoyada en información satelital (NDVI/NDWI), cálculo unitario de costos y certificación digital, responde directamente a estas necesidades sin exigir inversiones en sensores IoT en tierra.
 
 * **Coherencia arquitectónica y delimitación clara del alcance funcional:** La aplicación de los principios de *Domain-Driven Design* (DDD) y la definición de un Lenguaje Ubicuo permitieron estructurar la solución en contextos delimitados claros (*Profiles*, *Field Management*, *Crop Health* y *Harvest Certification*). Asimismo, la delimitación del alcance mantiene el foco del producto en el monitoreo agronómico, la asistencia técnica, el cálculo del punto de equilibrio y la trazabilidad de cosechas, estableciendo explícitamente que la publicación de ofertas y la liquidación comercial ocurren fuera de la plataforma.
@@ -10,7 +14,7 @@
 
 * **Implementación funcional del MVP Frontend y validación temprana en el Sprint 2:** Durante el segundo sprint se concretó la transición hacia el MVP de la aplicación web en **Angular 22** con arquitectura por capas, *Angular Signals*, **Angular Material** y visualización cartográfica mediante **Leaflet.js**, desplegada en **Firebase Hosting** e integrada con una **Fake REST API** en **Render**. Se verificaron los flujos principales del agricultor independiente (gestión y delimitación de parcelas, consulta de índices NDVI/NDWI, registro de gastos de campaña, cálculo del punto de equilibrio, consulta de certificados con QR y reporte de plagas), dejando sentadas las bases estructurales y de contratos de servicio para completar las vistas de cooperativas, agrónomos y la futura integración con el backend definitivo en **Spring Boot**.
 
-# Recomendaciones
+### Recomendaciones
 
 * **Implementar capacidades *Offline-First* mediante Progressive Web App (PWA):** Dado que los productores agrícolas operan en zonas rurales con conectividad intermitente o nula, se recomienda incorporar *Service Workers* y almacenamiento local (`IndexedDB`) en Angular para permitir el registro de gastos de campaña, reportes de plagas y consulta de datos cacheados sin conexión, sincronizando automáticamente al recuperar señal.
 
@@ -21,3 +25,5 @@
 * **Fortalecer la autenticidad y seguridad de los certificados digitales con QR:** Incorporar firmas digitales o *hashes* verificables en el backend para los certificados de cosecha generados por la plataforma, de modo que cualquier comprador o auditor externo pueda validar mediante el código QR la integridad de los datos agronómicos y de trazabilidad sin posibilidad de alteración.
 
 * **Ejecutar pruebas piloto en campo durante una campaña agrícola completa:** Realizar un piloto controlado con un grupo de productores de papa andina y café de especialidad a lo largo de un ciclo productivo real para medir el impacto cuantitativo en la reducción de pérdidas por estrés hídrico o plagas, calibrar la usabilidad en condiciones reales de trabajo y refinar el modelo de suscripción antes del lanzamiento comercial.
+
+## Video About-the-Team

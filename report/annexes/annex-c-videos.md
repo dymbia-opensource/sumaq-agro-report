@@ -1,4 +1,6 @@
-#### Anexo C: Videos 
+# Anexos
+
+## Anexo A: Videos de Exposiciones
 
 | Recurso                       | Plataforma       | URL                                                          |
 |-------------------------------|------------------|--------------------------------------------------------------|
