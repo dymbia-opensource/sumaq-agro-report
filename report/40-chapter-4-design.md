@@ -1651,14 +1651,19 @@ Las principales características que se consideran en los diagramas son:
 
 A continuación se presentan los diagramas de clases de cada bounded context, primero para la Web Application y luego para la RESTful API. Cada contexto de la Web Application tiene su archivo de rutas (`*.routes.ts`), que se carga de forma diferida desde `app.routes.ts` y se protege con `iamGuard`, `roleGuard` y `activeSubscriptionGuard`.
 
+Para que se puedan leer en el informe, el diagrama de cada bounded context se presenta por capas, con una imagen por capa (domain, application, infrastructure e interfaces en la RESTful API; domain, application, infrastructure y presentation en la Web Application), en el mismo orden en que se describen debajo. Las capas con más clases se dividen en dos o tres imágenes. En estas vistas, los *records* (commands, queries, resources, requests y responses) se muestran sin atributos, y las clases que implementan una interfaz muestran solo sus atributos, porque sus métodos son los de la interfaz. Las clases de otros contextos que usa cada capa aparecen sin miembros. Los diagramas completos, con todos los miembros, están en la carpeta `docs/class-diagrams` de cada repositorio.
+
 #### 4.7.1.1. Shared Kernel
 
 El Shared Kernel reúne las clases comunes que reutilizan todos los bounded contexts. No tiene commands ni events propios.
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - Shared Kernel - Web Application](assets/img/chapter-4/class-diagrams/web-application/00-shared-web-class-diagram.png)
+![Diagrama de Clases - Shared Kernel - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/00-shared/web-01-domain.png)
 
+![Diagrama de Clases - Shared Kernel - Web Application - Infrastructure Layer](assets/img/chapter-4/class-diagrams/00-shared/web-02-infrastructure.png)
+
+![Diagrama de Clases - Shared Kernel - Web Application - Presentation Layer](assets/img/chapter-4/class-diagrams/00-shared/web-03-presentation.png)
 * **`domain.model`:**
   * `BaseEntity`: clase base de todas las entidades. Guarda el identificador en `#_id: number | string` y lo expone con `id`.
   * `Money`: value object con monto y moneda; permite sumar, multiplicar y dar formato a los montos.
@@ -1680,8 +1685,13 @@ El Shared Kernel reúne las clases comunes que reutilizan todos los bounded cont
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - Shared Kernel - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/00-shared-api-class-diagram.png)
+![Diagrama de Clases - Shared Kernel - RESTful API - Domain Layer](assets/img/chapter-4/class-diagrams/00-shared/api-01-domain.png)
 
+![Diagrama de Clases - Shared Kernel - RESTful API - Application Layer](assets/img/chapter-4/class-diagrams/00-shared/api-02-application.png)
+
+![Diagrama de Clases - Shared Kernel - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/00-shared/api-03-infrastructure.png)
+
+![Diagrama de Clases - Shared Kernel - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/00-shared/api-04-interfaces.png)
 * **`domain`:** `AbstractDomainAggregateRoot<T>`, de la que heredan todos los agregados. Extiende `AbstractAggregateRoot` de Spring Data y permite registrar domain events con `registerDomainEvent`.
 * **`application`:**
   * `Result<T, E>`: interfaz sellada con dos casos, `Success` y `Failure`, que devuelven todos los servicios de commands en lugar de lanzar excepciones.
@@ -1705,8 +1715,13 @@ Este contexto registra a los usuarios, los autentica con JWT, maneja sus roles y
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - IAM - Web Application](assets/img/chapter-4/class-diagrams/web-application/01-iam-web-class-diagram.png)
+![Diagrama de Clases - IAM - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/01-iam/web-01-domain.png)
 
+![Diagrama de Clases - IAM - Web Application - Application Layer](assets/img/chapter-4/class-diagrams/01-iam/web-02-application.png)
+
+![Diagrama de Clases - IAM - Web Application - Infrastructure Layer](assets/img/chapter-4/class-diagrams/01-iam/web-03-infrastructure.png)
+
+![Diagrama de Clases - IAM - Web Application - Presentation Layer](assets/img/chapter-4/class-diagrams/01-iam/web-04-presentation.png)
 * **`domain.model`:** la entidad `User` hereda de `BaseEntity`, guarda el correo, el nombre y sus roles, y expone `hasRole(role)`. `UserRole` tiene los valores `FARMER`, `COOPERATIVE_DIRECTOR` y `AGRONOMIST`. Los commands son `SignUpCommand`, `SignInCommand`, `RequestPasswordResetCommand` y `ResetPasswordCommand`.
 * **`infrastructure`:** `IamApi` agrupa los endpoints `SignUpApiEndpoint`, `SignInApiEndpoint` y `PasswordRecoveryApiEndpoint`; cada uno usa su assembler (`SignUpAssembler`, `SignInAssembler`, `PasswordRecoveryAssembler`) para pasar de commands a requests y de responses a entidades. `iamInterceptor` agrega el token a cada petición e `iamGuard` protege las rutas privadas.
 * **`application`:** `IamStore` guarda con *signals* el usuario actual, su token, el estado de carga y los errores (`IamError`, `PasswordRecoveryError`). Expone `isSignedIn` y `activeUser` (`SessionParticipant`), y los métodos `signUp`, `signIn`, `signOut`, `requestPasswordReset`, `resetPassword` y `checkSessionExpiration`.
@@ -1721,8 +1736,13 @@ Este contexto registra a los usuarios, los autentica con JWT, maneja sus roles y
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - IAM - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/01-iam-api-class-diagram.png)
+![Diagrama de Clases - IAM - RESTful API - Domain Layer](assets/img/chapter-4/class-diagrams/01-iam/api-01-domain.png)
 
+![Diagrama de Clases - IAM - RESTful API - Application Layer](assets/img/chapter-4/class-diagrams/01-iam/api-02-application.png)
+
+![Diagrama de Clases - IAM - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/01-iam/api-03-infrastructure.png)
+
+![Diagrama de Clases - IAM - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/01-iam/api-04-interfaces.png)
 * **`domain`:** `User` es el agregado y hereda de `AbstractDomainAggregateRoot`. Tiene un `EmailAddress`, su contraseña cifrada y un conjunto de `Role`. `Roles` define `ROLE_FARMER`, `ROLE_COOPERATIVE_DIRECTOR` y `ROLE_AGRONOMIST`. `PasswordResetToken` guarda el código temporal para cambiar la contraseña. Los commands son `SignUpCommand`, `SignInCommand`, `RequestPasswordResetCommand`, `ResetPasswordCommand` y `SeedRolesCommand`. Los repositorios son `UserRepository`, `RoleRepository` y `PasswordResetTokenRepository`.
 * **`application`:** las interfaces `UserCommandService`, `RoleCommandService` y `PasswordRecoveryCommandService` se implementan en `UserCommandServiceImpl`, `RoleCommandServiceImpl` y `PasswordRecoveryCommandServiceImpl` (que se apoya en `PasswordResetRequestService` y `PasswordResetService`). Los puertos son `HashingService`, `TokenService`, `PasswordResetTokenCodec` y `PasswordResetEmailSender`. `ApplicationReadyEventHandler` crea los roles al iniciar la aplicación.
 * **`infrastructure`:** `HashingServiceImpl` (BCrypt), `TokenServiceImpl` (JWT), `SecurePasswordResetTokenCodec` (genera el código y guarda solo su hash SHA-256), `BrevoPasswordResetEmailSender` (correo de recuperación), los adaptadores de repositorio y, en Spring Security, `WebSecurityConfiguration`, `BearerAuthorizationRequestFilter`, `UserDetailsServiceImpl` y `UserDetailsImpl`.
@@ -1741,8 +1761,15 @@ Este contexto maneja los perfiles de los usuarios, las cooperativas, su padrón 
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - Profiles - Web Application](assets/img/chapter-4/class-diagrams/web-application/02-profiles-web-class-diagram.png)
+![Diagrama de Clases - Profiles - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/02-profiles/web-01-domain.png)
 
+![Diagrama de Clases - Profiles - Web Application - Application Layer](assets/img/chapter-4/class-diagrams/02-profiles/web-02-application.png)
+
+![Diagrama de Clases - Profiles - Web Application - Infrastructure Layer (1 de 2)](assets/img/chapter-4/class-diagrams/02-profiles/web-03-infrastructure-1.png)
+
+![Diagrama de Clases - Profiles - Web Application - Infrastructure Layer (2 de 2)](assets/img/chapter-4/class-diagrams/02-profiles/web-04-infrastructure-2.png)
+
+![Diagrama de Clases - Profiles - Web Application - Presentation Layer](assets/img/chapter-4/class-diagrams/02-profiles/web-05-presentation.png)
 * **`domain.model`:** entidades `FarmerProfile`, `Cooperative`, `CooperativeMember`, `AgronomistInvitation` y `TechnicalAdvisor`; value objects y modelos de lectura `MemberPlot`, `MemberCandidate`, `PlotAdvisorAssignment`, `AdvisorAssignmentHistory`, `PlotResponsibility` y `AdvisorSummary`; y `InvitationStatus`. Los commands son `UpdateFarmerAccountCommand` y `UpdateCooperativeCommand`.
 * **`infrastructure`:** `ProfilesApi` agrupa `FarmerProfilesApiEndpoint`, `CooperativesApiEndpoint`, `CooperativeMembersApiEndpoint` y `PlotAdvisorAssignmentsApiEndpoint`, cada uno con su assembler (`FarmerProfileAssembler`, `CooperativeAssembler`, `CooperativeMemberAssembler`, `MemberCandidateAssembler`, `AgronomistInvitationAssembler` y `PlotAdvisorAssignmentAssembler`).
 * **`application`:** `ProfilesStore` guarda el perfil, la cooperativa del directivo, su padrón, su equipo técnico (`TechnicalTeamMember`) y las asignaciones, y ofrece métodos como `saveAccount`, `saveCooperative`, `findMemberCandidate`, `addMember`, `linkMemberAccount`, `inviteAgronomist` y `assignPlotAdvisor`.
@@ -1756,8 +1783,17 @@ Este contexto maneja los perfiles de los usuarios, las cooperativas, su padrón 
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - Profiles - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/02-profiles-api-class-diagram.png)
+![Diagrama de Clases - Profiles - RESTful API - Domain Layer (1 de 2)](assets/img/chapter-4/class-diagrams/02-profiles/api-01-domain-1.png)
 
+![Diagrama de Clases - Profiles - RESTful API - Domain Layer (2 de 2)](assets/img/chapter-4/class-diagrams/02-profiles/api-02-domain-2.png)
+
+![Diagrama de Clases - Profiles - RESTful API - Application Layer (1 de 2)](assets/img/chapter-4/class-diagrams/02-profiles/api-03-application-1.png)
+
+![Diagrama de Clases - Profiles - RESTful API - Application Layer (2 de 2)](assets/img/chapter-4/class-diagrams/02-profiles/api-04-application-2.png)
+
+![Diagrama de Clases - Profiles - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/02-profiles/api-05-infrastructure.png)
+
+![Diagrama de Clases - Profiles - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/02-profiles/api-06-interfaces.png)
 * **`domain`:** los agregados son `Profile`, `Cooperative` y `AgronomistAssignment`. `Cooperative` contiene las entidades `CooperativeMember` y `AgronomistInvitation`. Los value objects son `PersonName`, `Dni`, `Ruc`, `EmailAddress`, `PhoneNumber`, `AssignmentHistoryEntry`, `PreferredLanguage` e `InvitationStatus`. Los events son `ProfileUpdatedEvent`, `CooperativeRegisteredEvent`, `CooperativeMemberAddedEvent`, `AgronomistInvitedEvent` y `AgronomistAssignedToPlotEvent`.
 * **`application`:** servicios de commands y queries por agregado (`ProfileCommandService`, `CooperativeCommandService`, `AgronomistAssignmentCommandService` y sus queries), `ProfilesContextFacadeImpl`, los servicios de ACL `ExternalIamService` y `ExternalFarmingService`, y `AgronomistInvitedEventHandler`, que envía el correo de invitación después de guardar la invitación.
 * **`infrastructure`:** adaptadores de repositorio `ProfileRepositoryImpl`, `CooperativeRepositoryImpl` y `AgronomistAssignmentRepositoryImpl`.
@@ -1777,8 +1813,13 @@ Este contexto maneja los planes (Semilla, Cooperativa Pro y Asesor Técnico), la
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - Subscriptions and Payments - Web Application](assets/img/chapter-4/class-diagrams/web-application/03-subscriptions-web-class-diagram.png)
+![Diagrama de Clases - Subscriptions and Payments - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/web-01-domain.png)
 
+![Diagrama de Clases - Subscriptions and Payments - Web Application - Application Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/web-02-application.png)
+
+![Diagrama de Clases - Subscriptions and Payments - Web Application - Infrastructure Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/web-03-infrastructure.png)
+
+![Diagrama de Clases - Subscriptions and Payments - Web Application - Presentation Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/web-04-presentation.png)
 * **`domain.model`:** entidades `Plan`, `Subscription` y `Payment`; el value object `PaymentCheckout` (con el `checkoutUrl` de Mercado Pago); y los tipos `PlanCode`, `BillingCycle`, `PaymentStatus`, `SubscriptionStatus` y `SubscriptionSegment`. Los commands son `SelectSubscriptionPlanCommand`, `StartPaymentCheckoutCommand`, `ConfirmPaymentCommand` y `CancelSubscriptionCommand`.
 * **`infrastructure`:** `SubscriptionsApi` agrupa `PlansApiEndpoint`, `SubscriptionsApiEndpoint` y `PaymentsApiEndpoint`, con los assemblers `PlanAssembler`, `SubscriptionAssembler`, `PaymentAssembler` y `PaymentCheckoutAssembler`. `activeSubscriptionGuard` envía al catálogo de planes a quien no tiene una suscripción activa.
 * **`application`:** `SubscriptionsStore` guarda los planes, la suscripción actual y los pagos, y ofrece `selectPlan`, `startPaymentCheckout`, `confirmPayment`, `cancelSubscription` y `downloadReceipt`.
@@ -1791,8 +1832,13 @@ Este contexto maneja los planes (Semilla, Cooperativa Pro y Asesor Técnico), la
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - Subscriptions and Payments - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/03-subscriptions-api-class-diagram.png)
+![Diagrama de Clases - Subscriptions and Payments - RESTful API - Domain Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/api-01-domain.png)
 
+![Diagrama de Clases - Subscriptions and Payments - RESTful API - Application Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/api-02-application.png)
+
+![Diagrama de Clases - Subscriptions and Payments - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/api-03-infrastructure.png)
+
+![Diagrama de Clases - Subscriptions and Payments - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/03-subscriptions/api-04-interfaces.png)
 * **`domain`:** `Subscription` es el agregado, con su `SubscriptionPeriod`; `Plan` y `Payment` son entidades. Los value objects son `PlanCode`, `BillingCycle`, `SubscriptionStatus` y `PaymentStatus`. Los repositorios son `SubscriptionRepository`, `PlanRepository` y `PaymentRepository`.
 * **`application`:** `SubscriptionCommandService`, `PlanCommandService`, `SubscriptionQueryService` y `PlanQueryService` con sus implementaciones; el puerto `PaymentGateway`; `SubscriptionsContextFacadeImpl`, que bloquea la suscripción y devuelve el límite del plan; y `PlanCatalogReadyEventHandler`, que crea el catálogo de planes al iniciar.
 * **`infrastructure`:** `MercadoPagoPaymentGateway` (Checkout Pro) y los adaptadores de repositorio.
@@ -1810,8 +1856,17 @@ Este contexto maneja las parcelas y sus polígonos, las campañas agrícolas, el
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - Field Management - Web Application](assets/img/chapter-4/class-diagrams/web-application/04-field-management-web-class-diagram.png)
+![Diagrama de Clases - Field Management - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/04-field-management/web-01-domain.png)
 
+![Diagrama de Clases - Field Management - Web Application - Application Layer](assets/img/chapter-4/class-diagrams/04-field-management/web-02-application.png)
+
+![Diagrama de Clases - Field Management - Web Application - Infrastructure Layer (1 de 2)](assets/img/chapter-4/class-diagrams/04-field-management/web-03-infrastructure-1.png)
+
+![Diagrama de Clases - Field Management - Web Application - Infrastructure Layer (2 de 2)](assets/img/chapter-4/class-diagrams/04-field-management/web-04-infrastructure-2.png)
+
+![Diagrama de Clases - Field Management - Web Application - Presentation Layer (1 de 2)](assets/img/chapter-4/class-diagrams/04-field-management/web-05-presentation-1.png)
+
+![Diagrama de Clases - Field Management - Web Application - Presentation Layer (2 de 2)](assets/img/chapter-4/class-diagrams/04-field-management/web-06-presentation-2.png)
 * **`domain.model`:** entidades `FieldPlot`, `CropCampaign`, `CampaignLedger`, `ExpenseEntry`, `GeoCoordinate` y `SoilBaseline`; modelos de lectura `PlotSummary` y `CampaignSummary`; y los tipos `CropType`, `CampaignStatus`, `PlotStatus`, `ExpenseCategory`, `SoilTexture` y `YieldUnit`. Hay un command por acción, por ejemplo `RegisterFieldPlotCommand`, `DelineatePlotBoundaryCommand`, `StartCropCampaignCommand`, `CloseCropCampaignCommand`, `RecordInputExpenseCommand`, `SetExpectedYieldCommand` y `ExportCampaignCostReportCommand`.
 * **`infrastructure`:** `FarmingApi` agrupa `FieldPlotsApiEndpoint`, `CropCampaignsApiEndpoint` y `CampaignLedgersApiEndpoint`, con sus assemblers. `OfflineSync` guarda en el dispositivo los gastos registrados sin conexión (`PendingOperation`) y `PendingExpenseAssembler` los convierte en commands al sincronizar. `CostReportPdf` genera el reporte de costos en PDF.
 * **`application`:** `FarmingStore` guarda las parcelas, las campañas y los libros de costos, controla la cuota de parcelas del plan y ofrece `registerPlot`, `delineateBoundary`, `recordSoilBaseline`, `startCampaign`, `closeCampaign`, `recordExpense`, `setExpectedYield`, `exportCostReport` y `syncPendingExpenses`.
@@ -1824,8 +1879,13 @@ Este contexto maneja las parcelas y sus polígonos, las campañas agrícolas, el
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - Field Management - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/04-field-management-api-class-diagram.png)
+![Diagrama de Clases - Field Management - RESTful API - Domain Layer](assets/img/chapter-4/class-diagrams/04-field-management/api-01-domain.png)
 
+![Diagrama de Clases - Field Management - RESTful API - Application Layer](assets/img/chapter-4/class-diagrams/04-field-management/api-02-application.png)
+
+![Diagrama de Clases - Field Management - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/04-field-management/api-03-infrastructure.png)
+
+![Diagrama de Clases - Field Management - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/04-field-management/api-04-interfaces.png)
 * **`domain`:** los agregados son `FieldPlot`, `CropCampaign` y `CampaignLedger`, que contiene las entidades `ExpenseEntry`. Los value objects son `FieldPlotId`, `CropCampaignId`, `PlotBoundary`, `GeoCoordinate`, `SoilBaseline`, `SeedVariety`, `Money` y los tipos `CropType`, `CampaignStatus`, `PlotStatus`, `ExpenseCategory`, `SoilTexture` y `YieldUnit`. Los events son `PlotBoundaryDelineatedEvent`, `CropCampaignStartedEvent`, `SowingDateRecordedEvent` y `CropCampaignClosedEvent`.
 * **`application`:** servicios de commands y queries de cada agregado; `FarmingContextFacadeImpl`; el puerto `PolygonMonitoringService`; y los event handlers `PlotBoundaryDelineatedEventHandler` (registra el polígono en AgroMonitoring), `CropCampaignStartedEventHandler` (abre el libro de costos) y `CropCampaignClosedEventHandler` (congela el libro de costos).
 * **`infrastructure`:** `AgroMonitoringPolygonService` con sus recursos `AgroMonitoringPolygonRequest` y `AgroMonitoringPolygonResponse`, y los adaptadores de repositorio.
@@ -1844,8 +1904,15 @@ Este contexto maneja las observaciones satelitales, el pronóstico del clima, la
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - Crop Health - Web Application](assets/img/chapter-4/class-diagrams/web-application/05-crop-health-web-class-diagram.png)
+![Diagrama de Clases - Crop Health - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/05-crop-health/web-01-domain.png)
 
+![Diagrama de Clases - Crop Health - Web Application - Application Layer](assets/img/chapter-4/class-diagrams/05-crop-health/web-02-application.png)
+
+![Diagrama de Clases - Crop Health - Web Application - Infrastructure Layer (1 de 2)](assets/img/chapter-4/class-diagrams/05-crop-health/web-03-infrastructure-1.png)
+
+![Diagrama de Clases - Crop Health - Web Application - Infrastructure Layer (2 de 2)](assets/img/chapter-4/class-diagrams/05-crop-health/web-04-infrastructure-2.png)
+
+![Diagrama de Clases - Crop Health - Web Application - Presentation Layer](assets/img/chapter-4/class-diagrams/05-crop-health/web-05-presentation.png)
 * **`domain.model`:** entidades `SatelliteObservation`, `ClimateForecast`, `AgroclimaticAlert`, `PestReport`, `FieldInspection` y `TechnicalPrescription`, y el value object `RegionalBulletin`. Los commands son `RecordSatelliteObservationCommand`, `RecordClimateForecastCommand`, `IssueAgroclimaticAlertCommand`, `RecordPestReportCommand`, `ScheduleFieldInspectionCommand` e `IssueTechnicalPrescriptionCommand`.
 * **`infrastructure`:** `CropApi` agrupa `SatelliteObservationsApiEndpoint`, `ClimateForecastsApiEndpoint`, `AgroclimaticAlertsApiEndpoint`, `PestReportsApiEndpoint`, `FieldInspectionsApiEndpoint` y `TechnicalPrescriptionsApiEndpoint`, cada uno con su assembler.
 * **`application`:** `CropStore` guarda las observaciones, alertas, reportes, inspecciones y recetas de la parcela elegida, y ofrece `importLatestObservation`, `importForecasts`, `publishBulletin`, `recordReport`, `scheduleInspection`, `completeInspection`, `issuePrescription` y `applyPrescription`.
@@ -1858,8 +1925,19 @@ Este contexto maneja las observaciones satelitales, el pronóstico del clima, la
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - Crop Health - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/05-crop-health-api-class-diagram.png)
+![Diagrama de Clases - Crop Health - RESTful API - Domain Layer (1 de 2)](assets/img/chapter-4/class-diagrams/05-crop-health/api-01-domain-1.png)
 
+![Diagrama de Clases - Crop Health - RESTful API - Domain Layer (2 de 2)](assets/img/chapter-4/class-diagrams/05-crop-health/api-02-domain-2.png)
+
+![Diagrama de Clases - Crop Health - RESTful API - Application Layer (1 de 3)](assets/img/chapter-4/class-diagrams/05-crop-health/api-03-application-1.png)
+
+![Diagrama de Clases - Crop Health - RESTful API - Application Layer (2 de 3)](assets/img/chapter-4/class-diagrams/05-crop-health/api-04-application-2.png)
+
+![Diagrama de Clases - Crop Health - RESTful API - Application Layer (3 de 3)](assets/img/chapter-4/class-diagrams/05-crop-health/api-05-application-3.png)
+
+![Diagrama de Clases - Crop Health - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/05-crop-health/api-06-infrastructure.png)
+
+![Diagrama de Clases - Crop Health - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/05-crop-health/api-07-interfaces.png)
 * **`domain`:** los agregados son `SatelliteObservation`, `ClimateForecast`, `AgroclimaticAlert`, `PestReport`, `FieldInspection`, `TechnicalPrescription` y `RegionalBulletin`. Los value objects son `NdviIndex`, `NdwiIndex`, `Percentage` y los tipos de severidad y estado (`AgroclimaticAlertSeverity`, `PestReportSeverity`, `PestReportStatus`, `FieldInspectionStatus`, `TechnicalPrescriptionStatus`). Los events son `SatelliteObservationRecordedEvent`, `ClimateForecastRecordedEvent`, `AgroclimaticAlertIssuedEvent`, `PestReportRecordedEvent` y `FieldInspectionCompletedEvent`. Hay excepciones de dominio como `PestReportNotFoundException` e `InvalidPestReportStatusTransitionException`.
 * **`application`:** un servicio de commands y uno de queries por agregado; los puertos `SatelliteImagery` y `WeatherForecasting`; los servicios de ACL `ExternalFarmingService` y `ExternalIamService`; y un event handler por evento. `FieldInspectionCompletedEventHandler` marca el reporte como inspeccionado y `AgroclimaticAlertIssuedEventHandler` envía por correo las alertas graves a los productores de la región, después de guardar la alerta.
 * **`infrastructure`:** `AgroMonitoringSatelliteImagery` y `AgroMonitoringWeatherForecast`, y los adaptadores de repositorio.
@@ -1878,8 +1956,13 @@ Este contexto maneja los lotes de cosecha, su pesaje, muestreo y calificación, 
 
 ##### Web Application (Angular)
 
-![Diagrama de Clases - Harvest Certification - Web Application](assets/img/chapter-4/class-diagrams/web-application/06-harvest-certification-web-class-diagram.png)
+![Diagrama de Clases - Harvest Certification - Web Application - Domain Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/web-01-domain.png)
 
+![Diagrama de Clases - Harvest Certification - Web Application - Application Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/web-02-application.png)
+
+![Diagrama de Clases - Harvest Certification - Web Application - Infrastructure Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/web-03-infrastructure.png)
+
+![Diagrama de Clases - Harvest Certification - Web Application - Presentation Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/web-04-presentation.png)
 * **`domain.model`:** entidades `HarvestBatch`, `QualityCertificate` y `PublicTraceabilityRecord`, y el modelo de lectura `BatchEntry`, que une cada lote con su certificado. Los commands son `RegisterHarvestBatchCommand`, `WeighDeliveredBatchCommand`, `ExtractRepresentativeSampleCommand`, `GradePotatoCalibersCommand`, `PerformCoffeeCuppingCommand`, `IssueQualityCertificateCommand`, `RevokeQualityCertificateCommand` y `VerifyCertificateCommand`.
 * **`infrastructure`:** `CertificationApi` agrupa `HarvestBatchesApiEndpoint`, `QualityCertificatesApiEndpoint` y `PublicTraceabilityApiEndpoint`, con los assemblers `HarvestBatchAssembler`, `QualityCertificateAssembler` y `PublicTraceabilityAssembler`.
 * **`application`:** `CertificationStore` guarda los lotes y certificados de la cooperativa, y ofrece `registerBatch`, `weighBatch`, `extractSample`, `gradeBatch` (con `PotatoGrading` o `CoffeeCupping`), `issueCertificate`, `revokeCertificate`, `downloadCertificate` y `verifyCertificate`.
@@ -1892,8 +1975,13 @@ Este contexto maneja los lotes de cosecha, su pesaje, muestreo y calificación, 
 
 ##### RESTful API (Spring Boot)
 
-![Diagrama de Clases - Harvest Certification - RESTful API](assets/img/chapter-4/class-diagrams/restful-api/06-harvest-certification-api-class-diagram.png)
+![Diagrama de Clases - Harvest Certification - RESTful API - Domain Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/api-01-domain.png)
 
+![Diagrama de Clases - Harvest Certification - RESTful API - Application Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/api-02-application.png)
+
+![Diagrama de Clases - Harvest Certification - RESTful API - Infrastructure Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/api-03-infrastructure.png)
+
+![Diagrama de Clases - Harvest Certification - RESTful API - Interfaces Layer](assets/img/chapter-4/class-diagrams/06-harvest-certification/api-04-interfaces.png)
 * **`domain`:** los agregados son `HarvestBatch` y `QualityCertificate`. Los value objects son `PotatoCaliberDistribution`, `CoffeeCuppingScores`, `Percentage` y los tipos `CropType`, `BatchStatus`, `QualityCategory` y `CertificateStatus`. Los events son `DeliveredBatchWeighedEvent` y `BatchGradedEvent`.
 * **`application`:** `HarvestBatchCommandService`, `QualityCertificateCommandService` y `HarvestCertificationQueryService` con sus implementaciones; los servicios de ACL `ExternalFarmingService` y `ExternalProfilesService`; y `BatchGradedEventHandler`, que asigna el puntaje y la categoría de calidad en la misma transacción de la calificación.
 * **`infrastructure`:** `ExternalFarmingServiceImpl` y `ExternalProfilesServiceImpl`, `PdfQrGeneratorAssembler` (genera el PDF del certificado con su código QR) y los adaptadores de repositorio.

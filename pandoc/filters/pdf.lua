@@ -10,7 +10,8 @@
     5. Anchos en px de las imágenes -> porcentaje del ancho de línea.
        Las imágenes sin ancho se escalan según su tamaño en píxeles y las
        capturas de celular (verticales) se limitan en alto para que no
-       ocupen una página completa.
+       ocupen una página completa. Ninguna imagen supera el alto de la
+       página (por ejemplo, los diagramas de clases largos).
     6. Imágenes solas en un párrafo -> centradas. Varias capturas de celular
        en el mismo párrafo (líneas contiguas) -> una fila, lado a lado.
     7. Cada encabezado de nivel 1 (# ...) inicia en una página nueva.
@@ -28,6 +29,7 @@ local MAX_PX = 650  -- ancho (px) que se considera 100% del ancho de línea
 local LINE_CM = 15.9  -- ancho de línea en cm (A4 con márgenes de 2.54 cm)
 local CAP_PHONE_CM = 11  -- alto máximo de una captura de celular (~media página)
 local CAP_LONG_CM = 19     -- alto máximo de una captura de celular con scroll largo
+local CAP_PAGE_CM = 21     -- alto máximo de cualquier imagen (deja espacio para el texto alt)
 local ROW_GAP = 1.5        -- separación (%) entre capturas en una misma fila
 
 local function latex(s) return pandoc.RawBlock('latex', s) end
@@ -111,6 +113,8 @@ local function normalize_width(img)
     if pw <= 800 and ratio > 2.4 then cap = CAP_LONG_CM
     elseif pw <= 800 and ratio >= 1.8 then cap = CAP_PHONE_CM end
     if cap and pct then pct = math.min(pct, cap / ratio / LINE_CM * 100) end
+    -- Ninguna imagen puede ser más alta que la página (diagramas largos)
+    if pct then pct = math.min(pct, CAP_PAGE_CM / ratio / LINE_CM * 100) end
   end
   local attrs = {}
   if pct then
