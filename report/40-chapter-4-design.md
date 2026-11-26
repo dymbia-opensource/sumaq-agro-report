@@ -687,6 +687,7 @@ Presenta un pie de página sobre fondo oscuro que agrupa el logotipo de SumaqAgr
 ## 4.4. Web Applications UX/UI Design
 
 Esta sección presenta y sustenta la arquitectura de interacción y el diseño visual de la plataforma SaaS de SumaqAgro, desarrollada por la startup Dymbia.
+
 ### 4.4.1. Web Applications Wireframes
 
 #### Desktop Web Browser
@@ -1353,7 +1354,7 @@ A continuación se presenta la vista general del tablero desarrollado en Miro, e
 
 ![event-storming-step-8-external-systems-refactorizado.jpg](assets/img/chapter-4/domain-driven-design/event-storming-step-8-external-systems.jpg)
 
-* Las notas rosadas son los sistemas externos con los que se comunica la plataforma. Son tres: la API de AgroMonitoring, que entrega las imágenes satelitales de Sentinel-2 y Landsat-8, los índices NDVI y NDWI y el pronóstico del clima; la pasarela de pagos Niubiz, que confirma el pago de las suscripciones; y Twilio, que envía las alertas por SMS y WhatsApp.
+* Las notas rosadas son los sistemas externos con los que se comunica la plataforma. Son tres: la API de AgroMonitoring, que guarda el polígono de cada parcela y entrega las imágenes con los índices NDVI y NDWI y el pronóstico del clima; Mercado Pago, que cobra los planes de suscripción y confirma cada pago mediante un *webhook*; y Brevo, que envía por correo la recuperación de contraseña, las invitaciones a los agrónomos y las alertas agroclimáticas graves.
 
 #### Step 9: Aggregates
 
@@ -1406,7 +1407,7 @@ Considerando la estructura de subdominios recomendada para plataformas SaaS de s
   * *Commands:* `SelectSubscriptionPlan`, `SubmitPayment`, `ActivateSubscription`, `CancelSubscription`.
   * *Events:* `SubscriptionPlanSelected`, `PaymentConfirmed`, `SubscriptionActivated`, `SubscriptionCancelled`.
   * *Read Models:* `PlansCatalog`, `BillingSummary`.
-  * *External System:* Niubiz Payment Gateway.
+  * *External System:* Mercado Pago.
 
 **4. Field Management Context (Core Subdomain)**
 
@@ -1455,7 +1456,7 @@ Considerando la estructura de subdominios recomendada para plataformas SaaS de s
   * *Commands:* `IssueTechnicalPrescription`, `ConfirmTreatmentApplication`, `ReportFoliageRecovery`, `EvaluateTreatmentEffectiveness`.
   * *Events:* `TechnicalPrescriptionIssued`, `TreatmentApplicationConfirmed`, `FoliageRecoveryReported`, `TreatmentEffectivenessEvaluated`.
   * *Read Models:* `MultispectralIndexDashboard`, `ActivePrescriptions`.
-* *External Systems:* AgroMonitoring API (imágenes, índices y clima), Twilio SMS / WhatsApp Gateway.
+* *External Systems:* AgroMonitoring API (imágenes, índices y clima) y Brevo (correo de las alertas agroclimáticas graves).
 
 **6. Harvest Certification Context (Core Subdomain)**
 
@@ -1490,9 +1491,27 @@ La orquestación entre los contextos delimitados se rige por políticas eventual
 * **P10:** `Whenever DeliveredBatchWeighed Then RecordActualYield` (Harvest Certification → Field Management)
 * **P11:** `Whenever PotatoCalibersGraded or CoffeeCuppingCompleted Then AssignQualityScore` (Harvest Certification)
 
+#### Implementación de las Políticas en los RESTful Web Services
+
+Las políticas del Design-Level EventStorming se implementaron en los RESTful Web Services de la siguiente manera. Las que ocurren dentro de un mismo bounded context se resuelven con un *domain event* y su *event handler*. Las que cruzan contextos se resuelven con el flujo de la aplicación o con las fachadas de la *Anti-Corruption Layer* (ACL), sin eventos entre contextos.
+
+| Política | Implementación |
+| :--- | :--- |
+| **P1** | Después del registro, el usuario elige su plan en el catálogo y lo paga; ningún plan se asigna sin pago. |
+| **P2** | `SubscriptionCommandService` activa o renueva la suscripción cuando Mercado Pago confirma el pago, por el retorno del *checkout* o por el *webhook*. |
+| **P3** | `PlotBoundaryDelineatedEvent` → su *handler* registra el polígono de la parcela en AgroMonitoring. |
+| **P4** | El monitoreo satelital se solicita con `POST /satellite-observations/imports`; Crop Health lee el polígono de la parcela mediante la ACL de Field Management. |
+| **P5** | Al importar el pronóstico del clima (`POST /climate-forecasts/imports`) se emiten alertas de helada y de estrés hídrico para la región de la parcela. |
+| **P6** | `AgroclimaticAlertIssuedEvent` → su *handler* envía por correo (Brevo) las alertas `HIGH` y `CRITICAL` a los productores de la región. |
+| **P7** | `PestReportRecordedEvent` registra el reporte, y el agrónomo asignado a la parcela lo atiende desde su bandeja de reportes. |
+| **P8** | `CropCampaignStartedEvent` → su *handler* abre el libro de costos de la campaña; `CropCampaignClosedEvent` lo congela. |
+| **P9** | El agregado `CampaignLedger` recalcula la inversión total y el precio de equilibrio con cada gasto y con el rendimiento esperado. |
+| **P10** | El productor registra el rendimiento real de la campaña en su libro de costos (`PUT /campaign-ledgers/{id}/yield-estimate`). |
+| **P11** | `BatchGradedEvent` → su *handler* asigna el puntaje de calidad del lote. |
+
 ### 4.6.2. Software Architecture Context Diagram
 
-En esta sección se presenta el Diagrama de Contexto del Sistema (Nivel 1 del modelo C4), el cual delimita las fronteras operativas y de software de la plataforma **SumaqAgro**, ubicándola como la solución central del ecosistema. A través de esta vista de alto nivel, se establecen los canales de comunicación y flujos de información que mantiene el sistema tanto con los distintos perfiles de usuario identificados en la investigación como con los servicios externos de terceros necesarios para la operación agrícola. Siguiendo los lineamientos de arquitectura y el enfoque *Diagram-as-Code* exigido para el proyecto, el modelado se desarrolló mediante la herramienta **Structurizr** a través de su especificación formal en Structurizr DSL.
+En esta sección se presenta el Diagrama de Contexto del Sistema (Nivel 1 del modelo C4), que delimita las fronteras de la plataforma **SumaqAgro** y muestra cómo se relaciona con sus usuarios y con los servicios externos de terceros que necesita para operar. El modelado se desarrolló con el enfoque *Diagrams as Code*: los cinco diagramas C4 de esta sección se generan desde un solo archivo en Structurizr DSL, guardado en el repositorio del informe en `docs/software-architecture.dsl`.
 
 **Herramienta utilizada:** Structurizr (*Diagrams as Code*, mediante Structurizr DSL).
 
@@ -1500,23 +1519,24 @@ En esta sección se presenta el Diagrama de Contexto del Sistema (Nivel 1 del mo
 
 #### Explicación del Diagrama de Contexto
 
-El diagrama sitúa en el centro a **SumaqAgro Platform**, plataforma web distribuida orientada a la agricultura de precisión, el cálculo de costos operativos de campo y la certificación de calidad para las cadenas de café de especialidad y papa andina. A su alrededor se articulan las siguientes interacciones:
+El diagrama sitúa en el centro a **SumaqAgro Platform**, plataforma web de agricultura de precisión que no requiere hardware en campo y que integra el monitoreo del cultivo, los costos de campaña, la gestión de cooperativas y la certificación de la cosecha para las cadenas de papa andina y café de especialidad.
 
 ##### 1. Actores y Usuarios del Dominio
-* **Agricultural Producer (Productor Agrícola):** Agricultor que accede mediante navegadores web o dispositivos móviles para registrar la delimitación geográfica de sus parcelas, monitorear el vigor foliar satelital (NDVI/NDWI) y registrar sus compras de insumos, jornales y fletes en la bitácora de costos.
-* **Cooperative Manager (Directivo de Cooperativa):** Usuario administrativo que utiliza la plataforma desde terminales de escritorio para auditar el volumen de acopio de los socios, monitorear los balances financieros por hectárea y aprobar formalmente la emisión de los certificados de calidad de cosecha.
-* **Technical Field Advisor (Asesor Técnico de Campo):** Ingeniero agrónomo que hace seguimiento a las alertas satelitales tempranas de estrés hídrico o plagas para priorizar sus visitas presenciales en parcelas críticas, emitiendo recetas agronómicas y dosis correctivas desde la aplicación.
-* **Visitor (Visitante):** Persona que no necesita una cuenta. Consulta la landing page para conocer la propuesta de valor y los planes, o escanea el código QR de un saco o lote para verificar en línea su procedencia, su variedad y su puntaje de calidad certificado.
+
+* **Agricultural Producer (Productor Agrícola):** Registra y delimita sus parcelas, revisa el vigor (NDVI) y la humedad (NDWI) de su cultivo y el pronóstico del clima, registra los gastos de insumos, jornales y fletes de cada campaña, reporta plagas a su agrónomo y paga su plan *Semilla*.
+* **Cooperative Director (Directivo de Cooperativa):** Registra la cooperativa, administra el padrón de socios y su equipo técnico de agrónomos, asigna un agrónomo a cada parcela de los socios, califica los lotes de cosecha y emite sus certificados de calidad. Paga el plan *Cooperativa Pro*.
+* **Technical Field Advisor (Asesor Técnico de Campo):** Ingeniero agrónomo que atiende los reportes de plagas de las parcelas a su cargo, programa y completa inspecciones de campo, y emite recetas técnicas. Paga el plan *Asesor Técnico*.
+* **Visitor (Visitante):** Persona sin cuenta que navega la Landing Page para conocer la propuesta de valor y los planes, o que escanea el código QR de un certificado para verificar en línea su autenticidad y la procedencia del lote.
 
 ##### 2. Sistemas Externos e Integraciones
-* **AgroMonitoring API:** Servicio de OpenWeather que recibe el polígono de cada parcela y entrega, mediante HTTPS/JSON, las imágenes satelitales de Sentinel-2 y Landsat-8, los índices NDVI y NDWI y el pronóstico del clima. Con esta información el sistema calcula el vigor foliar, detecta estrés hídrico y anticipa heladas sin depender de sensores instalados en campo.
-* **Twilio SMS / WhatsApp Gateway:** Pasarela de mensajería externa utilizada por SumaqAgro para remitir notificaciones prioritarias y alertas agroclimáticas urgentes a productores ubicados en zonas rurales con baja cobertura móvil de datos.
-* **Niubiz Payment Gateway:** Pasarela de procesamiento de pagos electrónicos integrada mediante API REST (HTTPS/JSON) para la gestión y cobro transaccional de los planes de suscripción de cooperativas agrarias y asesores técnicos.
-* **Brevo Email Service:** Servicio de correo transaccional que SumaqAgro usa, mediante SMTP o HTTPS, para enviar el enlace de recuperación de contraseña y la invitación que recibe un agrónomo cuando una cooperativa lo agrega a su equipo.
+
+* **AgroMonitoring API:** Servicio satelital y meteorológico que guarda el polígono de cada parcela y devuelve, mediante JSON sobre HTTPS, las imágenes con los índices NDVI y NDWI y el pronóstico del clima de 5 días. Con esta información el sistema detecta anomalías del cultivo y emite alertas de helada y de estrés hídrico sin sensores en campo.
+* **Mercado Pago:** Plataforma de pagos que cobra los planes de suscripción mediante *Checkout Pro*. El sistema crea la preferencia de pago, el usuario paga en Mercado Pago y este confirma cada pago mediante un *webhook*. Antes de activar el plan, el sistema vuelve a consultar el pago en Mercado Pago y verifica el titular, el monto y la moneda.
+* **Brevo:** Servicio de correo transaccional que el sistema usa, mediante su API HTTPS, para enviar el enlace de recuperación de contraseña, la invitación que recibe un agrónomo cuando una cooperativa lo agrega a su equipo técnico y las alertas agroclimáticas graves.
 
 ### 4.6.3. Software Architecture Container Diagrams
 
-En esta sección se presenta y describe el Diagrama de Contenedores (Nivel 2 del modelo C4) de la plataforma **SumaqAgro**, el cual profundiza en la frontera del sistema para exponer su arquitectura técnica distribuida. Este diagrama muestra las unidades de despliegue y ejecución independientes que componen la solución, la distribución de responsabilidades entre ellas, las principales decisiones de tecnología adoptadas y los protocolos de red empleados para la comunicación interna y con sistemas externos. El modelado fue estructurado y generado formalmente mediante la especificación DSL de la herramienta **Structurizr**.
+En esta sección se presenta el Diagrama de Contenedores (Nivel 2 del modelo C4) de **SumaqAgro**. Muestra las unidades que se despliegan y ejecutan por separado, la responsabilidad de cada una, las tecnologías elegidas y los protocolos con los que se comunican entre sí y con los sistemas externos.
 
 **Herramienta utilizada:** Structurizr (*Diagrams as Code*, mediante Structurizr DSL).
 
@@ -1524,98 +1544,91 @@ En esta sección se presenta y describe el Diagrama de Contenedores (Nivel 2 del
 
 #### Asignación de Responsabilidades y Decisiones Tecnológicas
 
-La topología de ejecución del sistema está conformada por cinco contenedores:
+El sistema está conformado por cinco contenedores:
 
-* **Static Content Container:**
-  Carpeta con los archivos compilados de la Web Application (HTML, CSS, JavaScript e imágenes), publicada en Firebase Hosting. Desde aquí el navegador del productor, del directivo y del agrónomo descarga la aplicación Angular. El visitante también la usa para abrir la vista pública del certificado al escanear un código QR.
-
-* **Landing Page Container:**
-  Carpeta de archivos estáticos del sitio web público, desarrollado con HTML5, CSS3 y JavaScript vanilla y publicado en Cloudflare Pages. Diseñado con una carga ligera para garantizar un rendimiento óptimo en terminales móviles bajo redes rurales 3G/4G. Su propósito es exponer la propuesta de valor del producto, presentar los planes de suscripción comercial (Semilla, Cooperativa Pro y Asesor Técnico) y llevar al visitante al registro de la Web Application. No se comunica con el backend: es un sitio estático.
-
-* **Web Application Container (Single Page Application - SPA):**
-  Aplicación web cliente desarrollada sobre el framework Angular 18, utilizando TypeScript y la biblioteca Angular Material. Provee una interfaz reactiva y accesible tanto para productores de campo como para administradores de cooperativas e ingenieros agrónomos. Integra capacidades de almacenamiento local mediante *Service Workers* e *IndexedDB*, lo que permite soportar operaciones en modo desconectado (*offline-first*) para el registro de gastos de campo y de reportes de plagas en predios rurales sin cobertura de datos móvil, sincronizando la información automáticamente contra la API REST al recuperar la conexión a internet. Asimismo, aloja el visor público interactivo que permite auditar las credenciales y trazabilidad de los lotes cuando un visitante escanea el código QR impreso.
-
-* **RESTful API Backend Container:**
-  Servidor de aplicaciones distribuido implementado en Java 21 utilizando el framework Spring Boot 3.x (Spring MVC, Spring Security y Spring Data JPA). Representa el núcleo transaccional del sistema y aloja la lógica de negocio basada en DDD para los 6 Bounded Contexts identificados y el Shared Kernel que todos reutilizan. Sus responsabilidades abarcan la emisión y validación de tokens criptográficos JWT para el control de accesos, el cómputo de las matrices financieras de costo unitario y punto de equilibrio rural, el procesamiento de las imágenes e índices satelitales y la exposición de endpoints documentados formalmente bajo OpenAPI 3.0 (Swagger UI).
-
-* **Database Container:**
-  Base de datos relacional MySQL 8.0 (`sumaqagro_db`). Guarda en una sola base las tablas de los 6 bounded contexts, con transacciones ACID y claves primarias y foráneas que mantienen la integridad referencial. Los vértices del polígono de cada parcela se guardan como pares de latitud y longitud.
+* **Landing Page:** Sitio web estático desarrollado con HTML5, CSS3 y JavaScript, publicado en Cloudflare Pages. Presenta la propuesta de valor, los planes *Semilla*, *Cooperativa Pro* y *Asesor Técnico* y el video *About the Product*. Sus botones de llamada a la acción llevan a cada segmento a su vista en la Web Application. No se comunica con los RESTful Web Services.
+* **Static Content:** Carpeta con los archivos compilados de la Web Application (HTML, CSS, JavaScript e imágenes), publicada en Firebase Hosting. Desde aquí el navegador de cada usuario descarga la aplicación Angular, incluida la vista pública que abre el visitante al escanear un código QR.
+* **Web Application:** *Single Page Application* desarrollada con Angular 22, TypeScript, Angular Material y ngx-translate, disponible en inglés y español. Se organiza por bounded context y consume los RESTful Web Services enviando el token JWT en cada petición. Los gastos de campaña que el productor registra sin conexión se guardan en una cola local y se envían cuando vuelve la conexión.
+* **RESTful Web Services:** Aplicación desarrollada con Java 27, Spring Boot 4.1, Spring Data JPA y Spring Security, publicada en Render. Contiene la lógica de negocio de los 6 bounded contexts y el Shared Kernel con arquitectura en capas (*interfaces*, *application*, *domain* e *infrastructure*), autentica con tokens JWT, responde los errores con *Problem Details* (RFC 9457) y documenta sus endpoints con OpenAPI (Swagger UI).
+* **Database:** Base de datos relacional MySQL que guarda las tablas de los 6 bounded contexts. Cada bounded context lee y escribe solo sus propias tablas.
 
 #### Protocolos de Interoperabilidad y Comunicación
 
-* **Acceso de Usuarios:** Los usuarios entran por HTTPS. El visitante navega la *Landing Page*, y desde ella pasa al registro de la *Web Application*. Los usuarios registrados cargan la *Web Application* desde el *Static Content*.
-* **Cliente Web a Backend:** La Web Application llama a los endpoints REST del backend con JSON sobre HTTPS, enviando el token Bearer JWT en cada petición. Por este mismo canal sincroniza los datos guardados sin conexión.
-* **Backend a Base de Datos:** El backend lee y escribe los agregados mediante el controlador JDBC de MySQL, sobre el puerto 3306.
-* **Backend a Servicios Externos:** El backend se comunica con AgroMonitoring API, Twilio y Niubiz con JSON sobre HTTPS. Niubiz, además, confirma cada pago llamando a un webhook del backend. Los correos de recuperación de contraseña e invitación de agrónomos se envían a Brevo mediante SMTP.
+* **Acceso de Usuarios:** Los usuarios entran por HTTPS. El visitante navega la Landing Page y desde ella pasa al registro en la Web Application; los usuarios registrados cargan la Web Application desde el Static Content.
+* **Web Application a RESTful Web Services:** JSON sobre HTTPS, con el token Bearer JWT en cada petición.
+* **RESTful Web Services a Database:** Controlador JDBC de MySQL.
+* **RESTful Web Services a Servicios Externos:** JSON sobre HTTPS con AgroMonitoring API, Mercado Pago y Brevo. Mercado Pago, además, notifica cada pago llamando a un *webhook* de los RESTful Web Services.
 
 ### 4.6.4. Software Architecture Components Diagrams
 
-En esta sección se presentan y explican los Diagramas de Componentes (Nivel 3 del modelo C4) correspondientes a cada uno de los contenedores de software ejecutables que integran la plataforma **SumaqAgro**: la **Landing Page**, la **Web Application (Single Page Application en Angular 18)** y el **RESTful API Backend (Spring Boot 3.x)**. A través de estos diagramas se detalla la descomposición estructural interna de cada unidad de despliegue, identificando la naturaleza de sus componentes, sus responsabilidades de negocio asignadas, los detalles de implementación tecnológica y sus flujos de interacción internos y externos. El modelado fue desarrollado en **Structurizr** siguiendo la especificación formal de Structurizr DSL.
+En esta sección se presentan los Diagramas de Componentes (Nivel 3 del modelo C4) de los contenedores que contienen lógica: la **Landing Page**, la **Web Application** y los **RESTful Web Services**. Cada diagrama muestra cómo se divide internamente el contenedor, la responsabilidad de cada componente y cómo se relacionan entre sí y con el exterior.
 
 **Herramienta utilizada:** Structurizr (*Diagrams as Code*, mediante Structurizr DSL).
 
 #### 4.6.4.1. Landing Page Container Components Diagram
 
-El contenedor de la Landing Page descompone la estructura del sitio web estático público, diseñado con una arquitectura liviana orientada a maximizar la velocidad de carga y la tasa de conversión en dispositivos móviles bajo redes rurales 3G/4G.
+La Landing Page es un sitio estático liviano, pensado para cargar rápido en dispositivos móviles con redes rurales 3G/4G.
 
 ![C4 Model - Diagrama de Componentes de la Landing Page (Nivel 3)](assets/img/chapter-4/c4/c4-components-landing-diagram.png)
 
 ##### Desglose de Componentes de la Landing Page:
-* **`Navigation & Hero Component`:** Bloque estructural desarrollado con HTML5 semántico y maquetado responsivo mediante CSS3 Flexbox. Administra la barra de navegación superior, la identidad visual corporativa de SumaqAgro, la propuesta de valor agroclimática orientada a café de especialidad y papa andina, y el llamado a la acción (CTA) que lleva al visitante al registro de la Web Application.
-* **`Pricing & Plans Catalog Component`:** Componente visual maquetado mediante CSS3 Grid. Presenta la matriz comparativa de los planes de suscripción comercial SaaS: el plan *Semilla* (S/ 49 al mes para pequeños productores familiares), el plan *Cooperativa Pro* (para gremios con monitoreo consolidado de socios) y el plan *Asesor Técnico* (para agrónomos independientes con carteras de clientes).
+
+* **`Navigation & Hero Component`:** Barra de navegación responsiva, propuesta de valor para la papa andina y el café de especialidad, y las llamadas a la acción que abren la Web Application en la vista de cada segmento.
+* **`Pricing & Plans Catalog Component`:** Comparación de los planes *Semilla*, *Cooperativa Pro* y *Asesor Técnico*, con enlace al registro en la Web Application.
 
 #### 4.6.4.2. Web Application Container Components Diagram (Angular SPA)
 
-La Web Application, construida con **Angular 18**, se organiza por bounded context siguiendo DDD. Cada componente del diagrama es una carpeta de Angular dentro de `src/app` y todas tienen las mismas capas: `domain/model` (entidades), `application` (store con el estado), `infrastructure` (llamadas a la API) y `presentation` (vistas). Además existe una carpeta `shared` con lo que usan todos los contextos.
+La Web Application se organiza por bounded context siguiendo DDD. Cada componente del diagrama es una carpeta de `src/app` con las mismas capas: `domain` (entidades y commands), `application` (store con *signals*), `infrastructure` (fachada de la API, endpoints, requests, responses y assemblers) y `presentation` (vistas y componentes). La carpeta `shared` contiene lo que usan todos los contextos.
 
 ![C4 Model - Diagrama de Componentes de la Web Application (Nivel 3)](assets/img/chapter-4/c4/c4-components-webapp-diagram.png)
 
 ##### Desglose de Componentes de la Web Application:
-* **`IAM Component`:** Formularios de registro, inicio de sesión y recuperación de contraseña. Contiene el *guard* que protege las rutas privadas según la sesión y el rol, y el *interceptor* que agrega el token JWT a cada petición.
-* **`Profiles Component`:** Configuración del perfil, registro de la cooperativa, padrón de socios y asignación de agrónomos a las parcelas.
-* **`Subscriptions and Payments Component`:** Catálogo de planes, pago (*checkout*) e historial de cobros.
-* **`Field Management Component`:** Registro de parcelas con el mapa para marcar el polígono GPS (Leaflet.js), campañas agrícolas y bitácora de costos, donde los gastos se pueden registrar sin conexión.
-* **`Crop Health Component`:** Mapa con los índices NDVI y NDWI (Leaflet.js), alertas agroclimáticas, reportes de plagas, inspecciones y recetas técnicas.
-* **`Harvest Certification Component`:** Lotes de acopio, fichas de catación SCA para café y de calibres MIDAGRI para papa, certificados de calidad y la vista pública que se abre al escanear el código QR.
-* **`Shared Component`:** Lo que usan todos los contextos: el *layout* con el menú, el selector de idioma, las clases base para llamar a la API, la sincronización sin conexión con IndexedDB (Dexie.js) y la caché del Service Worker (`@angular/pwa`).
+
+* **`IAM Component`** (`src/app/iam`): Registro, inicio de sesión y recuperación de contraseña. Contiene el *guard* que protege las rutas privadas según la sesión y el rol, y el *interceptor* que agrega el token JWT a cada petición.
+* **`Profiles Component`** (`src/app/profiles`): Configuración de la cuenta, registro de la cooperativa, padrón de socios, equipo técnico de agrónomos y asignación de un agrónomo a cada parcela.
+* **`Subscriptions and Payments Component`** (`src/app/subscriptions`): Catálogo de planes, pago con Mercado Pago, resultado del pago e historial de cobros.
+* **`Field Management Component`** (`src/app/farming`): Registro de parcelas con el mapa para delimitar el polígono (Leaflet), campañas agrícolas y libro de costos con gráficos (Chart.js), incluida la cola de gastos registrados sin conexión.
+* **`Crop Health Component`** (`src/app/crop`): Mapa con los índices NDVI y NDWI (Leaflet), pronóstico del clima, alertas agroclimáticas, reportes de plagas, inspecciones y recetas técnicas.
+* **`Harvest Certification Component`** (`src/app/certification`): Lotes de cosecha, calificación de calibres de papa y catación de café, certificados de calidad y la vista pública de verificación por código QR.
+* **`Shared Component`** (`src/app/shared`): *Layout* con el menú según el rol, selector de idioma, clases base para llamar a la API y manejo de errores.
 
 ##### Relaciones entre Componentes:
-* **Usuarios:** el productor usa Field Management, Crop Health y Subscriptions and Payments; el directivo usa Profiles y Harvest Certification; el agrónomo usa Crop Health; y el visitante se registra en IAM o verifica un certificado en Harvest Certification. La Landing Page envía al visitante al registro en IAM.
-* **IAM:** los otros cinco componentes revisan la sesión y el rol del usuario con el *guard* de IAM antes de abrir sus rutas. Shared también lee el rol desde IAM para mostrar el menú que le corresponde a cada usuario.
-* **Shared:** todos los componentes usan su *layout* y sus clases base de API. Field Management y Crop Health, además, usan su sincronización sin conexión.
-* **RESTful API:** cada componente llama solo al componente de su mismo bounded context en el backend, con JSON sobre HTTPS.
+
+* **Usuarios:** el productor usa Field Management, Crop Health y Subscriptions and Payments; el directivo usa Profiles, Harvest Certification y Subscriptions and Payments; el agrónomo usa Crop Health y Subscriptions and Payments; y el visitante se registra en IAM o verifica un certificado en Harvest Certification.
+* **IAM:** los demás componentes revisan la sesión y el rol del usuario con el *guard* de IAM antes de abrir sus rutas, y Shared lee el rol desde IAM para mostrar el menú que le corresponde.
+* **Lecturas entre contextos:** Crop Health y Profiles leen las parcelas desde el store de Field Management; Harvest Certification lee la cooperativa y sus socios desde Profiles; y Field Management lee el cupo de parcelas del plan desde Subscriptions and Payments.
+* **RESTful Web Services:** cada componente llama solo al componente de su mismo bounded context en el backend, con JSON sobre HTTPS. Subscriptions and Payments, además, lleva al usuario a pagar a Mercado Pago.
 
 #### 4.6.4.3. RESTful API Backend Container Components Diagram (Spring Boot)
 
-El backend, desarrollado en **Java 21 con Spring Boot 3.x**, también se organiza por bounded context. Cada componente del diagrama es un bounded context y contiene sus propios controllers REST, servicios de Spring y repositorios de Spring Data JPA. El Shared Kernel agrupa lo que todos comparten.
+Los RESTful Web Services también se organizan por bounded context. Cada componente del diagrama es un paquete de `com.dymbia.sumaqagro.platform` con cuatro capas: `interfaces` (controllers REST, resources, assemblers y la fachada ACL que ofrece a otros contextos), `application` (*command services*, *query services*, *event handlers* y servicios de salida), `domain` (agregados, entidades, *value objects*, commands, queries, events e interfaces de repositorio) e `infrastructure` (adaptadores JPA y clientes de servicios externos). El Shared Kernel agrupa lo que todos comparten.
 
 ![C4 Model - Diagrama de Componentes del API Backend (Nivel 3)](assets/img/chapter-4/c4/c4-components-backend-diagram.png)
 
 ##### Desglose de Componentes del Backend:
-* **`IAM Component`:** Registro, inicio de sesión, emisión del token JWT, roles y recuperación de contraseña.
-* **`Profiles Component`:** Perfiles de usuario, cooperativas, padrón de socios e invitación y asignación de agrónomos a las parcelas.
-* **`Subscriptions and Payments Component`:** Planes (Semilla, Cooperativa Pro y Asesor Técnico), cobros y cupo de parcelas de cada plan.
-* **`Field Management Component`:** Parcelas con su polígono GPS, campañas agrícolas, bitácora de costos y precio de equilibrio. También recibe los gastos registrados sin conexión.
-* **`Crop Health Component`:** Índices NDVI y NDWI, pronóstico del clima, alertas agroclimáticas, reportes de plagas, inspecciones y recetas técnicas.
-* **`Harvest Certification Component`:** Lotes de acopio, calificación de calibres de papa y catación de café, y emisión de certificados de calidad con código QR.
-* **`Shared Kernel Component`:** Clases base, value objects compartidos, manejo de excepciones, configuración de OpenAPI y el envío de notificaciones que usan los demás contextos.
+
+* **`IAM Component`** (`iam`): Registro, inicio de sesión con JWT, roles y recuperación de contraseña. Cifra las contraseñas con BCrypt.
+* **`Profiles Component`** (`profiles`): Perfiles, cooperativas, padrón de socios, invitaciones a agrónomos y asignación de agrónomos a las parcelas.
+* **`Subscriptions and Payments Component`** (`subscriptions`): Planes, suscripciones, pagos con Mercado Pago y cupos de cada plan.
+* **`Field Management Component`** (`farming`): Parcelas y sus polígonos, campañas agrícolas, libro de costos y precio de equilibrio.
+* **`Crop Health Component`** (`crop`): Observaciones satelitales, pronóstico del clima, alertas agroclimáticas, reportes de plagas, inspecciones de campo y recetas técnicas.
+* **`Harvest Certification Component`** (`certification`): Lotes de cosecha, calificación de calibres de papa y catación de café, certificados de calidad con código QR y su verificación pública.
+* **`Shared Kernel Component`** (`shared`): Clase base de los agregados, `Result` y `ApplicationError`, *Problem Details* (RFC 9457), publicador de *domain events*, puerto de envío de correos, i18n y configuración de OpenAPI.
 
 ##### Relaciones entre Componentes:
-* **Domain events (políticas):**
-  * IAM publica `UserSignedUp` y Subscriptions and Payments asigna el plan Semilla (P1).
-  * Field Management publica `SowingDateRecorded` y Crop Health programa el monitoreo satelital (P4).
-  * Harvest Certification publica `DeliveredBatchWeighed` y Field Management registra el rendimiento real (P10).
-* **Consultas mediante ACL (facades):**
-  * Profiles asigna roles mediante IAM y valida las parcelas en Field Management.
-  * Field Management revisa el cupo de parcelas del plan en Subscriptions and Payments.
-  * Crop Health lee los polígonos de las parcelas en Field Management y busca el agrónomo asignado en Profiles.
-  * Harvest Certification valida los socios de la cooperativa en Profiles y lee el origen de la parcela en Field Management.
+
+* **Consultas mediante ACL (facades):** los bounded contexts no leen las tablas de otros; se consultan mediante la fachada `*ContextFacade` que cada uno publica en `interfaces/acl`, y cada consumidor la envuelve en su propio servicio `External*Service`.
+  * IAM crea el perfil y acepta las invitaciones del agrónomo en Profiles al registrarse un usuario.
+  * Profiles busca cuentas por correo y revisa sus roles en IAM, lee el dueño de cada parcela en Field Management y revisa los cupos de socios y de asesorías en Subscriptions and Payments.
+  * Field Management revisa el cupo de parcelas en Subscriptions and Payments y la pertenencia del productor a la cooperativa en Profiles.
+  * Crop Health lee los polígonos, regiones y dueños de las parcelas en Field Management, y el correo de los productores a alertar en IAM.
+  * Harvest Certification valida la cooperativa y sus socios en Profiles, y lee la parcela de origen de cada lote en Field Management.
+* **Domain events:** cada bounded context reacciona a sus propios eventos con *event handlers* (por ejemplo, `CropCampaignStartedEvent` abre el libro de costos y `AgroclimaticAlertIssuedEvent` envía la alerta por correo), como se detalla en la implementación de las políticas de la sección 4.6.1.
 * **Sistemas externos:**
-  * Subscriptions and Payments cobra con Niubiz, y Niubiz confirma cada pago llamando a un webhook.
-  * Field Management registra los polígonos de las parcelas en AgroMonitoring.
-  * Crop Health obtiene de AgroMonitoring las imágenes, los índices y el clima, y envía las alertas por SMS o WhatsApp con Twilio.
-  * IAM envía el correo de recuperación de contraseña y Profiles el de invitación al agrónomo, ambos con Brevo mediante SMTP.
-* **Shared Kernel y base de datos:** todos los componentes usan las clases base y los value objects del Shared Kernel, y leen y escriben en la base de datos MySQL mediante JDBC.
+  * Subscriptions and Payments crea el pago en Mercado Pago y recibe su confirmación por *webhook*.
+  * Field Management registra los polígonos de las parcelas en AgroMonitoring, y Crop Health obtiene de AgroMonitoring las imágenes, los índices y el pronóstico del clima.
+  * El Shared Kernel envía los correos de IAM, Profiles y Crop Health mediante la API de Brevo.
+* **Shared Kernel y base de datos:** todos los componentes usan las clases base del Shared Kernel, y leen y escriben en MySQL mediante JDBC.
 
 ## 4.7. Software Object-Oriented Design
 
