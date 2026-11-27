@@ -1,5 +1,5 @@
 # =====================================================================
-# Compilación del Informe (Docs-as-Code) — Pandoc + XeLaTeX
+# Compilación del Informe (Docs-as-Code) — Pandoc + XeLaTeX + Mermaid CLI
 #   make -C pandoc pdf                   -> pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb2.pdf
 #   make -C pandoc pdf MILESTONE=av2     -> ...-report-av2.pdf
 #   make -C pandoc pdf FONTS=linux       -> usa Liberation Sans/Mono (Linux / WSL)
@@ -27,7 +27,7 @@ pdf:
 # Útil para depurar errores de LaTeX: genera el .tex intermedio
 tex:
 	@mkdir -p $(DIST_DIR)
-	pandoc --defaults=$(CONFIG) $(FONT_OPTS) -s -o $(DIST_DIR)/report.tex
+	pandoc --defaults=$(CONFIG) $(FONT_OPTS) --extract-media=$(DIST_DIR)/media -o $(DIST_DIR)/report.tex
 
 clean:
 	@rm -rf $(DIST_DIR)

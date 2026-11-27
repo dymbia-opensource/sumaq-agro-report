@@ -5,17 +5,35 @@
 \usepackage{xurl}                       % permite cortar URLs largas
 \usepackage{fancyhdr}
 
-% Numeración de páginas: número arábigo en la esquina inferior derecha de
-% todas las páginas, desde la carátula (página 1), sin encabezados.
+% APA 7: número de página en la esquina superior derecha.
 \pagestyle{fancy}
 \fancyhf{}
-\fancyfoot[R]{\thepage}
+\fancyhead[R]{\thepage}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 \setlength{\headheight}{14pt}
 
-% Texto justificado (el interlineado 1.5 se define con `linestretch` en metadata.yaml)
-\emergencystretch=2em
+% APA 7: texto alineado a la izquierda, sangría y control de líneas aisladas.
+\AtBeginDocument{\raggedright\setlength{\parindent}{0.5in}}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+% Títulos de tablas y figuras en español y sobre su contenido.
+\AtBeginDocument{%
+  \captionsetup{labelsep=newline,justification=raggedright,
+    singlelinecheck=false,textfont={it,color=black},labelfont={bf,color=black}}%
+  \captionsetup[table]{position=top}%
+  \captionsetup[figure]{position=top}%
+  \floatstyle{plaintop}%
+  \restylefloat{figure}%
+  \renewcommand{\tablename}{Tabla}%
+}
 
 % La carátula la genera el filtro; se desactiva el \maketitle por defecto
 \renewcommand\maketitle{}

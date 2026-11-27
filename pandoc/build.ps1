@@ -2,7 +2,7 @@
 # build.ps1 — Compila el informe a PDF en Windows (PowerShell)
 #   .\pandoc\build.ps1                 -> entrega TB2
 #   .\pandoc\build.ps1 -Milestone av2  -> entrega AV2
-# Requisitos: Pandoc 3.x y MiKTeX (o TeX Live) en el PATH.
+# Requisitos: Pandoc 3.x, XeLaTeX y mmdc (Mermaid CLI con Chromium) en el PATH.
 # =====================================================================
 param(
   [string]$Milestone = "tb2",
