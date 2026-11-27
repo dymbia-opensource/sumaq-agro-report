@@ -1,0 +1,347 @@
+[
+  {
+    "id": "adzic-impact-mapping",
+    "type": "webpage",
+    "title": "Impact Mapping",
+    "author": [
+      {
+        "family": "Adzic",
+        "given": "G."
+      }
+    ],
+    "URL": "https://www.impactmapping.org/"
+  },
+  {
+    "id": "atlassian-jira",
+    "type": "webpage",
+    "title": "Jira: Software de seguimiento de proyectos y problemas para equipos ágiles",
+    "author": [
+      {
+        "literal": "Atlassian"
+      }
+    ],
+    "URL": "https://www.atlassian.com/es/software/jira"
+  },
+  {
+    "id": "atlassian-scm",
+    "type": "webpage",
+    "title": "Source code management: What is SCM and why does it matter?",
+    "author": [
+      {
+        "literal": "Atlassian"
+      }
+    ],
+    "URL": "https://www.atlassian.com/git/tutorials/source-code-management"
+  },
+  {
+    "id": "auravant",
+    "type": "webpage",
+    "title": "The all-in-one digital agriculture platform",
+    "author": [
+      {
+        "literal": "Auravant"
+      }
+    ],
+    "URL": "https://www.auravant.com/",
+    "accessed": {
+      "date-parts": [
+        [
+          2026,
+          10,
+          7
+        ]
+      ]
+    }
+  },
+  {
+    "id": "cloudflare-pages",
+    "type": "webpage",
+    "title": "Cloudflare Pages: Deploy web applications in seconds",
+    "author": [
+      {
+        "literal": "Cloudflare"
+      }
+    ],
+    "URL": "https://www.cloudflare.com/products/pages/"
+  },
+  {
+    "id": "conventional-commits",
+    "type": "webpage",
+    "title": "Conventional Commits 1.0.0",
+    "author": [
+      {
+        "literal": "Conventional Commits"
+      }
+    ],
+    "URL": "https://www.conventionalcommits.org/en/v1.0.0/"
+  },
+  {
+    "id": "event-storming-journal",
+    "type": "webpage",
+    "title": "Design-level Event Storming in 3 minutes",
+    "author": [
+      {
+        "literal": "Event Storming Journal"
+      }
+    ],
+    "URL": "https://www.eventstormingjournal.com/software%20design/design-level-event-storming-in-3-minutes/"
+  },
+  {
+    "id": "figma",
+    "type": "software",
+    "title": "Figma: The collaborative interface design tool",
+    "author": [
+      {
+        "literal": "Figma"
+      }
+    ],
+    "URL": "https://www.figma.com",
+    "genre": "Software de computación"
+  },
+  {
+    "id": "github",
+    "type": "webpage",
+    "title": "GitHub: Let’s build from here",
+    "author": [
+      {
+        "literal": "GitHub"
+      }
+    ],
+    "URL": "https://github.com/"
+  },
+  {
+    "id": "goo-su",
+    "type": "software",
+    "title": "Goo.su: Acortador de URL",
+    "author": [
+      {
+        "literal": "Goo.su"
+      }
+    ],
+    "URL": "https://goo.su/page/acortador-de-url",
+    "genre": "Software en línea"
+  },
+  {
+    "id": "inei-2022",
+    "type": "report",
+    "title": "Encuesta Nacional Agropecuaria (ENA 2022): Principales Resultados",
+    "author": [
+      {
+        "literal": "Instituto Nacional de Estadística e Informática"
+      }
+    ],
+    "URL": "https://m.inei.gob.pe/prensa/noticias/334-de-los-productores-agropecuarios-del-pais-son-mujeres-14486/",
+    "issued": {
+      "date-parts": [
+        [
+          2022
+        ]
+      ]
+    }
+  },
+  {
+    "id": "intellij-idea",
+    "type": "software",
+    "title": "IntelliJ IDEA",
+    "author": [
+      {
+        "literal": "JetBrains"
+      }
+    ],
+    "URL": "https://www.jetbrains.com/idea/",
+    "genre": "Software de computación"
+  },
+  {
+    "id": "kilimo",
+    "type": "webpage",
+    "title": "Optimizing water use in agriculture",
+    "author": [
+      {
+        "literal": "Kilimo"
+      }
+    ],
+    "URL": "https://kilimo.com/",
+    "accessed": {
+      "date-parts": [
+        [
+          2026,
+          10,
+          7
+        ]
+      ]
+    }
+  },
+  {
+    "id": "jnc-2022",
+    "type": "report",
+    "title": "Línea de base del sector cafetalero peruano: Productividad, vulnerabilidad climática y acceso a mercados",
+    "author": [
+      {
+        "literal": "Junta Nacional del Café"
+      }
+    ],
+    "URL": "https://juntadelcafe.org.pe/",
+    "issued": {
+      "date-parts": [
+        [
+          2022
+        ]
+      ]
+    }
+  },
+  {
+    "id": "miro",
+    "type": "webpage",
+    "title": "El espacio de innovación con IA",
+    "author": [
+      {
+        "literal": "Miro"
+      }
+    ],
+    "URL": "https://miro.com/es/"
+  },
+  {
+    "id": "midagri-2021",
+    "type": "webpage",
+    "title": "Decreto Supremo N.º 017-2021-MIDAGRI: Aprueban la Política Nacional Agraria 2021-2030",
+    "author": [
+      {
+        "literal": "Ministerio de Desarrollo Agrario y Riego"
+      }
+    ],
+    "URL": "https://busquedas.elperuano.pe/dispositivo/NL/1975873-14",
+    "container-title": "Diario Oficial El Peruano",
+    "issued": {
+      "date-parts": [
+        [
+          2021
+        ]
+      ]
+    }
+  },
+  {
+    "id": "midagri-2023",
+    "type": "report",
+    "title": "Informe Técnico Sectorial: Análisis de vulnerabilidad ante sequías y heladas en la producción de papa en sierra central y sur",
+    "author": [
+      {
+        "literal": "Ministerio de Desarrollo Agrario y Riego"
+      }
+    ],
+    "URL": "https://www.gob.pe/midagri",
+    "issued": {
+      "date-parts": [
+        [
+          2023
+        ]
+      ]
+    }
+  },
+  {
+    "id": "postman",
+    "type": "software",
+    "title": "Postman",
+    "author": [
+      {
+        "literal": "Postman"
+      }
+    ],
+    "URL": "https://www.postman.com/",
+    "genre": "Software de computación / Aplicación web"
+  },
+  {
+    "id": "proinnovate-2021",
+    "type": "webpage",
+    "title": "Startup agrotecnológica Space AG recibe inversión de más de un millón de dólares para expandirse en América Latina",
+    "author": [
+      {
+        "literal": "ProInnóvate"
+      }
+    ],
+    "URL": "https://www.gob.pe/institucion/proinnovate/noticias/512241-startup-agrotecnologica-space-ag-recibe-inversion-de-mas-de-un-millon-de-dolares-para-expandirse-en-america-latina",
+    "publisher": "Ministerio de la Producción",
+    "issued": {
+      "date-parts": [
+        [
+          2021,
+          8,
+          19
+        ]
+      ]
+    }
+  },
+  {
+    "id": "railway",
+    "type": "webpage",
+    "title": "Railway: Instant deployments, effortless scale",
+    "author": [
+      {
+        "literal": "Railway Corp"
+      }
+    ],
+    "URL": "https://railway.com/"
+  },
+  {
+    "id": "gestion-2019",
+    "type": "article-newspaper",
+    "title": "Conoce la startup peruana que apunta a optimizar la agricultura mundial",
+    "author": [
+      {
+        "literal": "Redacción Gestión"
+      }
+    ],
+    "URL": "https://gestion.pe/economia/empresas/conoce-startup-peruana-apunta-optimizar-agricultura-mundial-269178-noticia/",
+    "container-title": "Diario Gestión",
+    "issued": {
+      "date-parts": [
+        [
+          2019,
+          6,
+          10
+        ]
+      ]
+    }
+  },
+  {
+    "id": "spaceag",
+    "type": "webpage",
+    "title": "Leading the digitalization of agriculture",
+    "author": [
+      {
+        "literal": "SpaceAG"
+      }
+    ],
+    "URL": "https://www.spaceag.co/",
+    "accessed": {
+      "date-parts": [
+        [
+          2026,
+          10,
+          7
+        ]
+      ]
+    }
+  },
+  {
+    "id": "structurizr",
+    "type": "webpage",
+    "title": "Structurizr: Diagrams as code for software architecture",
+    "author": [
+      {
+        "literal": "Structurizr"
+      }
+    ],
+    "URL": "https://structurizr.com/"
+  },
+  {
+    "id": "uxpressia",
+    "type": "webpage",
+    "title": "Mapa de experiencia del cliente",
+    "author": [
+      {
+        "literal": "Uxpressia"
+      }
+    ],
+    "URL": "https://uxpressia.com/w/ojG2k"
+  }
+]

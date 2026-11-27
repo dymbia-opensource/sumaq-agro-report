@@ -48,7 +48,12 @@ resource-path:
   - "${.}/../report/front-matter"
   - "${.}/.."
 
+bibliography:
+  - ${.}/../report/bibliography/references.json
+csl: ${.}/csl/apa-7.csl
+
 filters:
+  - citeproc
   - ${.}/filters/mermaid.lua
   - ${.}/filters/pdf.lua
 
