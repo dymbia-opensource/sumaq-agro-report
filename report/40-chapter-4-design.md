@@ -1994,542 +1994,922 @@ Este contexto maneja los lotes de cosecha, su pesaje, muestreo y calificación, 
 
 ## 4.8. Database Design
 
-En esta sección se presenta el diseño de la base de datos relacional de SumaqAgro. Los diagramas toman como base los agregados, entidades y value objects de los diagramas de clases de la RESTful API (sección 4.7) y los llevan a tablas de MySQL.
+El diseño relacional de SumaqAgro se deriva de las entidades JPA de `sumaq-agro-platform`. La sección 4.6 presenta los bounded contexts y la sección 4.7 describe sus clases. La separación entre agregados de dominio, entidades de persistencia y assemblers sigue el ADR-004 de la guía Learning Center. El ADR-010 orienta las referencias por identidad entre agregados.
 
-Las principales características que se consideran en los diagramas son:
+MySQL usa InnoDB y reúne **26 tablas en seis bounded contexts**. El Shared Kernel aporta el identificador `BIGINT AUTO_INCREMENT` y las columnas de auditoría `created_at` y `updated_at` a 24 tablas. El perfil de desarrollo usa el esquema `sumaqagro` y el de producción lo obtiene de `DATABASE_NAME`. Hibernate aplica la estrategia `SnakeCaseWithPluralizedTablePhysicalNamingStrategy` y está configurado con `spring.jpa.hibernate.ddl-auto=update`.
 
-* **Motor:** MySQL 8.0 con InnoDB y juego de caracteres `utf8mb4`. Todas las tablas viven en una sola base de datos, `sumaqagro_db`.
-* **Organización por bounded context:** las tablas se agrupan según los 6 bounded contexts: IAM, Profiles, Subscriptions and Payments, Field Management, Crop Health y Harvest Certification. El Shared Kernel no tiene tablas propias.
-* **Agregados y entidades:** cada agregado y cada entidad interna tiene su propia tabla. Los value objects se guardan como columnas de la tabla de su agregado (por ejemplo, el análisis de suelo en `field_plots` o la catación de café en `harvest_batches`).
-* **Nombres:** tablas y columnas en inglés, en minúsculas, en plural y en `snake_case`. Las restricciones llevan prefijo: `pk_` (primary key), `fk_` (foreign key) y `uk_` (unique).
-* **Claves:** todas las tablas usan `id BIGINT AUTO_INCREMENT` como primary key. Las foreign keys se nombran `<entidad>_id`.
-* **Relaciones entre contextos:** las relaciones dentro de un contexto se declaran junto con su tabla. Las relaciones hacia otro contexto (por ejemplo, `field_plots.owner_user_id` hacia `users`) se declaran al final del script; en el código estas consultas pasan por los facades de ACL.
-* **Tipos de datos:** `DECIMAL(10,2)` para montos y cantidades, `DECIMAL(10,8)` y `DECIMAL(11,8)` para latitud y longitud, `DECIMAL(5,4)` para los índices NDVI y NDWI, y `VARCHAR` para los estados, con los mismos valores de los enums del backend.
-* **Auditoría:** las tablas principales tienen `created_at` y `updated_at`, que MySQL llena de forma automática.
-* **Tablas por contexto:** para cada tabla se indica qué guarda cada columna y su tipo de dato. Las claves se marcan al inicio de la descripción: **PK** (primary key), **FK** (foreign key, con la tabla a la que apunta) y **UNIQUE** (valor que no se repite).
+Los *value objects* se representan mediante columnas del agregado o conversiones. Por ejemplo, el límite de la parcela se almacena como texto en `field_plots.boundary` y el precio unitario se descompone en importe y moneda en `expense_entries`. Los estados y tipos enumerados usan `ENUM` de MySQL, con `payments.status` mapeado explícitamente a `VARCHAR(20)`.
 
 ### 4.8.1. Database Diagrams
 
-El modelo se elaboró en **Hackolade Studio** a partir del script `SumaqAgro_db.sql`, y las pruebas de creación de tablas se hicieron en **DataGrip** conectado a MySQL 8.0. Primero se muestra el diagrama completo de la base de datos y luego el detalle de cada bounded context.
+Los diagramas entidad–relación se expresan en Mermaid mediante Diagram-as-Code, de acuerdo con el enunciado. Las etiquetas **FK** indican las seis claves foráneas generadas por Hibernate. Las etiquetas **referencia** muestran relaciones por identificador o código sin clave foránea. Mermaid usa línea continua para relaciones identificadoras y línea discontinua para relaciones no identificadoras, incluidas algunas claves foráneas. En las tablas externas se muestra la columna de destino.
 
-**Herramientas utilizadas:** Hackolade Studio y DataGrip.
+**PK** indica clave primaria y **UK** indica unicidad de una columna. Las restricciones únicas compuestas se identifican por nombre en los atributos participantes. JPA no declara índices adicionales mediante `@Index`. MySQL utiliza los índices de las claves primarias y únicas, y crea un índice de respaldo para una clave foránea cuando ningún índice existente cubre sus columnas.
 
-![Database Diagram - SumaqAgro](assets/img/chapter-4/database/sumaqagro-db-diagram.png) 
+Las tablas detallan el tipo y la nulabilidad del DDL de creación generado para MySQL a partir de los mapeos JPA. Un esquema ya desplegado puede conservar objetos de versiones anteriores al aplicar `update`.
 
 #### 4.8.1.1. Identity and Access Management (IAM) Context
 
 Este contexto guarda las cuentas de usuario, sus roles y los códigos para recuperar la contraseña.
 
-![Database Diagram - Identity and Access Management (IAM) Context](assets/img/chapter-4/database/01-iam-db-diagram.png) 
+```mermaid
+erDiagram
+    direction LR
+    users {
+        BIGINT id PK
+        VARCHAR(254) email UK
+        VARCHAR(255) password_hash
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    roles {
+        BIGINT id PK
+        ENUM name UK
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    user_roles {
+        BIGINT user_id PK, FK
+        BIGINT role_id PK, FK
+    }
+    password_reset_tokens {
+        BIGINT id PK
+        BIGINT user_id "referencia"
+        VARCHAR(64) token_hash UK
+        DATETIME(6) expires_at
+        DATETIME(6) consumed_at "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    roles ||--o{ user_roles : "FK role_id a id"
+    users ||--o{ user_roles : "FK user_id a id"
+    users ||..o{ password_reset_tokens : "referencia user_id a id"
+```
 
 ###### Tabla `users`
 
-Cuentas de usuario de la plataforma. La contraseña se guarda cifrada con BCrypt.
+Cuentas de usuario de la plataforma. La contraseña se almacena como una huella BCrypt.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `email` | `VARCHAR(150)` | **(UNIQUE)** Correo con el que el usuario inicia sesión. No se repite. |
-| `password` | `VARCHAR(255)` | Contraseña cifrada con BCrypt; nunca se guarda en texto plano. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `email` | `VARCHAR(254)` | No | **(UNIQUE)** Correo con el que el usuario inicia sesión. No se repite. |
+| `password_hash` | `VARCHAR(255)` | No | Huella de la contraseña con BCrypt; nunca se guarda en texto plano. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `roles`
 
-Catálogo de roles: `ROLE_FARMER`, `ROLE_COOPERATIVE_MANAGER` y `ROLE_AGRONOMIST`.
+Catálogo de roles: `ROLE_FARMER`, `ROLE_COOPERATIVE_DIRECTOR` y `ROLE_AGRONOMIST`.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `name` | `VARCHAR(30)` | **(UNIQUE)** Nombre del rol: `ROLE_FARMER`, `ROLE_COOPERATIVE_MANAGER` o `ROLE_AGRONOMIST`. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `name` | `ENUM` | No | **(UNIQUE)** Nombre del rol: `ROLE_FARMER`, `ROLE_COOPERATIVE_DIRECTOR` o `ROLE_AGRONOMIST`. No se repite. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `user_roles`
 
 Tabla intermedia que asigna uno o varios roles a cada usuario.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `user_id` | `BIGINT` | **(PK; FK → `users`)** Usuario al que se le asigna el rol. |
-| `role_id` | `BIGINT` | **(PK; FK → `roles`)** Rol asignado al usuario. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `user_id` | `BIGINT` | No | **(PK; FK → `users`)** Usuario al que se le asigna el rol. |
+| `role_id` | `BIGINT` | No | **(PK; FK → `roles`)** Rol asignado al usuario. |
 
-Clave primaria compuesta: `(user_id, role_id)`.
+La clave primaria compuesta tiene el orden `(role_id, user_id)`.
 
 ###### Tabla `password_reset_tokens`
 
-Códigos temporales que se envían por correo (Brevo) para cambiar la contraseña.
+Códigos temporales que se envían por correo (Brevo) para cambiar la contraseña. Solo se guarda su huella.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `user_id` | `BIGINT` | **(FK → `users`)** Usuario que pidió recuperar su contraseña. |
-| `token` | `VARCHAR(255)` | **(UNIQUE)** Código que se envía por correo (Brevo) para cambiar la contraseña. |
-| `expires_at` | `TIMESTAMP` | Fecha y hora en que el código deja de ser válido. |
-| `used` | `BOOLEAN` | Indica si el código ya se usó, para que no sirva dos veces. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `user_id` | `BIGINT` | No | **(referencia → `users`)** Usuario que pidió recuperar su contraseña. |
+| `token_hash` | `VARCHAR(64)` | No | **(UNIQUE)** Huella SHA-256 (hexadecimal) del código enviado por correo. El código en sí no se guarda. No se repite. |
+| `expires_at` | `DATETIME(6)` | No | Fecha y hora en que el código deja de ser válido. |
+| `consumed_at` | `DATETIME(6)` | Sí | Fecha y hora en que se usó el código. Queda vacío mientras no se use, así no sirve dos veces. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 **Relaciones principales:**
-* `users` 1 — N `user_roles` N — 1 `roles`: un usuario tiene uno o varios roles.
-* `users` 1 — N `password_reset_tokens`: un usuario puede pedir varios códigos de recuperación.
+* `users` 1 — N `user_roles` N — 1 `roles`: un usuario tiene uno o varios roles. Son las únicas claves foráneas declaradas en este contexto.
+* `password_reset_tokens.user_id` → `users`: un usuario puede pedir varios códigos de recuperación (referencia por identificador).
+
 
 #### 4.8.1.2. Profiles Context
 
-Este contexto guarda el perfil de cada usuario, las cooperativas con su padrón de socios y la asignación de agrónomos a las parcelas.
+Este contexto guarda el perfil de cada usuario, las cooperativas con su padrón de socios, las invitaciones a agrónomos y la asignación de agrónomos a las parcelas con su historial.
 
-![Database Diagram - Profiles Context](assets/img/chapter-4/database/02-profiles-db-diagram.png)
+```mermaid
+erDiagram
+    direction LR
+    profiles {
+        BIGINT id PK
+        BIGINT user_id UK "referencia"
+        VARCHAR(100) first_name
+        VARCHAR(100) last_name
+        VARCHAR(20) phone_number "NULL"
+        VARCHAR(255) photo_url "NULL"
+        VARCHAR(8) dni "NULL"
+        ENUM preferred_language
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    cooperatives {
+        BIGINT id PK
+        VARCHAR(11) ruc UK
+        VARCHAR(150) business_name
+        VARCHAR(100) region
+        BIGINT manager_user_id "referencia"
+        VARCHAR(150) institutional_email "NULL"
+        VARCHAR(150) legal_representative "NULL"
+        VARCHAR(255) headquarters_address "NULL"
+        VARCHAR(20) switchboard_phone "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    cooperative_members {
+        BIGINT id PK
+        BIGINT cooperative_id FK "uk_cooperative_members_cooperative_id_dni"
+        VARCHAR(8) dni "uk_cooperative_members_cooperative_id_dni"
+        VARCHAR(100) first_name
+        VARCHAR(100) last_name
+        VARCHAR(100) community
+        DATE joined_at
+        BIT(1) active
+        BIGINT user_id "NULL, referencia"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    agronomist_invitations {
+        BIGINT id PK
+        BIGINT cooperative_id FK
+        VARCHAR(150) email
+        VARCHAR(255) invitation_token UK
+        ENUM status
+        DATETIME(6) sent_at
+        BIGINT agronomist_user_id "NULL, referencia"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    agronomist_assignments {
+        BIGINT id PK
+        BIGINT cooperative_id "referencia"
+        BIGINT agronomist_user_id "referencia"
+        BIGINT plot_id "referencia"
+        BIGINT producer_user_id "referencia"
+        DATETIME(6) assigned_at
+        BIT(1) active
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    agronomist_assignment_histories {
+        BIGINT agronomist_assignment_id FK
+        BIGINT agronomist_user_id "referencia"
+        DATETIME(6) assigned_at
+        DATETIME(6) ended_at
+    }
+    field_plots {
+        BIGINT id PK
+    }
+    users {
+        BIGINT id PK
+    }
+    agronomist_assignments ||..o{ agronomist_assignment_histories : "FK agronomist_assignment_id a id"
+    cooperatives ||..o{ agronomist_invitations : "FK cooperative_id a id"
+    cooperatives ||..o{ cooperative_members : "FK cooperative_id a id"
+    users ||..o| profiles : "referencia user_id a id"
+    users ||..o{ cooperatives : "referencia manager_user_id a id"
+    users |o..o{ cooperative_members : "referencia user_id a id"
+    users |o..o{ agronomist_invitations : "referencia agronomist_user_id a id"
+    cooperatives ||..o{ agronomist_assignments : "referencia cooperative_id a id"
+    users ||..o{ agronomist_assignments : "referencia agronomist_user_id a id"
+    field_plots ||..o{ agronomist_assignments : "referencia plot_id a id"
+    users ||..o{ agronomist_assignments : "referencia producer_user_id a id"
+    users ||..o{ agronomist_assignment_histories : "referencia agronomist_user_id a id"
+```
 
 ###### Tabla `profiles`
 
 Datos de contacto de cada usuario. Hay un solo perfil por usuario.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `user_id` | `BIGINT` | **(FK → `users`, otro contexto; UNIQUE)** Cuenta de usuario a la que pertenece el perfil. |
-| `first_name` | `VARCHAR(100)` | Nombres del usuario. |
-| `last_name` | `VARCHAR(100)` | Apellidos del usuario. |
-| `phone_number` | `VARCHAR(20)` | Celular donde recibe las alertas por SMS o WhatsApp. |
-| `photo_url` | `VARCHAR(255)` | Dirección de la foto de perfil. |
-| `preferred_language` | `VARCHAR(2)` | Idioma de la interfaz: `ES` (español) o `EN` (inglés). |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `user_id` | `BIGINT` | No | **(referencia → `users`, IAM; UNIQUE)** Cuenta de usuario a la que pertenece el perfil. Hay un solo perfil por cuenta. |
+| `first_name` | `VARCHAR(100)` | No | Nombres del usuario. |
+| `last_name` | `VARCHAR(100)` | No | Apellidos del usuario. |
+| `phone_number` | `VARCHAR(20)` | Sí | Celular donde recibe las alertas. Puede estar vacío. |
+| `photo_url` | `VARCHAR(255)` | Sí | Dirección de la foto de perfil. Puede estar vacía. |
+| `dni` | `VARCHAR(8)` | Sí | DNI del usuario (8 dígitos). Es opcional y solo lo ve el dueño del perfil. |
+| `preferred_language` | `ENUM` | No | Idioma de la interfaz: `ES` (español) o `EN` (inglés). |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `cooperatives`
 
 Cooperativas registradas, identificadas por su RUC.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `ruc` | `CHAR(11)` | **(UNIQUE)** RUC de la cooperativa (11 dígitos). |
-| `business_name` | `VARCHAR(150)` | Razón social de la cooperativa. |
-| `region` | `VARCHAR(100)` | Región donde trabaja la cooperativa. |
-| `manager_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Directivo que administra la cooperativa en la plataforma. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `ruc` | `VARCHAR(11)` | No | **(UNIQUE)** RUC de la cooperativa (11 dígitos). No se repite. |
+| `business_name` | `VARCHAR(150)` | No | Razón social de la cooperativa. |
+| `region` | `VARCHAR(100)` | No | Región donde trabaja la cooperativa. |
+| `manager_user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Directivo que administra la cooperativa en la plataforma. |
+| `institutional_email` | `VARCHAR(150)` | Sí | Correo institucional de la cooperativa. Puede estar vacío. |
+| `legal_representative` | `VARCHAR(150)` | Sí | Representante legal de la cooperativa. Puede estar vacío. |
+| `headquarters_address` | `VARCHAR(255)` | Sí | Dirección de la sede de la cooperativa. Puede estar vacía. |
+| `switchboard_phone` | `VARCHAR(20)` | Sí | Teléfono central de la cooperativa. Puede estar vacío. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `cooperative_members`
 
 Padrón de socios de cada cooperativa. Un mismo DNI no se repite dentro de una cooperativa.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `cooperative_id` | `BIGINT` | **(FK → `cooperatives`)** Cooperativa a la que pertenece el socio. |
-| `dni` | `CHAR(8)` | DNI del socio (8 dígitos). |
-| `first_name` | `VARCHAR(100)` | Nombres del socio. |
-| `last_name` | `VARCHAR(100)` | Apellidos del socio. |
-| `community` | `VARCHAR(100)` | Comunidad o caserío donde vive el socio. |
-| `joined_at` | `DATE` | Fecha en que el socio entró a la cooperativa. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `cooperative_id` | `BIGINT` | No | **(FK → `cooperatives`)** Cooperativa a la que pertenece el socio. |
+| `dni` | `VARCHAR(8)` | No | DNI del socio (8 dígitos). |
+| `first_name` | `VARCHAR(100)` | No | Nombres del socio. |
+| `last_name` | `VARCHAR(100)` | No | Apellidos del socio. |
+| `community` | `VARCHAR(100)` | No | Comunidad o caserío donde vive el socio. |
+| `joined_at` | `DATE` | No | Fecha en que el socio entró a la cooperativa. |
+| `active` | `BIT(1)` | No | Indica si el socio sigue activo en el padrón. |
+| `user_id` | `BIGINT` | Sí | **(referencia → `users`, IAM)** Cuenta del productor vinculada al socio. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
-Restricción única compuesta: `(cooperative_id, dni)`.
+Restricción única compuesta: `(cooperative_id, dni)` (`uk_cooperative_members_cooperative_id_dni`).
 
 ###### Tabla `agronomist_invitations`
 
-Invitaciones que la cooperativa envía por correo a los agrónomos.
+Invitaciones que la cooperativa envía por correo a los agrónomos. Las aceptadas forman el equipo técnico de la cooperativa.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `cooperative_id` | `BIGINT` | **(FK → `cooperatives`)** Cooperativa que envía la invitación. |
-| `email` | `VARCHAR(150)` | Correo del agrónomo invitado. |
-| `invitation_token` | `VARCHAR(255)` | **(UNIQUE)** Código del enlace de invitación que se envía por correo (Brevo). |
-| `status` | `VARCHAR(20)` | Estado de la invitación: `PENDING`, `ACCEPTED` o `EXPIRED`. |
-| `sent_at` | `TIMESTAMP` | Fecha y hora en que se envió la invitación. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `cooperative_id` | `BIGINT` | No | **(FK → `cooperatives`)** Cooperativa que envía la invitación. |
+| `email` | `VARCHAR(150)` | No | Correo del agrónomo invitado. No se invita dos veces el mismo correo a una cooperativa. |
+| `invitation_token` | `VARCHAR(255)` | No | **(UNIQUE)** Código del enlace de invitación que se envía por correo (Brevo). No se repite. |
+| `status` | `ENUM` | No | Estado de la invitación: `PENDING`, `ACCEPTED` o `EXPIRED`. |
+| `sent_at` | `DATETIME(6)` | No | Fecha y hora en que se envió la invitación. |
+| `agronomist_user_id` | `BIGINT` | Sí | **(referencia → `users`, IAM)** Cuenta del agrónomo que aceptó la invitación. Queda vacío mientras la invitación está pendiente. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `agronomist_assignments`
 
 Indica qué agrónomo atiende cada parcela de la cooperativa.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `cooperative_id` | `BIGINT` | **(FK → `cooperatives`)** Cooperativa que hace la asignación. |
-| `agronomist_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Agrónomo que atenderá la parcela. |
-| `plot_id` | `BIGINT` | **(FK → `field_plots`, otro contexto)** Parcela que se le asigna al agrónomo. |
-| `assigned_at` | `TIMESTAMP` | Fecha y hora de la asignación. |
-| `active` | `BOOLEAN` | Indica si la asignación sigue vigente. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `cooperative_id` | `BIGINT` | No | **(referencia → `cooperatives`)** Cooperativa que hace la asignación. |
+| `agronomist_user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Agrónomo que atiende la parcela. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`, Field Management)** Parcela que se le asigna al agrónomo. |
+| `producer_user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Productor dueño de la parcela. |
+| `assigned_at` | `DATETIME(6)` | No | Fecha y hora de la asignación vigente. |
+| `active` | `BIT(1)` | No | Indica si la asignación sigue vigente. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
+
+###### Tabla `agronomist_assignment_histories`
+
+Historial de agrónomos que atendieron antes una parcela. Se agrega una fila cada vez que la asignación se reasigna.
+
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `agronomist_assignment_id` | `BIGINT` | No | **(FK → `agronomist_assignments`)** Asignación a la que pertenece el registro del historial. |
+| `agronomist_user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Agrónomo que atendió la parcela antes de la reasignación. |
+| `assigned_at` | `DATETIME(6)` | No | Fecha y hora en que ese agrónomo recibió la parcela. |
+| `ended_at` | `DATETIME(6)` | No | Fecha y hora en que dejó de atenderla. |
+
+Es una colección de valores de la asignación (`@ElementCollection`), y contiene la clave foránea a la asignación y los atributos del historial. El mapeo genera la tabla sin clave primaria, sin columna de orden y sin auditoría propia.
 
 **Relaciones principales:**
-* `cooperatives` 1 — N `cooperative_members`, `agronomist_invitations` y `agronomist_assignments`.
-* `profiles.user_id`, `cooperatives.manager_user_id` y `agronomist_assignments.agronomist_user_id` → `users` (IAM).
-* `agronomist_assignments.plot_id` → `field_plots` (Field Management).
+* `cooperatives` 1 — N `cooperative_members` y `agronomist_invitations` (claves foráneas declaradas).
+* `agronomist_assignments` 1 — N `agronomist_assignment_histories` (clave foránea declarada).
+* `agronomist_assignments.cooperative_id` → `cooperatives`; las columnas `*_user_id` → `users` (IAM) y `plot_id` → `field_plots` (Field Management), por identificador.
+
 
 #### 4.8.1.3. Subscriptions and Payments Context
 
-Este contexto guarda los planes, la suscripción de cada usuario y los pagos hechos con Niubiz.
+Este contexto guarda los planes, la suscripción de cada usuario y los pagos hechos con Mercado Pago Checkout Pro.
 
-![Database Diagram - Subscriptions and Payments Context](assets/img/chapter-4/database/03-subscriptions-payments-db-diagram.png)
+```mermaid
+erDiagram
+    direction LR
+    plans {
+        BIGINT id PK
+        ENUM code UK
+        DECIMAL monthly_price "DECIMAL(10,2)"
+        DECIMAL annual_price "DECIMAL(10,2)"
+        INTEGER registered_plot_limit
+        INTEGER producer_limit
+        INTEGER supervised_plot_limit
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    subscriptions {
+        BIGINT id PK
+        BIGINT user_id UK "referencia"
+        ENUM plan_code "referencia"
+        ENUM billing_cycle
+        ENUM status
+        DATE start_date
+        DATE end_date
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    payments {
+        BIGINT id PK
+        VARCHAR(50) reference UK
+        BIGINT user_id "referencia"
+        BIGINT subscription_id "NULL, referencia"
+        ENUM plan_code "referencia"
+        ENUM billing_cycle
+        DECIMAL amount "DECIMAL(10,2)"
+        VARCHAR(20) status
+        DATETIME(6) attempted_at
+        VARCHAR(40) provider_payment_id "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    users {
+        BIGINT id PK
+    }
+    users ||..o| subscriptions : "referencia user_id a id"
+    plans ||..o{ subscriptions : "referencia plan_code a code"
+    users ||..o{ payments : "referencia user_id a id"
+    subscriptions |o..o{ payments : "referencia subscription_id a id"
+    plans ||..o{ payments : "referencia plan_code a code"
+```
 
 ###### Tabla `plans`
 
-Catálogo de planes (Semilla, Cooperativa Pro y Asesor Técnico) con su precio y su cupo de parcelas.
+Catálogo de planes (Semilla, Cooperativa Pro y Asesor Técnico) con su precio y sus límites.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `code` | `VARCHAR(30)` | **(UNIQUE)** Código del plan: `SEED`, `COOPERATIVE_PRO` o `TECHNICAL_ADVISOR`. |
-| `name` | `VARCHAR(100)` | Nombre comercial del plan (Semilla, Cooperativa Pro o Asesor Técnico). |
-| `monthly_price_amount` | `DECIMAL(10,2)` | Precio del plan con pago mensual. |
-| `annual_price_amount` | `DECIMAL(10,2)` | Precio del plan con pago anual. |
-| `currency` | `CHAR(3)` | Moneda de los precios (por defecto `PEN`). |
-| `plot_quota` | `INT` | Cantidad máxima de parcelas que permite el plan. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `code` | `ENUM` | No | **(UNIQUE)** Código del plan: `SEED`, `COOPERATIVE_PRO` o `TECHNICAL_ADVISOR`. No se repite. |
+| `monthly_price` | `DECIMAL(10,2)` | No | Precio del plan con pago mensual, en soles (PEN). |
+| `annual_price` | `DECIMAL(10,2)` | No | Precio del plan con pago anual, en soles (PEN). |
+| `registered_plot_limit` | `INTEGER` | No | Cantidad máxima de parcelas que el usuario puede registrar con el plan. |
+| `producer_limit` | `INTEGER` | No | Cantidad máxima de productores (socios) que permite el plan. |
+| `supervised_plot_limit` | `INTEGER` | No | Cantidad máxima de parcelas que un agrónomo puede supervisar con el plan. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `subscriptions`
 
-Suscripción vigente de cada usuario. Hay una sola suscripción por usuario.
+Suscripción vigente de cada usuario, con su periodo de acceso pagado. Hay una sola suscripción por usuario.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `user_id` | `BIGINT` | **(FK → `users`, otro contexto; UNIQUE)** Usuario dueño de la suscripción. Cada usuario tiene una sola. |
-| `plan_id` | `BIGINT` | **(FK → `plans`)** Plan contratado. |
-| `status` | `VARCHAR(20)` | Estado de la suscripción: `ACTIVE` o `CANCELLED`. |
-| `billing_cycle` | `VARCHAR(10)` | Frecuencia de cobro: `MONTHLY` o `ANNUAL`. |
-| `start_date` | `DATE` | Fecha de inicio del periodo vigente. |
-| `end_date` | `DATE` | Fecha de fin del periodo pagado vigente. |
-| `auto_renew` | `BOOLEAN` | Indica si la suscripción se renueva sola al terminar el periodo. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `user_id` | `BIGINT` | No | **(referencia → `users`, IAM; UNIQUE)** Usuario dueño de la suscripción. Cada usuario tiene una sola. |
+| `plan_code` | `ENUM` | No | **(referencia → `plans`)** Plan contratado (`SEED`, `COOPERATIVE_PRO` o `TECHNICAL_ADVISOR`). Se guarda el código, no el `id` del plan. |
+| `billing_cycle` | `ENUM` | No | Frecuencia de cobro: `MONTHLY` o `ANNUAL`. |
+| `status` | `ENUM` | No | Estado de la suscripción: `ACTIVE` o `CANCELLED`. |
+| `start_date` | `DATE` | No | Fecha de inicio del periodo vigente. |
+| `end_date` | `DATE` | No | Fecha de fin del periodo pagado vigente. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `payments`
 
-Pagos de cada suscripción con el token de transacción que devuelve Niubiz.
+Intentos de pago de un plan con su resultado y el precio cotizado. El pago se confirma en el servidor leyéndolo de Mercado Pago.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `subscription_id` | `BIGINT` | **(FK → `subscriptions`)** Suscripción a la que corresponde el pago. |
-| `amount` | `DECIMAL(10,2)` | Monto cobrado. |
-| `currency` | `CHAR(3)` | Moneda del cobro (por defecto `PEN`). |
-| `transaction_token` | `VARCHAR(255)` | **(UNIQUE)** Token de la transacción que devuelve Niubiz. No se repite, así el webhook no registra dos veces el mismo pago. |
-| `status` | `VARCHAR(20)` | Estado del pago: `PENDING`, `COMPLETED` o `REJECTED`. |
-| `paid_at` | `TIMESTAMP` | Fecha y hora en que Niubiz confirmó el pago. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `reference` | `VARCHAR(50)` | No | **(UNIQUE)** Referencia propia del pago, que se envía a Mercado Pago. No se repite. |
+| `user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Usuario que paga. |
+| `subscription_id` | `BIGINT` | Sí | **(referencia → `subscriptions`)** Suscripción que activó el pago. Queda vacío mientras el pago no se confirma. |
+| `plan_code` | `ENUM` | No | **(referencia → `plans`)** Plan que se paga: `SEED`, `COOPERATIVE_PRO` o `TECHNICAL_ADVISOR`. |
+| `billing_cycle` | `ENUM` | No | Frecuencia de cobro: `MONTHLY` o `ANNUAL`. |
+| `amount` | `DECIMAL(10,2)` | No | Monto cotizado y cobrado, en soles (PEN). |
+| `status` | `VARCHAR(20)` | No | Estado del pago: `PENDING`, `COMPLETED` o `REJECTED`. Es texto y no `ENUM` para poder agregar estados sin cambiar la columna. |
+| `attempted_at` | `DATETIME(6)` | No | Fecha y hora en que se inició el pago. |
+| `provider_payment_id` | `VARCHAR(40)` | Sí | Identificador del pago en Mercado Pago. Queda vacío en los pagos de demostración. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 **Relaciones principales:**
-* `plans` 1 — N `subscriptions`: varios usuarios pueden tener el mismo plan.
-* `subscriptions` 1 — N `payments`: una suscripción acumula sus pagos.
-* `subscriptions.user_id` → `users` (IAM).
+* `plans` 1 — N `subscriptions` y `payments`: se relacionan por el código del plan (`plan_code`), sin clave foránea.
+* `subscriptions` 1 — N `payments`: una suscripción acumula los pagos que la activaron (`payments.subscription_id`, por identificador).
+* `subscriptions.user_id` y `payments.user_id` → `users` (IAM).
+
 
 #### 4.8.1.4. Field Management Context
 
-Este contexto guarda las parcelas con su polígono GPS, las campañas agrícolas y el libro de costos de cada campaña.
+Este contexto (`farming` en el código) guarda las parcelas con su polígono GPS, las campañas agrícolas y el libro de costos de cada campaña.
 
-![Database Diagram - Field Management Context](assets/img/chapter-4/database/04-field-management-db-diagram.png)
+```mermaid
+erDiagram
+    direction LR
+    field_plots {
+        BIGINT id PK
+        BIGINT owner_user_id "uk_owner_user_id_name, referencia"
+        BIGINT cooperative_id "NULL, referencia"
+        BIGINT cooperative_member_id "NULL, referencia"
+        VARCHAR(100) name "uk_owner_user_id_name"
+        VARCHAR(150) region
+        ENUM status
+        DECIMAL area_hectares "DECIMAL(10,2)"
+        VARCHAR(255) agro_monitoring_polygon_id "NULL"
+        TEXT boundary "NULL"
+        DECIMAL soil_ph "DECIMAL(4,2), NULL"
+        ENUM soil_texture "NULL"
+        DECIMAL soil_organic_matter_percentage "DECIMAL(5,2), NULL"
+        DATE soil_recorded_at "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    crop_campaigns {
+        BIGINT id PK
+        BIGINT plot_id "referencia"
+        VARCHAR(10) season
+        ENUM crop_type
+        VARCHAR(60) seed_variety
+        BIT(1) seed_variety_custom
+        DATE sowing_date "NULL"
+        ENUM status
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    campaign_ledgers {
+        BIGINT id PK
+        BIGINT crop_campaign_id UK "referencia"
+        ENUM yield_unit
+        DECIMAL expected_yield "DECIMAL(12,2), NULL"
+        DECIMAL actual_yield "DECIMAL(12,2), NULL"
+        BIT(1) frozen
+        VARCHAR(3) currency
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    expense_entries {
+        BIGINT id PK
+        BIGINT campaign_ledger_id FK
+        ENUM category
+        VARCHAR(120) description
+        DECIMAL quantity "DECIMAL(12,2)"
+        DECIMAL unit_price "DECIMAL(12,2)"
+        VARCHAR(3) unit_price_currency
+        DATE expense_date
+        VARCHAR(255) notes "NULL"
+        VARCHAR(64) client_sync_id "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    cooperative_members {
+        BIGINT id PK
+    }
+    cooperatives {
+        BIGINT id PK
+    }
+    users {
+        BIGINT id PK
+    }
+    campaign_ledgers ||..o{ expense_entries : "FK campaign_ledger_id a id"
+    users ||..o{ field_plots : "referencia owner_user_id a id"
+    cooperatives |o..o{ field_plots : "referencia cooperative_id a id"
+    cooperative_members |o..o{ field_plots : "referencia cooperative_member_id a id"
+    field_plots ||..o{ crop_campaigns : "referencia plot_id a id"
+    crop_campaigns ||..o| campaign_ledgers : "referencia crop_campaign_id a id"
+```
 
 ###### Tabla `field_plots`
 
-Parcelas registradas. El análisis de suelo (value object `SoilBaseline`) se guarda en las columnas `soil_*`.
+Parcelas registradas. El polígono GPS se guarda como texto en `boundary` y el análisis de suelo (value object `SoilBaseline`) en las columnas `soil_*`.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `owner_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Productor dueño de la parcela. |
-| `name` | `VARCHAR(100)` | Nombre que el productor le da a la parcela. |
-| `region` | `VARCHAR(100)` | Región donde está la parcela. |
-| `area_hectares` | `DECIMAL(10,4)` | Área calculada a partir del polígono, en hectáreas. |
-| `status` | `VARCHAR(20)` | Estado de la parcela: `WITHOUT_POLYGON` (sin polígono) o `ACTIVE_MONITORING` (con monitoreo satelital). |
-| `agromonitoring_polygon_id` | `VARCHAR(50)` | Identificador del polígono registrado en AgroMonitoring. |
-| `soil_ph` | `DECIMAL(4,2)` | pH del suelo según el análisis inicial. |
-| `soil_texture` | `VARCHAR(50)` | Textura del suelo (por ejemplo, franco o arcilloso). |
-| `soil_organic_matter_percentage` | `DECIMAL(5,2)` | Porcentaje de materia orgánica del suelo. |
-| `soil_recorded_at` | `DATE` | Fecha del análisis de suelo. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `owner_user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Productor dueño de la parcela. |
+| `cooperative_id` | `BIGINT` | Sí | **(referencia → `cooperatives`, Profiles)** Cooperativa a la que pertenece la parcela. Queda vacío si el productor es independiente. No cambia después de crearse. |
+| `cooperative_member_id` | `BIGINT` | Sí | **(referencia → `cooperative_members`, Profiles)** Socio de la cooperativa dueño de la parcela. Queda vacío si el productor es independiente. No cambia después de crearse. |
+| `name` | `VARCHAR(100)` | No | Nombre que el productor le da a la parcela. No se repite entre las parcelas del mismo productor. |
+| `region` | `VARCHAR(150)` | No | Región donde está la parcela. |
+| `status` | `ENUM` | No | Estado de la parcela: `WITHOUT_POLYGON` (sin polígono) o `ACTIVE_MONITORING` (con monitoreo satelital). |
+| `area_hectares` | `DECIMAL(10,2)` | No | Área calculada a partir del polígono, en hectáreas. |
+| `agro_monitoring_polygon_id` | `VARCHAR(255)` | Sí | Identificador del polígono registrado en AgroMonitoring. Queda vacío hasta que se dibuja el polígono. |
+| `boundary` | `TEXT` | Sí | Vértices del polígono GPS en orden, como texto: pares `latitud,longitud` separados por `;`. Queda vacío hasta que se dibuja el polígono. |
+| `soil_ph` | `DECIMAL(4,2)` | Sí | pH del suelo según el análisis inicial. Queda vacío hasta que se registra. |
+| `soil_texture` | `ENUM` | Sí | Textura del suelo: `SANDY`, `LOAMY`, `CLAY`, `SILTY`, `SANDY_LOAM` o `CLAY_LOAM`. |
+| `soil_organic_matter_percentage` | `DECIMAL(5,2)` | Sí | Porcentaje de materia orgánica del suelo. |
+| `soil_recorded_at` | `DATE` | Sí | Fecha del análisis de suelo. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
-###### Tabla `plot_coordinates`
-
-Vértices del polígono GPS de cada parcela, en orden.
-
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `field_plot_id` | `BIGINT` | **(FK → `field_plots`)** Parcela a la que pertenece el vértice. |
-| `vertex_order` | `INT` | Posición del vértice dentro del polígono. |
-| `latitude` | `DECIMAL(10,8)` | Latitud GPS del vértice. |
-| `longitude` | `DECIMAL(11,8)` | Longitud GPS del vértice. |
-
-Restricción única compuesta: `(field_plot_id, vertex_order)`.
+Restricción única compuesta: `(owner_user_id, name)` (`uk_owner_user_id_name`).
 
 ###### Tabla `crop_campaigns`
 
 Campañas agrícolas de cada parcela, con el cultivo, la variedad y la fecha de siembra.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `field_plot_id` | `BIGINT` | **(FK → `field_plots`)** Parcela donde se hace la campaña. |
-| `season` | `VARCHAR(20)` | Temporada agrícola (por ejemplo, 2026-A). |
-| `crop_type` | `VARCHAR(20)` | Cultivo: `ANDEAN_POTATO` (papa andina) o `SPECIALTY_COFFEE` (café de especialidad). |
-| `seed_variety_name` | `VARCHAR(100)` | Variedad sembrada. |
-| `seed_variety_custom` | `BOOLEAN` | Indica si la variedad la escribió el productor porque no estaba en la lista. |
-| `sowing_date` | `DATE` | Fecha de siembra. Al registrarla se programa el monitoreo satelital. |
-| `status` | `VARCHAR(20)` | Estado de la campaña: `IN_PROGRESS` o `FINISHED`. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`)** Parcela donde se hace la campaña. |
+| `season` | `VARCHAR(10)` | No | Temporada agrícola (por ejemplo, 2026-A). |
+| `crop_type` | `ENUM` | No | Cultivo: `ANDEAN_POTATO` (papa andina) o `SPECIALTY_COFFEE` (café de especialidad). |
+| `seed_variety` | `VARCHAR(60)` | No | Variedad sembrada. |
+| `seed_variety_custom` | `BIT(1)` | No | Indica si la variedad la escribió el productor porque no estaba en la lista. |
+| `sowing_date` | `DATE` | Sí | Fecha de siembra. Al registrarla se programa el monitoreo satelital. Puede estar vacía. |
+| `status` | `ENUM` | No | Estado de la campaña: `IN_PROGRESS` o `FINISHED`. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `campaign_ledgers`
 
-Libro de costos de cada campaña, con el rendimiento esperado y el real.
+Libro de costos de cada campaña, con el rendimiento esperado y el real. Se abre solo cuando empieza la campaña y se congela cuando termina.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `crop_campaign_id` | `BIGINT` | **(FK → `crop_campaigns`; UNIQUE)** Campaña a la que pertenece el libro de costos. Cada campaña tiene uno solo. |
-| `expected_yield_quantity` | `DECIMAL(10,2)` | Rendimiento que el productor espera cosechar. |
-| `expected_yield_unit` | `VARCHAR(10)` | Unidad del rendimiento esperado: `SACK` (saco) o `QUINTAL`. |
-| `actual_yield_quantity` | `DECIMAL(10,2)` | Rendimiento real, que se registra cuando se pesa el lote en el acopio. |
-| `actual_yield_unit` | `VARCHAR(10)` | Unidad del rendimiento real: `SACK` o `QUINTAL`. |
-| `frozen` | `BOOLEAN` | Indica si el libro está cerrado y ya no acepta gastos. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `crop_campaign_id` | `BIGINT` | No | **(referencia → `crop_campaigns`; UNIQUE)** Campaña a la que pertenece el libro de costos. Cada campaña tiene uno solo. |
+| `yield_unit` | `ENUM` | No | Unidad del rendimiento: `SACK` (saco, para papa) o `QUINTAL` (para café). |
+| `expected_yield` | `DECIMAL(12,2)` | Sí | Rendimiento que el productor espera cosechar, en la unidad `yield_unit`. Puede estar vacío. |
+| `actual_yield` | `DECIMAL(12,2)` | Sí | Rendimiento real, en la unidad `yield_unit`. Puede estar vacío hasta que se registra. |
+| `frozen` | `BIT(1)` | No | Indica si el libro está cerrado y ya no acepta gastos. |
+| `currency` | `VARCHAR(3)` | No | Moneda de los gastos del libro (por ejemplo, `PEN`). |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `expense_entries`
 
-Gastos del libro de costos: insumos, jornales y flete. `client_sync_id` evita duplicar los gastos registrados sin conexión.
+Gastos del libro de costos: insumos, jornales y flete. `client_sync_id` identifica los gastos registrados sin conexión.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `campaign_ledger_id` | `BIGINT` | **(FK → `campaign_ledgers`)** Libro de costos al que pertenece el gasto. |
-| `category` | `VARCHAR(10)` | Tipo de gasto: `INPUTS` (insumos), `LABOR` (jornales) o `FREIGHT` (flete). |
-| `description` | `VARCHAR(255)` | Detalle del gasto (por ejemplo, el nombre del insumo). |
-| `quantity` | `DECIMAL(10,2)` | Cantidad comprada o número de jornales. |
-| `unit_price_amount` | `DECIMAL(10,2)` | Precio por unidad. |
-| `currency` | `CHAR(3)` | Moneda del gasto (por defecto `PEN`). |
-| `expense_date` | `DATE` | Fecha en que se hizo el gasto. |
-| `notes` | `VARCHAR(255)` | Notas adicionales del productor. |
-| `client_sync_id` | `CHAR(36)` | **(UNIQUE)** Código generado en el celular cuando el gasto se registra sin conexión. No se repite, así el gasto no se duplica al sincronizar. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `campaign_ledger_id` | `BIGINT` | No | **(FK → `campaign_ledgers`)** Libro de costos al que pertenece el gasto. |
+| `category` | `ENUM` | No | Tipo de gasto: `INPUTS` (insumos), `LABOR` (jornales) o `FREIGHT` (flete). |
+| `description` | `VARCHAR(120)` | No | Detalle del gasto (por ejemplo, el nombre del insumo). |
+| `quantity` | `DECIMAL(12,2)` | No | Cantidad comprada o número de jornales. |
+| `unit_price` | `DECIMAL(12,2)` | No | Precio por unidad (parte `amount` del value object `Money`). |
+| `unit_price_currency` | `VARCHAR(3)` | No | Moneda del precio unitario (parte `currency` del value object `Money`). |
+| `expense_date` | `DATE` | No | Fecha en que se hizo el gasto. |
+| `notes` | `VARCHAR(255)` | Sí | Notas adicionales del productor. Pueden estar vacías. |
+| `client_sync_id` | `VARCHAR(64)` | Sí | Identificador generado al registrar un gasto sin conexión. El agregado evita duplicados por identificador dentro del libro. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 **Relaciones principales:**
-* `field_plots` 1 — N `plot_coordinates` y `crop_campaigns`.
-* `crop_campaigns` 1 — 1 `campaign_ledgers` 1 — N `expense_entries`.
-* `field_plots.owner_user_id` → `users` (IAM).
+* `campaign_ledgers` 1 — N `expense_entries` (clave foránea declarada).
+* `crop_campaigns.plot_id` → `field_plots` y `campaign_ledgers.crop_campaign_id` → `crop_campaigns` (1 — 1), por identificador.
+* `field_plots.owner_user_id` → `users` (IAM); `field_plots.cooperative_id` y `cooperative_member_id` → `cooperatives` y `cooperative_members` (Profiles).
+* El polígono no tiene tabla propia: sus vértices se guardan en `field_plots.boundary`.
+
 
 #### 4.8.1.5. Crop Health Context
 
-Este contexto guarda las observaciones satelitales, el pronóstico del clima, las alertas y la asesoría del agrónomo.
+Este contexto guarda las observaciones satelitales, el pronóstico del clima, las alertas, los boletines regionales y la asesoría del agrónomo (reportes de plaga, visitas y recetas).
 
-![Database Diagram - Crop Health Context](assets/img/chapter-4/database/05-crop-health-db-diagram.png)
+```mermaid
+erDiagram
+    direction LR
+    satellite_observations {
+        BIGINT id PK
+        BIGINT plot_id "referencia"
+        DATETIME(6) captured_at
+        TEXT source
+        FLOAT(53) ndvi_mean "NULL"
+        FLOAT(53) ndwi_mean "NULL"
+        FLOAT(53) cloud_coverage_percent
+        FLOAT(53) surface_temp_kelvin "NULL"
+        VARCHAR(32) import_key UK "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    climate_forecasts {
+        BIGINT id PK
+        TEXT region
+        FLOAT(53) temperature_celsius
+        FLOAT(53) rain_chance
+        DATETIME(6) forecast_date
+        TEXT source
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    agroclimatic_alerts {
+        BIGINT id PK
+        TEXT title
+        TEXT description
+        ENUM severity
+        TEXT region
+        DATETIME(6) issued_at
+        TEXT source
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    regional_bulletins {
+        BIGINT id PK
+        BIGINT agronomist_id "referencia"
+        TEXT region
+        TEXT title
+        TEXT content
+        DATETIME(6) published_at
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    pest_reports {
+        BIGINT id PK
+        BIGINT plot_id "referencia"
+        BIGINT reporter_id "referencia"
+        TEXT description
+        ENUM severity
+        ENUM status
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    field_inspections {
+        BIGINT id PK
+        BIGINT pest_report_id UK "referencia"
+        BIGINT plot_id "referencia"
+        BIGINT agronomist_id "referencia"
+        DATETIME(6) scheduled_at
+        ENUM status
+        TEXT findings "NULL"
+        DATETIME(6) completed_at "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    technical_prescriptions {
+        BIGINT id PK
+        BIGINT pest_report_id UK "referencia"
+        BIGINT plot_id "referencia"
+        BIGINT agronomist_id "referencia"
+        TEXT product
+        TEXT dosage
+        TEXT instructions
+        DATE application_date
+        ENUM status
+        DATETIME(6) applied_at "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    field_plots {
+        BIGINT id PK
+    }
+    users {
+        BIGINT id PK
+    }
+    field_plots ||..o{ satellite_observations : "referencia plot_id a id"
+    users ||..o{ regional_bulletins : "referencia agronomist_id a id"
+    field_plots ||..o{ pest_reports : "referencia plot_id a id"
+    users ||..o{ pest_reports : "referencia reporter_id a id"
+    pest_reports ||..o| field_inspections : "referencia pest_report_id a id"
+    field_plots ||..o{ field_inspections : "referencia plot_id a id"
+    users ||..o{ field_inspections : "referencia agronomist_id a id"
+    pest_reports ||..o| technical_prescriptions : "referencia pest_report_id a id"
+    field_plots ||..o{ technical_prescriptions : "referencia plot_id a id"
+    users ||..o{ technical_prescriptions : "referencia agronomist_id a id"
+```
 
 ###### Tabla `satellite_observations`
 
-Imágenes de AgroMonitoring con sus índices NDVI y NDWI. Las imágenes con mucha nubosidad se marcan como descartadas.
+Imágenes de AgroMonitoring con sus índices NDVI y NDWI. `import_key` evita importar dos veces la misma imagen.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `plot_id` | `BIGINT` | **(FK → `field_plots`, otro contexto)** Parcela observada. |
-| `polygon_id` | `VARCHAR(50)` | Identificador del polígono en AgroMonitoring. |
-| `captured_at` | `TIMESTAMP` | Fecha y hora en que el satélite tomó la imagen. |
-| `source` | `VARCHAR(15)` | Satélite de origen: `SENTINEL_2` o `LANDSAT_8`. |
-| `cloud_coverage` | `DECIMAL(5,2)` | Porcentaje de nubes en la imagen. |
-| `ndvi` | `DECIMAL(5,4)` | Índice de vigor de la vegetación (NDVI). |
-| `ndwi` | `DECIMAL(5,4)` | Índice de agua en la vegetación (NDWI). |
-| `discarded` | `BOOLEAN` | Indica si la imagen se descartó por tener demasiadas nubes. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`, Field Management)** Parcela observada. |
+| `captured_at` | `DATETIME(6)` | No | Fecha y hora en que el satélite tomó la imagen. |
+| `source` | `TEXT` | No | Satélite o fuente de origen de la imagen. |
+| `ndvi_mean` | `FLOAT(53)` | Sí | Índice de vigor de la vegetación (NDVI) promedio de la parcela. Puede estar vacío. |
+| `ndwi_mean` | `FLOAT(53)` | Sí | Índice de agua en la vegetación (NDWI) promedio de la parcela. Puede estar vacío. |
+| `cloud_coverage_percent` | `FLOAT(53)` | No | Porcentaje de nubes en la imagen. |
+| `surface_temp_kelvin` | `FLOAT(53)` | Sí | Temperatura de la superficie, en kelvin. Puede estar vacía. |
+| `import_key` | `VARCHAR(32)` | Sí | **(UNIQUE)** Clave que evita importar dos veces la misma observación cuando se informa. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `climate_forecasts`
 
-Pronóstico diario de cada parcela. Solo hay un pronóstico por parcela y fecha.
+Pronóstico diario de cada región, importado de AgroMonitoring (5 días).
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `plot_id` | `BIGINT` | **(FK → `field_plots`, otro contexto)** Parcela a la que corresponde el pronóstico. |
-| `forecast_date` | `DATE` | Día pronosticado. |
-| `min_celsius` | `DECIMAL(5,2)` | Temperatura mínima esperada, en °C. Sirve para detectar riesgo de helada. |
-| `max_celsius` | `DECIMAL(5,2)` | Temperatura máxima esperada, en °C. |
-| `precipitation_mm` | `DECIMAL(6,2)` | Lluvia esperada, en milímetros. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
-
-Restricción única compuesta: `(plot_id, forecast_date)`.
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `region` | `TEXT` | No | Región a la que corresponde el pronóstico. |
+| `temperature_celsius` | `FLOAT(53)` | No | Temperatura promedio esperada, en °C. |
+| `rain_chance` | `FLOAT(53)` | No | Probabilidad de lluvia, en porcentaje. |
+| `forecast_date` | `DATETIME(6)` | No | Día pronosticado. |
+| `source` | `TEXT` | No | Fuente del pronóstico. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `agroclimatic_alerts`
 
-Alertas por anomalía de vegetación, estrés hídrico o riesgo de helada.
+Alertas agroclimáticas por región. Las graves (`HIGH` y `CRITICAL`) también se envían por correo a los productores con parcelas en la región.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `plot_id` | `BIGINT` | **(FK → `field_plots`, otro contexto)** Parcela afectada. |
-| `type` | `VARCHAR(20)` | Tipo de alerta: `VEGETATION_ANOMALY`, `WATER_STRESS` o `FROST_RISK`. |
-| `severity` | `VARCHAR(10)` | Gravedad: `LOW`, `MEDIUM` o `CRITICAL`. |
-| `status` | `VARCHAR(10)` | Estado: `ACTIVE` o `MITIGATED`. |
-| `raised_at` | `TIMESTAMP` | Fecha y hora en que se generó la alerta. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
-
-###### Tabla `action_steps`
-
-Pasos del plan de acción de cada alerta.
-
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `agroclimatic_alert_id` | `BIGINT` | **(FK → `agroclimatic_alerts`)** Alerta a la que pertenece el paso. |
-| `description` | `VARCHAR(255)` | Acción que debe hacer el productor (por ejemplo, regar o cubrir el cultivo). |
-| `scheduled_at` | `TIMESTAMP` | Fecha y hora en que se debe hacer la acción. |
-| `completed` | `BOOLEAN` | Indica si el productor ya hizo la acción. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `title` | `TEXT` | No | Título de la alerta. |
+| `description` | `TEXT` | No | Descripción de la situación y de qué hacer. |
+| `severity` | `ENUM` | No | Gravedad: `LOW`, `MEDIUM`, `HIGH` o `CRITICAL`. |
+| `region` | `TEXT` | No | Región afectada. |
+| `issued_at` | `DATETIME(6)` | No | Fecha y hora en que se emitió la alerta. |
+| `source` | `TEXT` | No | Origen de la alerta (por ejemplo, servicio meteorológico o sistema interno). |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `regional_bulletins`
 
 Boletines preventivos que el agrónomo emite para una región.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `agronomist_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Agrónomo que emite el boletín. |
-| `region` | `VARCHAR(100)` | Región a la que va dirigido el boletín. |
-| `title` | `VARCHAR(150)` | Título del boletín. |
-| `preventive_measures` | `TEXT` | Medidas preventivas que recomienda el agrónomo. |
-| `issued_at` | `TIMESTAMP` | Fecha y hora de publicación. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `agronomist_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Agrónomo que emite el boletín. |
+| `region` | `TEXT` | No | Región a la que va dirigido el boletín. |
+| `title` | `TEXT` | No | Título del boletín. |
+| `content` | `TEXT` | No | Contenido del boletín, con las medidas preventivas que recomienda el agrónomo. |
+| `published_at` | `DATETIME(6)` | No | Fecha y hora de publicación. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `pest_reports`
 
-Reportes de plaga con foto. `farmer_user_id` es quien reporta y `assigned_agronomist_user_id` es el agrónomo que lo revisa; las dos columnas apuntan a `users`. `client_sync_id` evita duplicar los reportes hechos sin conexión.
+Reportes de plaga que hace el productor sobre una parcela.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `plot_id` | `BIGINT` | **(FK → `field_plots`, otro contexto)** Parcela donde se encontró la plaga. |
-| `farmer_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Productor que hace el reporte. |
-| `assigned_agronomist_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Agrónomo que revisa el reporte. Puede estar vacío hasta que se asigne. |
-| `photo_url` | `VARCHAR(255)` | Dirección de la foto de la plaga. |
-| `photo_uploaded_at` | `TIMESTAMP` | Fecha y hora en que se subió la foto. |
-| `comments` | `VARCHAR(500)` | Comentarios del productor sobre lo que observó. |
-| `damage_assessment` | `VARCHAR(500)` | Evaluación del daño hecha por el agrónomo. |
-| `status` | `VARCHAR(15)` | Estado del reporte: `SUBMITTED`, `UNDER_REVIEW`, `PRESCRIBED`, `IN_FOLLOW_UP`, `RESOLVED` o `REOPENED`. |
-| `client_sync_id` | `CHAR(36)` | **(UNIQUE)** Código generado en el celular cuando el reporte se hace sin conexión. No se repite, así el reporte no se duplica al sincronizar. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`, Field Management)** Parcela donde se encontró la plaga. |
+| `reporter_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Productor que hace el reporte. |
+| `description` | `TEXT` | No | Lo que el productor observó. |
+| `severity` | `ENUM` | No | Gravedad: `LOW`, `MEDIUM`, `HIGH` o `SEVERE`. |
+| `status` | `ENUM` | No | Estado del reporte: `PENDING`, `INSPECTED` o `RESOLVED`. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `field_inspections`
 
-Visitas de campo programadas a partir de un reporte de plaga.
+Visita de campo programada a partir de un reporte de plaga. Hay como máximo una por reporte.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `pest_report_id` | `BIGINT` | **(FK → `pest_reports`)** Reporte de plaga que origina la visita. |
-| `agronomist_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Agrónomo que hace la visita. |
-| `scheduled_at` | `TIMESTAMP` | Fecha y hora programada de la visita. |
-| `completed_at` | `TIMESTAMP` | Fecha y hora en que se terminó la visita. |
-| `findings` | `VARCHAR(500)` | Lo que encontró el agrónomo en la parcela. |
-| `status` | `VARCHAR(10)` | Estado: `SCHEDULED` o `COMPLETED`. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `pest_report_id` | `BIGINT` | No | **(referencia → `pest_reports`; UNIQUE)** Reporte de plaga que origina la visita. Cada reporte tiene como máximo una visita. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`, Field Management)** Parcela que se visita. |
+| `agronomist_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Agrónomo que hace la visita. |
+| `scheduled_at` | `DATETIME(6)` | No | Fecha y hora programada de la visita. |
+| `status` | `ENUM` | No | Estado: `SCHEDULED` o `COMPLETED`. |
+| `findings` | `TEXT` | Sí | Lo que encontró el agrónomo en la parcela. Queda vacío hasta completar la visita. |
+| `completed_at` | `DATETIME(6)` | Sí | Fecha y hora en que se terminó la visita. Queda vacía hasta completarla. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `technical_prescriptions`
 
 Receta técnica emitida para un reporte de plaga. Hay como máximo una por reporte.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `pest_report_id` | `BIGINT` | **(FK → `pest_reports`; UNIQUE)** Reporte de plaga que se trata. Cada reporte tiene como máximo una receta. |
-| `agronomist_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Agrónomo que emite la receta. |
-| `product` | `VARCHAR(150)` | Producto recomendado. |
-| `dosage_quantity` | `DECIMAL(10,2)` | Cantidad del producto por aplicación. |
-| `dosage_unit` | `VARCHAR(20)` | Unidad de la dosis (por ejemplo, ml o g). |
-| `dosage_per` | `VARCHAR(20)` | Base de la dosis (por ejemplo, por litro o por mochila). |
-| `frequency` | `VARCHAR(100)` | Cada cuánto se aplica el producto. |
-| `waiting_period_days` | `INT` | Días que se deben esperar antes de cosechar. |
-| `status` | `VARCHAR(20)` | Estado: `PENDING_APPLICATION`, `APPLIED` o `EVALUATED`. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `pest_report_id` | `BIGINT` | No | **(referencia → `pest_reports`; UNIQUE)** Reporte de plaga que se trata. Cada reporte tiene como máximo una receta. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`, Field Management)** Parcela que se trata. |
+| `agronomist_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Agrónomo que emite la receta. |
+| `product` | `TEXT` | No | Producto recomendado. |
+| `dosage` | `TEXT` | No | Dosis recomendada. |
+| `instructions` | `TEXT` | No | Instrucciones de aplicación. |
+| `application_date` | `DATE` | No | Fecha prevista de aplicación. |
+| `status` | `ENUM` | No | Estado: `ISSUED` (emitida) o `APPLIED` (aplicada). |
+| `applied_at` | `DATETIME(6)` | Sí | Fecha y hora en que el productor registró la aplicación. Queda vacía hasta entonces. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 **Relaciones principales:**
-* `agroclimatic_alerts` 1 — N `action_steps`.
-* `pest_reports` 1 — N `field_inspections` y 1 — 0..1 `technical_prescriptions`.
-* `plot_id` → `field_plots` (Field Management) y las columnas `*_user_id` → `users` (IAM).
+* Las tablas de este contexto no declaran claves foráneas: se relacionan por identificador.
+* `pest_reports` 1 — 0..1 `field_inspections` y 1 — 0..1 `technical_prescriptions` (por `pest_report_id`, único en cada una).
+* `plot_id` → `field_plots` (Field Management) y `reporter_id` / `agronomist_id` → `users` (IAM).
+* Las alertas agroclimáticas y los pronósticos se guardan por región, no por parcela.
+
 
 #### 4.8.1.6. Harvest Certification Context
 
-Este contexto guarda los lotes que llegan al acopio, su calificación de calidad y los certificados con código QR.
+Este contexto guarda los lotes que llegan al acopio con su muestra y calificación de calidad, y los certificados con código QR.
 
-![Database Diagram - Harvest Certification Context](assets/img/chapter-4/database/06-harvest-certification-db-diagram.png)
+```mermaid
+erDiagram
+    direction LR
+    harvest_batches {
+        BIGINT id PK
+        VARCHAR(40) batch_code UK
+        BIGINT cooperative_id "referencia"
+        BIGINT member_id "referencia"
+        BIGINT plot_id "referencia"
+        ENUM crop_type
+        DATE harvested_on
+        DATETIME(6) registered_at
+        ENUM status
+        DECIMAL net_weight_kg "DECIMAL(12,3), NULL"
+        VARCHAR(40) sample_identifier "NULL"
+        DECIMAL sample_weight_kg "DECIMAL(12,3), NULL"
+        DECIMAL first_caliber_percentage "DECIMAL(5,2), NULL"
+        DECIMAL second_caliber_percentage "DECIMAL(5,2), NULL"
+        DECIMAL third_caliber_percentage "DECIMAL(5,2), NULL"
+        DECIMAL pest_damage_percentage "DECIMAL(5,2), NULL"
+        DECIMAL coffee_cupping_score "DECIMAL(5,2), NULL"
+        BIT(1) coffee_ferment_defect
+        DECIMAL quality_score "DECIMAL(5,2), NULL"
+        ENUM quality_category "NULL"
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    quality_certificates {
+        BIGINT id PK
+        VARCHAR(40) certificate_number UK
+        BIGINT harvest_batch_id UK "referencia"
+        ENUM quality_category
+        VARCHAR(64) certificate_hash
+        BIGINT issued_by_user_id "referencia"
+        DATETIME(6) issued_at
+        ENUM status
+        DATETIME(6) created_at
+        DATETIME(6) updated_at
+    }
+    cooperative_members {
+        BIGINT id PK
+    }
+    cooperatives {
+        BIGINT id PK
+    }
+    field_plots {
+        BIGINT id PK
+    }
+    users {
+        BIGINT id PK
+    }
+    cooperatives ||..o{ harvest_batches : "referencia cooperative_id a id"
+    cooperative_members ||..o{ harvest_batches : "referencia member_id a id"
+    field_plots ||..o{ harvest_batches : "referencia plot_id a id"
+    harvest_batches ||..o| quality_certificates : "referencia harvest_batch_id a id"
+    users ||..o{ quality_certificates : "referencia issued_by_user_id a id"
+```
 
 ###### Tabla `harvest_batches`
 
-Lotes de cosecha. El peso, los calibres de papa y la catación de café (value objects) se guardan en sus columnas; solo se llenan las que corresponden al cultivo.
+Lotes de cosecha. El peso, la muestra, los calibres de papa y la catación de café se guardan en sus columnas; solo se llenan las que corresponden al cultivo y a la etapa del lote.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `code` | `VARCHAR(20)` | **(UNIQUE)** Código del lote. No se repite. |
-| `cooperative_id` | `BIGINT` | **(FK → `cooperatives`, otro contexto)** Cooperativa que recibe el lote. |
-| `member_id` | `BIGINT` | **(FK → `cooperative_members`, otro contexto)** Socio que entrega el lote. |
-| `plot_id` | `BIGINT` | **(FK → `field_plots`, otro contexto)** Parcela de donde viene la cosecha. |
-| `campaign_id` | `BIGINT` | **(FK → `crop_campaigns`, otro contexto)** Campaña en la que se cosechó. |
-| `crop_type` | `VARCHAR(20)` | Cultivo: `ANDEAN_POTATO` o `SPECIALTY_COFFEE`. |
-| `collected_at` | `DATE` | Fecha en que el lote llegó al acopio. |
-| `gross_kg` | `DECIMAL(10,2)` | Peso bruto del lote, en kg. |
-| `tare_kg` | `DECIMAL(10,2)` | Peso de los envases (tara), en kg. El peso neto es bruto menos tara. |
-| `potato_first_percentage` | `DECIMAL(5,2)` | Papa: porcentaje de primera calidad según el calibre (MIDAGRI). |
-| `potato_second_percentage` | `DECIMAL(5,2)` | Papa: porcentaje de segunda calidad. |
-| `potato_third_percentage` | `DECIMAL(5,2)` | Papa: porcentaje de tercera calidad. |
-| `potato_weevil_damage_pct` | `DECIMAL(5,2)` | Papa: porcentaje de tubérculos dañados por gorgojo. |
-| `coffee_aroma` | `DECIMAL(4,2)` | Café: puntaje de aroma en la catación (SCA). |
-| `coffee_flavor` | `DECIMAL(4,2)` | Café: puntaje de sabor. |
-| `coffee_acidity` | `DECIMAL(4,2)` | Café: puntaje de acidez. |
-| `coffee_body` | `DECIMAL(4,2)` | Café: puntaje de cuerpo. |
-| `quality_category` | `VARCHAR(30)` | Resultado de la calificación: `PREMIUM_GOLD`, `STANDARD`, `B_GRADE_REQUIRES_SORTING`, `SPECIALTY_COFFEE` o `COMMERCIAL_COFFEE`. |
-| `status` | `VARCHAR(20)` | Estado del lote: `PENDING_GRADING`, `GRADED` o `CERTIFIED`. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
-
-###### Tabla `representative_samples`
-
-Muestra extraída de cada lote para calificarlo.
-
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `harvest_batch_id` | `BIGINT` | **(FK → `harvest_batches`; UNIQUE)** Lote del que se extrajo la muestra. Cada lote tiene una sola. |
-| `weight_kg` | `DECIMAL(8,2)` | Peso de la muestra, en kg. |
-| `extracted_at` | `TIMESTAMP` | Fecha y hora en que se tomó la muestra. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `batch_code` | `VARCHAR(40)` | No | **(UNIQUE)** Código del lote. No se repite. |
+| `cooperative_id` | `BIGINT` | No | **(referencia → `cooperatives`, Profiles)** Cooperativa que recibe el lote. |
+| `member_id` | `BIGINT` | No | **(referencia → `cooperative_members`, Profiles)** Socio que entrega el lote. |
+| `plot_id` | `BIGINT` | No | **(referencia → `field_plots`, Field Management)** Parcela de donde viene la cosecha. |
+| `crop_type` | `ENUM` | No | Cultivo: `ANDEAN_POTATO` o `SPECIALTY_COFFEE`. |
+| `harvested_on` | `DATE` | No | Fecha en que se cosechó el lote. |
+| `registered_at` | `DATETIME(6)` | No | Fecha y hora en que el lote se registró en el acopio. |
+| `status` | `ENUM` | No | Estado del lote: `PENDING`, `GRADED` o `CERTIFIED`. |
+| `net_weight_kg` | `DECIMAL(12,3)` | Sí | Peso neto del lote, en kg. Queda vacío hasta pesarlo. |
+| `sample_identifier` | `VARCHAR(40)` | Sí | Identificador de la muestra representativa extraída del lote. |
+| `sample_weight_kg` | `DECIMAL(12,3)` | Sí | Peso de la muestra, en kg. |
+| `first_caliber_percentage` | `DECIMAL(5,2)` | Sí | Papa: porcentaje de primera calidad según el calibre (MIDAGRI). |
+| `second_caliber_percentage` | `DECIMAL(5,2)` | Sí | Papa: porcentaje de segunda calidad. |
+| `third_caliber_percentage` | `DECIMAL(5,2)` | Sí | Papa: porcentaje de tercera calidad. |
+| `pest_damage_percentage` | `DECIMAL(5,2)` | Sí | Papa: porcentaje de tubérculos dañados por plaga. |
+| `coffee_cupping_score` | `DECIMAL(5,2)` | Sí | Café: puntaje total de la catación (SCA). |
+| `coffee_ferment_defect` | `BIT(1)` | No | Café: indica si la catación encontró defecto de fermento. |
+| `quality_score` | `DECIMAL(5,2)` | Sí | Puntaje de calidad calculado al calificar el lote. |
+| `quality_category` | `ENUM` | Sí | Resultado de la calificación: `PREMIUM_GOLD`, `STANDARD`, `B_GRADE_REQUIRES_SORTING`, `SPECIALTY_COFFEE` o `COMMERCIAL_COFFEE`. Queda vacío hasta calificar el lote. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
 
 ###### Tabla `quality_certificates`
 
-Certificados de calidad. `sha256_hash` sella el contenido y permite verificarlo al escanear el QR.
+Certificados de calidad. `certificate_hash` sella el contenido y permite verificarlo al escanear el QR.
 
-| Columna | Tipo | Descripción |
-|---|---|---|
-| `id` | `BIGINT` | **(PK)** Identificador único del registro, generado automáticamente. |
-| `harvest_batch_id` | `BIGINT` | **(FK → `harvest_batches`; UNIQUE)** Lote certificado. Cada lote tiene como máximo un certificado. |
-| `certificate_number` | `VARCHAR(30)` | **(UNIQUE)** Número del certificado. No se repite. |
-| `sha256_hash` | `CHAR(64)` | Huella SHA-256 del contenido del certificado; permite comprobar que no fue alterado. |
-| `qr_code_url` | `VARCHAR(255)` | Enlace que abre el código QR hacia la vista pública del certificado. |
-| `issued_by_user_id` | `BIGINT` | **(FK → `users`, otro contexto)** Directivo que emitió el certificado. |
-| `issued_at` | `TIMESTAMP` | Fecha y hora de emisión. |
-| `status` | `VARCHAR(10)` | Estado: `ACTIVE` o `REVOKED`. |
-| `revoked_reason` | `VARCHAR(255)` | Motivo de la anulación, si el certificado fue revocado. |
-| `created_at` | `TIMESTAMP` | Fecha y hora en que se creó el registro. |
-| `updated_at` | `TIMESTAMP` | Fecha y hora de la última modificación del registro. |
+| Columna | Tipo MySQL | Admite `NULL` | Descripción |
+|---|---|---|---|
+| `id` | `BIGINT` | No | **(PK)** Identificador único del registro, generado automáticamente. |
+| `certificate_number` | `VARCHAR(40)` | No | **(UNIQUE)** Número del certificado. No se repite. |
+| `harvest_batch_id` | `BIGINT` | No | **(referencia → `harvest_batches`; UNIQUE)** Lote certificado. Cada lote tiene como máximo un certificado. |
+| `quality_category` | `ENUM` | No | Categoría de calidad que certifica (`PREMIUM_GOLD`, `STANDARD`, `B_GRADE_REQUIRES_SORTING`, `SPECIALTY_COFFEE` o `COMMERCIAL_COFFEE`). |
+| `certificate_hash` | `VARCHAR(64)` | No | Huella SHA-256 del contenido del certificado; permite comprobar que no fue alterado. |
+| `issued_by_user_id` | `BIGINT` | No | **(referencia → `users`, IAM)** Directivo que emitió el certificado. |
+| `issued_at` | `DATETIME(6)` | No | Fecha y hora de emisión. |
+| `status` | `ENUM` | No | Estado: `ACTIVE` o `REVOKED`. |
+| `created_at` | `DATETIME(6)` | No | Fecha y hora en que se creó el registro. |
+| `updated_at` | `DATETIME(6)` | No | Fecha y hora de la última modificación del registro. |
+
+Restricciones únicas: `uk_quality_certificates_certificate_number` y `uk_quality_certificates_harvest_batch_id`.
 
 **Relaciones principales:**
-* `harvest_batches` 1 — 0..1 `representative_samples` y 1 — 0..1 `quality_certificates`.
-* `cooperative_id` → `cooperatives`, `member_id` → `cooperative_members` (Profiles), `plot_id` → `field_plots` y `campaign_id` → `crop_campaigns` (Field Management).
+* `harvest_batches` 1 — 0..1 `quality_certificates` (por `harvest_batch_id`, único). La muestra representativa no tiene tabla propia: se guarda en las columnas `sample_*` del lote.
+* `cooperative_id` → `cooperatives` y `member_id` → `cooperative_members` (Profiles); `plot_id` → `field_plots` (Field Management), por identificador.
 * `quality_certificates.issued_by_user_id` → `users` (IAM).
-
+* El enlace del código QR no se guarda en una columna: se arma con la dirección pública configurada en la API.
