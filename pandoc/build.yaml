@@ -14,6 +14,12 @@
 #  -implicit_figures           : no usa el alt de la imagen como pie de figura
 from: markdown+raw_html+pipe_tables+lists_without_preceding_blankline-yaml_metadata_block-blank_before_header-markdown_in_html_blocks-implicit_figures
 
+standalone: true
+template: ${.}/template/eisvogel.tex
+variables:
+  disable-header-and-footer: true
+  indent: true
+
 metadata-files:
   - ${.}/metadata.yaml
 
@@ -32,6 +38,8 @@ input-files:
   - ${.}/../report/50-chapter-5-implementation.md
   - ${.}/../report/60-conclusions.md
   - ${.}/../report/99-bibliography.md
+  - ${.}/../report/annexes/annex-a-student-outcome.md
+  - ${.}/../report/annexes/annex-b-performance-report.md
   - ${.}/../report/annexes/annex-c-videos.md
 
 # Las imágenes se escriben relativas a report/ (assets/img/...), igual que en GitHub
@@ -40,7 +48,13 @@ resource-path:
   - "${.}/../report/front-matter"
   - "${.}/.."
 
+bibliography:
+  - ${.}/../report/bibliography/references.json
+csl: ${.}/csl/apa-7.csl
+
 filters:
+  - citeproc
+  - ${.}/filters/mermaid.lua
   - ${.}/filters/pdf.lua
 
 include-in-header:

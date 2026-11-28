@@ -63,9 +63,9 @@ Para sustentar la formulación del problema y la propuesta de valor, se aplica l
 
 * **How Much (¿Cuánto representa cuantitativamente esta problemática?):**  
   La magnitud del problema se evidencia en los datos de las fuentes sectoriales oficiales del Perú:
-  - **Extensión y dependencia climática de la papa:** En el Perú se registran más de 330,000 hectáreas sembradas anualmente de papa, de las cuales más del 90% se cultivan bajo régimen de secano (dependientes al 100% de lluvias) en zonas altoandinas, donde heladas y déficits hídricos generan mermas de hasta un 40% del rendimiento por hectárea ([MIDAGRI, 2023](https://www.gob.pe/midagri)).
-  - **Impacto socioeconómico en la caficultura:** Más de 223,000 familias dependen del café distribuido en más de 380,000 hectáreas ([Junta Nacional del Café, 2022](https://juntadelcafe.org.pe/)). La proliferación de plagas por variaciones térmicas y la falta de trazabilidad hacia la Unión Europea y Norteamérica desvalorizan el grano, impidiendo capturar el diferencial de precios que ofrecen los cafés de especialidad.
-  - **Brecha de tecnificación y asociatividad:** Según la Encuesta Nacional Agropecuaria (ENA), solo el 3.8% de los productores agropecuarios en el país recibe asistencia técnica especializada, apenas el 6.6% accede a programas de capacitación y el 93.3% no pertenece a ninguna organización agraria ([INEI, 2022](https://m.inei.gob.pe/prensa/noticias/334-de-los-productores-agropecuarios-del-pais-son-mujeres-14486/)), perpetuando la gestión informal y la venta a pérdida.
+  - **Extensión y dependencia climática de la papa:** En el Perú se registran más de 330,000 hectáreas sembradas anualmente de papa, de las cuales más del 90% se cultivan bajo régimen de secano (dependientes al 100% de lluvias) en zonas altoandinas, donde heladas y déficits hídricos generan mermas de hasta un 40% del rendimiento por hectárea [@midagri-2023].
+  - **Impacto socioeconómico en la caficultura:** Más de 223,000 familias dependen del café distribuido en más de 380,000 hectáreas [@jnc-2022]. La proliferación de plagas por variaciones térmicas y la falta de trazabilidad hacia la Unión Europea y Norteamérica desvalorizan el grano, impidiendo capturar el diferencial de precios que ofrecen los cafés de especialidad.
+  - **Brecha de tecnificación y asociatividad:** Según la Encuesta Nacional Agropecuaria (ENA), solo el 3.8% de los productores agropecuarios en el país recibe asistencia técnica especializada, apenas el 6.6% accede a programas de capacitación y el 93.3% no pertenece a ninguna organización agraria [@inei-2022], perpetuando la gestión informal y la venta a pérdida.
 
 ### 1.2.2. Lean UX Process
 
@@ -146,8 +146,8 @@ El éxito de la solución propuesta radica en el entendimiento profundo de los a
 *   **Nivel educativo:** Primaria o secundaria (completa o incompleta).
 *   **Acceso tecnológico:** Teléfonos inteligentes con conectividad móvil intermitente (redes 3G/4G) y uso habitual de aplicaciones de mensajería (WhatsApp).
 *   **Sustento estadístico oficial:**
-*   En el Perú se siembran más de **330,000 hectáreas de papa** anualmente, de las cuales más del **90%** se cultivan bajo secano (dependencia total de lluvias), lo que expone a los agricultores independientes a pérdidas extremas de hasta un **40% de su rendimiento** debido a anomalías climáticas (heladas y sequías) ([MIDAGRI, 2023](https://www.gob.pe/midagri)).
-*   Según la Encuesta Nacional Agropecuaria, la brecha de tecnificación es severa: el **93.3%** de los productores independientes en el país trabaja de manera informal y no pertenece a ninguna organización agraria ([INEI, 2022](https://m.inei.gob.pe/prensa/noticias/334-de-los-productores-agropecuarios-del-pais-son-mujeres-14486/)).
+*   En el Perú se siembran más de **330,000 hectáreas de papa** anualmente, de las cuales más del **90%** se cultivan bajo secano (dependencia total de lluvias), lo que expone a los agricultores independientes a pérdidas extremas de hasta un **40% de su rendimiento** debido a anomalías climáticas (heladas y sequías) [@midagri-2023].
+*   Según la Encuesta Nacional Agropecuaria, la brecha de tecnificación es severa: el **93.3%** de los productores independientes en el país trabaja de manera informal y no pertenece a ninguna organización agraria [@inei-2022].
 
 ### 2. Productores organizados y directivos de cooperativas agrícolas
 *   **Descripción del segmento:** Gerentes generales, jefes de acopio, directores comerciales y líderes de asociaciones agrarias. Tienen la responsabilidad de centralizar la producción de decenas de socios, estandarizar los niveles de calidad para la venta mayorista, y certificar el origen del cultivo para cumplir con las regulaciones de los mercados nacionales y de exportación.
@@ -157,7 +157,7 @@ El éxito de la solución propuesta radica en el entendimiento profundo de los a
 *   **Nivel educativo:** Técnico o universitario (Administración, Ingeniería Agrónoma, Comercio Exterior).
 *   **Acceso tecnológico:** Computadora de escritorio/laptop en oficina con conexión estable de internet, navegación diaria en navegadores web y uso de hojas de cálculo (Excel) para control financiero.
 *   **Sustento estadístico oficial:**
-*   La caficultura en el Perú sostiene a más de **223,000 familias** distribuidas en más de **380,000 hectáreas** ([Junta Nacional del Café, 2022](https://juntadelcafe.org.pe/)).
+*   La caficultura en el Perú sostiene a más de **223,000 familias** distribuidas en más de **380,000 hectáreas** [@jnc-2022].
 *   Los directivos de estas cooperativas se enfrentan a un mercado global altamente competitivo e informal; las exigencias de trazabilidad ambiental de la Unión Europea y la falta de certificaciones estandarizadas en origen desvalorizan el grano peruano, impidiendo acceder a los sobreprecios de especialidad que los mercados internacionales ofrecen por atributos cualitativos.
 
 ### 3. Ingenieros agrónomos y asesores técnicos de campo
@@ -168,5 +168,5 @@ El éxito de la solución propuesta radica en el entendimiento profundo de los a
 *   **Nivel educativo:** Universitario completo (Ingeniería Agrónoma, Agrícola o Forestal).
 *   **Acceso tecnológico:** Smartphone de gama media/alta con GPS integrado, uso de aplicaciones de mapas y herramientas web para redactar informes de visitas de campo.
 *   **Sustento estadístico oficial:**
-*   En el territorio nacional existe una alarmante brecha en la transferencia de conocimiento: **solo el 3.8% de los productores agrícolas recibe asistencia técnica especializada** y apenas el **6.6%** accede a capacitaciones formales ([INEI, 2022](https://m.inei.gob.pe/prensa/noticias/334-de-los-productores-agropecuarios-del-pais-son-mujeres-14486/)).
+*   En el territorio nacional existe una alarmante brecha en la transferencia de conocimiento: **solo el 3.8% de los productores agrícolas recibe asistencia técnica especializada** y apenas el **6.6%** accede a capacitaciones formales [@inei-2022].
 *   Esta bajísima tasa de cobertura obliga a los pocos asesores de campo activos a optimizar drásticamente sus tiempos de traslado, requiriendo tecnologías de monitoreo remoto satelital que les permitan diagnosticar anomalías fitosanitarias de forma preventiva en múltiples parcelas dispersas sin necesidad de realizar visitas físicas recurrentes.

@@ -212,7 +212,10 @@ sumaq-agro-report/
 │   ├── Makefile                         # make -C pandoc pdf MILESTONE=tb2
 │   ├── build.ps1                        # .\pandoc\build.ps1 -Milestone tb2 (Windows)
 │   ├── filters/
-│   │   └── pdf.lua                      # HTML images and tables → PDF
+│   │   ├── mermaid.lua                  # Renders Mermaid diagrams with mmdc
+│   │   └── pdf.lua                      # Adapts HTML images and tables for PDF
+│   ├── csl/apa-7.csl                    # Citation and bibliography style
+│   ├── template/eisvogel.tex            # LaTeX template
 │   ├── pdf/
 │   │   ├── preamble.tex                 # LaTeX settings
 │   │   └── toc.md                       # Table of contents placement
@@ -229,7 +232,8 @@ sumaq-agro-report/
 │   ├── 40-chapter-4-design.md
 │   ├── 50-chapter-5-implementation.md
 │   ├── 60-conclusions.md                # Conclusions, recommendations, and About-the-Team
-│   ├── 99-bibliography.md               # Prefix 99: APA references
+│   ├── 99-bibliography.md               # Location of the generated bibliography
+│   ├── bibliography/references.json    # Citation data for citeproc
 │   ├── annexes/
 │   │   └── annex-c-videos.md            # Annex A: Presentation Videos (AV1, TB1, AV2, TB2)
 │   └── assets/img/                      # Images grouped by chapter
@@ -250,23 +254,132 @@ sumaq-agro-report/
 
 ## PDF Compilation
 
-Requirements: **Pandoc 3.x** and **XeLaTeX** (MiKTeX or TeX Live / MacTeX). Run all commands from the repository root.
+Run the commands from the repository root. The [Pandoc build configuration](pandoc/build.yaml) sets the report order for course 1ASI0729 (2026-20).
+
+In **WebStorm** or **IntelliJ IDEA**, use **File > Open** and select `sumaq-agro-report`. If you need a checkout, use **Get from VCS** with the [repository URL](https://github.com/dymbia-opensource/sumaq-agro-report.git), or run this with Git installed:
+
+```text
+git clone https://github.com/dymbia-opensource/sumaq-agro-report.git
+cd sumaq-agro-report
+```
+
+Open the IDE's **Terminal** and check that it is in the directory containing `README.md` and `pandoc/`. Use PowerShell on Windows and Bash on Linux.
+
+### Prerequisites
+
+- **Pandoc 3.x and XeLaTeX** on your PATH. Use MiKTeX or TeX Live on Windows, TeX Live on Linux, or MacTeX on macOS. The distribution must provide the LaTeX packages used by Eisvogel and the report preamble.
+- **Node.js and npm** to install **Mermaid CLI**. Install it once per checkout with the commands below. The build commands load the local launcher and browser cache automatically. Keep the browser download enabled when installing Mermaid CLI. The Windows filter uses `mmdc.cmd`.
+- **Arial and Consolas** for the default fonts. If those fonts are unavailable on Linux or macOS, install **Liberation Sans and Liberation Mono** and use the font override below.
+- **Make** for the Makefile commands. The repository includes the Lua filters, Eisvogel template, and APA 7 CSL style. Pandoc provides `citeproc` for citations and the bibliography.
 
 ### Windows (PowerShell)
 
-Installation (one time only):
+**1. Install the tools once.** Open the integrated terminal in WebStorm or IntelliJ IDEA and select PowerShell. If the repository is already open, run:
 
 ```powershell
-winget install --id JohnMacFarlane.Pandoc
-winget install --id MiKTeX.MiKTeX
+winget install --exact --id JohnMacFarlane.Pandoc
+winget install --exact --id MiKTeX.MiKTeX
+winget install --exact --id OpenJS.NodeJS.LTS
 ```
 
-In **MiKTeX Console → Settings**, enable *Install missing packages on-the-fly: Always*.
+Complete MiKTeX's first-run setup in MiKTeX Console and enable automatic installation of missing packages. The Windows build uses Arial and Consolas. Restart the IDE so its terminal picks up the installed tools.
 
-Compilation:
+**2. Install Mermaid CLI and its browser once per checkout.** From the repository root:
+
+```powershell
+$env:PUPPETEER_CACHE_DIR = Join-Path $PWD.Path 'pandoc\build\mermaid-browser'
+npm.cmd install --prefix pandoc/build/mermaid-tools @mermaid-js/mermaid-cli@12.2.0
+& .\pandoc\build\mermaid-tools\node_modules\.bin\puppeteer.cmd browsers install
+```
+
+The explicit browser command also works when npm skips dependency install scripts. [Puppeteer installation guide](https://pptr.dev/guides/installation)
+
+**3. Generate the PDF.** From the repository root, run this command each time you want to build:
 
 ```powershell
 .\pandoc\build.ps1 -Milestone tb2
 ```
 
-The PDF is generated as `pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb2.pdf`.
+Use `-Milestone av2` for the AV2 filename.
+
+### Linux (Ubuntu 24.04, Bash)
+
+**1. Install the tools once.** These package names are for Ubuntu 24.04 on x86-64. Open the integrated Bash terminal in WebStorm or IntelliJ IDEA.
+
+```bash
+sudo apt update
+sudo apt install -y git curl unzip make pandoc fonts-liberation \
+  texlive-xetex texlive-latex-extra texlive-fonts-recommended texlive-lang-spanish \
+  libasound2t64 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libdrm2 \
+  libgbm1 libglib2.0-0t64 libgtk-3-0t64 libnspr4 libnss3 libx11-xcb1 \
+  libxcomposite1 libxdamage1 libxfixes3 libxkbcommon0 libxrandr2
+```
+
+If Node.js 24 with npm is already installed, skip this block. Otherwise, install it with nvm:
+
+```bash
+export NVM_DIR="$HOME/.nvm"
+if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+  git clone --depth 1 --branch v0.40.3 https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+fi
+. "$NVM_DIR/nvm.sh"
+nvm install 24
+if ! grep -Fq '# Load nvm for Node.js' "$HOME/.bashrc" 2>/dev/null; then
+  cat >> "$HOME/.bashrc" <<'EOF'
+
+# Load nvm for Node.js
+export NVM_DIR="$HOME/.nvm"
+[ ! -s "$NVM_DIR/nvm.sh" ] || . "$NVM_DIR/nvm.sh"
+EOF
+fi
+```
+
+[nvm installation and usage](https://github.com/nvm-sh/nvm/tree/v0.40.3)
+
+**2. Install Mermaid CLI and its browser once per checkout.** From the repository root:
+
+```bash
+export PUPPETEER_CACHE_DIR="$PWD/pandoc/build/mermaid-browser"
+npm install --prefix pandoc/build/mermaid-tools @mermaid-js/mermaid-cli@12.2.0
+./pandoc/build/mermaid-tools/node_modules/.bin/puppeteer browsers install
+```
+
+**3. Generate the PDF.** From the repository root, run this command each time you want to build:
+
+```bash
+make -C pandoc pdf MILESTONE=tb2 FONTS=linux
+```
+
+### macOS (Bash or Zsh)
+
+With Homebrew and Apple Command Line Tools available, install the host tools, then use steps 2 and 3 from Linux to install Mermaid CLI locally and compile.
+
+```bash
+brew install pandoc node@24
+brew install --cask mactex font-liberation
+export PATH="$(brew --prefix node@24)/bin:/Library/TeX/texbin:$PATH"
+```
+
+Add the PATH line to your shell profile or run it in each new terminal before building.
+
+### Direct Pandoc commands (optional)
+
+The PowerShell and Make commands above are the shortest path. If you need to call Pandoc directly, set the local Mermaid paths in the same terminal first. The checkout setup already creates the output directory.
+
+```powershell
+$env:PATH = "$(Join-Path $PWD.Path 'pandoc\build\mermaid-tools\node_modules\.bin');$env:PATH"
+$env:PUPPETEER_CACHE_DIR = Join-Path $PWD.Path 'pandoc\build\mermaid-browser'
+pandoc --defaults=pandoc/build.yaml -o pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb2.pdf
+```
+
+```bash
+export PATH="$PWD/pandoc/build/mermaid-tools/node_modules/.bin:$PATH"
+export PUPPETEER_CACHE_DIR="$PWD/pandoc/build/mermaid-browser"
+pandoc --defaults=pandoc/build.yaml \
+  -V mainfont="Liberation Sans" -V monofont="Liberation Mono" \
+  -o pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb2.pdf
+```
+
+### Output
+
+All TB2 commands above generate `pandoc/build/upc-pre-202620-1asi0729-7742-dymbia-report-tb2.pdf`. Git ignores the output directory.
